@@ -1,0 +1,181 @@
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  transition: background-color 0.3s, color 0.3s;
+}
+
+/* Temas */
+body.light-mode {
+  background-color: #f9f9f9;
+  color: #111;
+}
+body.dark-mode {
+  background-color: #0a0a0a;
+  color: #f0f0f0;
+}
+body.red-mode {
+  background-color: #200 !important;
+  color: #ff6666 !important;
+}
+body.red-mode * {
+  background-color: #300 !important;
+  color: #ff6666 !important;
+  border-color: #600 !important;
+}
+
+/* Cabeçalho e navegação */
+header {
+  background: #111;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem;
+}
+header .top-buttons {
+  display: flex;
+  gap: 0.5rem;
+}
+nav {
+  display: flex;
+  background: #222;
+}
+nav button {
+  flex: 1;
+  padding: 1rem;
+  background: #222;
+  color: white;
+  border: none;
+  cursor: pointer;
+}
+nav button.active {
+  background: #444;
+}
+
+/* Secções */
+section {
+  display: none;
+  padding: 1rem;
+}
+section.active {
+  display: block;
+}
+
+/* Cartões */
+.card {
+  background: #1a1a1a;
+  padding: 1rem;
+  border-radius: 8px;
+  border: 1px solid #333;
+  text-align: center;
+}
+.card img.thumbnail {
+  width: 100%;
+  height: auto;
+  max-height: 120px;
+  object-fit: cover;
+  border-radius: 6px;
+}
+.card .meta {
+  font-size: 0.85rem;
+  color: #aaa;
+  margin-top: 0.3rem;
+}
+
+/* Grelha de observações e favoritos */
+.grid-container,
+.favoritos-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  gap: 1rem;
+}
+
+/* Formulários */
+form {
+  max-width: 500px;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin: auto;
+}
+input, select, textarea, button {
+  background: #222;
+  color: white;
+  border: 1px solid #444;
+  border-radius: 4px;
+  padding: 0.5rem;
+}
+input[type="search"] {
+  width: 100%;
+  font-size: 1rem;
+}
+button[type="submit"],
+.actions button {
+  background: #2a7ae2;
+  color: white;
+  border: none;
+  cursor: pointer;
+}
+
+/* Ações */
+.actions {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: 1rem;
+  flex-wrap: wrap;
+}
+.actions button {
+  background: none;
+  border: none;
+  color: #ccc;
+  cursor: pointer;
+}
+
+/* Chips de filtro */
+.chip {
+  padding: 0.4rem 0.8rem;
+  border: 1px solid #555;
+  background: #333;
+  color: white;
+  border-radius: 999px;
+  cursor: pointer;
+  margin: 0.2rem;
+}
+.chip.active {
+  background: #2a7ae2;
+  border-color: #2a7ae2;
+}
+
+/* Pesquisa */
+#searchBar {
+  display: none;
+  padding: 0.5rem 1rem;
+  background-color: #181818;
+}
+#searchBar input {
+  width: 100%;
+}
+#searchBar.visible {
+  display: block;
+}
+
+/* Estilo para modo claro adicional */
+body.light-mode header,
+body.light-mode nav {
+  background: #eee;
+}
+body.light-mode nav button {
+  color: #111;
+  background: #ddd;
+}
+body.light-mode nav button.active {
+  background: #bbb;
+}
+body.light-mode .card {
+  background: #fff;
+  color: #111;
+}
+body.light-mode input, body.light-mode select, body.light-mode textarea {
+  background: #f0f0f0;
+  color: #111;
+  border: 1px solid #ccc;
+}
