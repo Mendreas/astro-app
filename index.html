@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title data-i18n="appTitle">Observações Astronómicas</title>
+  <link rel="stylesheet" href="style.css" />
+  <link rel="manifest" href="manifest.json">
+  <link rel="icon" type="image/png" href="icon-192.png">
+</head>
+<body>
+  <header>
+    <strong>🔭 <span data-i18n="appTitle">Observações Astronómicas</span></strong>
+    <div class="top-buttons">
+      <button id="themeToggle">☀️</button>
+      <button id="toggleRed">🔴</button>
+      <button id="toggleLang">EN</button>
+      <button id="searchToggle">🔍</button>
+    </div>
+  </header>
+  <nav>
+    <button class="tab-button active" data-tab="observacoes" data-i18n="tabObservacoes">Observações</button>
+    <button class="tab-button" data-tab="favoritos" data-i18n="tabFavoritos">Favoritos</button>
+    <button class="tab-button" data-tab="adicionar" data-i18n="tabAdicionar">Adicionar</button>
+    <button class="tab-button" data-tab="recursos" data-i18n="tabRecursos">Recursos</button>
+    <button class="tab-button" data-tab="config" data-i18n="tabConfig">Config</button>
+  </nav>
+  <div id="searchBar">
+    <input type="search" id="searchInput" placeholder="🔎 Procurar..." data-i18n="searchPlaceholder" />
+  </div>
+
+  <!-- Conteúdo das tabs aqui ... (mantém igual como na versão anterior) -->
+
+  <script src="https://cdn.jsdelivr.net/npm/idb@7/build/umd.js"></script>
+  <script>
+    const i18n = {
+      pt: {
+        appTitle: "Observações Astronómicas",
+        tabObservacoes: "Observações",
+        tabFavoritos: "Favoritos",
+        tabAdicionar: "Adicionar",
+        tabRecursos: "Recursos",
+        tabConfig: "Config",
+        searchPlaceholder: "🔎 Procurar...",
+        nome: "Nome",
+        tipo: "Tipo",
+        estrela: "Estrela",
+        galaxia: "Galáxia",
+        aglomerado: "Aglomerado",
+        nebulosa: "Nebulosa",
+        sistemasolar: "Sistema Solar",
+        outro: "Outro",
+        data: "Data",
+        local: "Local",
+        ra: "RA",
+        dec: "DEC",
+        magnitude: "Magnitude",
+        elongacao: "Elongação",
+        distancia: "Distância",
+        unidade: "Unidade",
+        descricao: "Descrição",
+        foto: "Foto",
+        guardar: "💾 Guardar",
+        ordenar: "🅰️🔽 Ordenar",
+        exportar: "📤 Exportar",
+        importar: "📥 Importar",
+        catMessierTitulo: "🌌 Catálogo Messier",
+        catMessierDescricao: "Lista dos 110 objetos mais observados do céu noturno.",
+        verOnline: "Ver online",
+        stellariumTitulo: "🔭 Simulador de Céu",
+        stellariumDescricao: "Visualize o céu em tempo real, com planetas, constelações e estrelas.",
+        abrir: "Abrir Stellarium",
+        fasesLuaTitulo: "🌓 Fases da Lua",
+        fasesLuaDescricao: "Calendário com todas as fases lunares.",
+        verFases: "Ver Fases",
+        eventosTitulo: "🌠 Eventos Astronómicos",
+        eventosDescricao: "Chuva de meteoros, eclipses, conjunções e mais.",
+        verEventos: "Ver Eventos"
+      },
+      en: {
+        appTitle: "Astronomical Observations",
+        tabObservacoes: "Observations",
+        tabFavoritos: "Favorites",
+        tabAdicionar: "Add",
+        tabRecursos: "Resources",
+        tabConfig: "Settings",
+        searchPlaceholder: "🔎 Search...",
+        nome: "Name",
+        tipo: "Type",
+        estrela: "Star",
+        galaxia: "Galaxy",
+        aglomerado: "Cluster",
+        nebulosa: "Nebula",
+        sistemasolar: "Solar System",
+        outro: "Other",
+        data: "Date",
+        local: "Location",
+        ra: "RA",
+        dec: "DEC",
+        magnitude: "Magnitude",
+        elongacao: "Elongation",
+        distancia: "Distance",
+        unidade: "Unit",
+        descricao: "Description",
+        foto: "Photo",
+        guardar: "💾 Save",
+        ordenar: "🅰️🔽 Sort",
+        exportar: "📤 Export",
+        importar: "📥 Import",
+        catMessierTitulo: "🌌 Messier Catalog",
+        catMessierDescricao: "List of 110 most observed deep sky objects.",
+        verOnline: "View online",
+        stellariumTitulo: "🔭 Sky Simulator",
+        stellariumDescricao: "See the sky in real time with planets and constellations.",
+        abrir: "Open Stellarium",
+        fasesLuaTitulo: "🌓 Moon Phases",
+        fasesLuaDescricao: "Calendar of moon phases.",
+        verFases: "View Phases",
+        eventosTitulo: "🌠 Astronomical Events",
+        eventosDescricao: "Meteor showers, eclipses, conjunctions and more.",
+        verEventos: "View Events"
+      }
+    };
+
+    let currentLang = localStorage.getItem('lang') || 'pt';
+    function traduzir() {
+      document.querySelectorAll('[data-i18n]').forEach(el => {
+        const key = el.getAttribute('data-i18n');
+        const txt = i18n[currentLang][key];
+        if (txt) {
+          if (el.placeholder) el.placeholder = txt;
+          else el.textContent = txt;
+        }
+      });
+      document.getElementById('toggleLang').textContent = currentLang === 'pt' ? 'EN' : 'PT';
+    }
+
+    document.getElementById('toggleLang').onclick = () => {
+      currentLang = currentLang === 'pt' ? 'en' : 'pt';
+      localStorage.setItem('lang', currentLang);
+      traduzir();
+    };
+
+    traduzir();
+  </script>
+  <script src="script.js"></script>
+
+  <section id="editar" style="display:none;">
+    <form id="editForm">
+      <input type="hidden" id="editObjectId">
+      <label><span data-i18n="nome">Nome</span><input id="editNome" /></label>
+      <label><span data-i18n="tipo">Tipo</span>
+        <select id="editTipo">
+          <option data-i18n="estrela">Estrela</option>
+          <option data-i18n="galaxia">Galáxia</option>
+          <option data-i18n="aglomerado">Aglomerado</option>
+          <option data-i18n="nebulosa">Nebulosa</option>
+          <option data-i18n="sistemasolar">Sistema Solar</option>
+          <option data-i18n="outro">Outro</option>
+        </select>
+      </label>
+      <label><span data-i18n="data">Data</span><input id="editData" type="date" /></label>
+      <label><span data-i18n="local">Local</span><input id="editLocal" /></label>
+      <label><span data-i18n="ra">RA</span><input id="editRa" /></label>
+      <label><span data-i18n="dec">DEC</span><input id="editDec" /></label>
+      <label><span data-i18n="magnitude">Magnitude</span><input id="editMagnitude" type="number" step="0.1" /></label>
+      <label><span data-i18n="elongacao">Elongação</span><input id="editElongacao" type="number" step="0.1" /></label>
+      <label><span data-i18n="distancia">Distância</span><input id="editDistancia" /></label>
+      <label><span data-i18n="descricao">Descrição</span><textarea id="editDescricao"></textarea></label>
+      <div id="editPreview"></div>
+      <button type="submit" data-i18n="guardar">💾 Guardar</button>
+    </form>
+  </section>
+</body>
+</html>
