@@ -133,7 +133,7 @@ function configurarFiltros() {
 
   const magChip = document.createElement('button');
   magChip.className = 'chip';
-  magChip.textContent = i18n[lang].magChip;
+  magChip.textContent = window.i18n?.[lang]?.magChip || 'Mag ≤ 8';
   magChip.onclick = () => {
     magFiltro = magFiltro ? null : 8;
     render();
