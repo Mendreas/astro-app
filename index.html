@@ -189,12 +189,9 @@ if (formAdd) {
     document.getElementById('preview').innerHTML = '';
   });
 
-  const el_foto = document.getElementById('foto');
-if (el_foto) {
-  el_foto.addEventListener('change', e => {
+  document.getElementById('foto').addEventListener('change', e => {
     const file = e.target.files[0];
-    if (!file);
-} return;
+    if (!file) return;
     const reader = new FileReader();
     reader.onload = () => {
       document.getElementById('preview').innerHTML = `<img class="observation-photo" src="${reader.result}">`;
@@ -432,6 +429,34 @@ if ('serviceWorker' in navigator) {
     .then(() => console.log("✅ Service Worker registado"))
     .catch(err => console.error("❌ Falha ao registar SW", err));
 }
+
+const foto = document.getElementById('foto');
+if (foto) {
+  foto.addEventListener('change', e => {
+    const file = e.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = () => {
+      document.getElementById('preview').innerHTML = `<img class="observation-photo" src="${reader.result}">`;
+    };
+    reader.readAsDataURL(file);
+  });
+}
+
+const sortToggle = document.getElementById('sortToggle');
+if (sortToggle) {
+  sortToggle.addEventListener('click', () => {
+    console.log('Ordenar clicado');
+  });
+}
+
+const searchInput = document.getElementById('searchInput');
+if (searchInput) {
+  searchInput.addEventListener('input', () => {
+    console.log('Busca atualizada');
+  });
+});
+
 </script>
 </body>
 </html>
