@@ -177,5 +177,41 @@
       <button type="submit" data-i18n="guardar">💾 Guardar</button>
     </form>
   </section>
+  
+  <section id="adicionar" class="active">
+  <form id="addForm">
+    <input type="hidden" id="editObject">
+    <label><span data-i18n="nome">Nome</span><input id="nome" /></label>
+    <label><span data-i18n="tipo">Tipo</span>
+      <select id="tipo">
+        <option value="Estrela" data-i18n="estrela">Estrela</option>
+        <option value="Galáxia" data-i18n="galaxia">Galáxia</option>
+        <option value="Aglomerado" data-i18n="aglomerado">Aglomerado</option>
+        <option value="Nebulosa" data-i18n="nebulosa">Nebulosa</option>
+        <option value="Sistema Solar" data-i18n="sistemasolar">Sistema Solar</option>
+        <option value="Outro" data-i18n="outro">Outro</option>
+      </select>
+    </label>
+    <label><span data-i18n="data">Data</span><input type="date" id="data" /></label>
+    <label><span data-i18n="local">Local</span><input id="local" /></label>
+    <label><span data-i18n="ra">RA</span><input id="ra" /></label>
+    <label><span data-i18n="dec">DEC</span><input id="dec" /></label>
+    <label><span data-i18n="magnitude">Magnitude</span><input type="number" step="0.1" id="magnitude" /></label>
+    <label><span data-i18n="elongacao">Elongação</span><input type="number" step="0.1" id="elongacao" /></label>
+    <label><span data-i18n="distancia">Distância</span><input id="distancia" /></label>
+    <label><span data-i18n="unidade">Unidade</span>
+      <select id="distUnidade">
+        <option value="AU">AU</option>
+        <option value="ly">ly</option>
+      </select>
+    </label>
+    <label><span data-i18n="foto">Foto</span><input type="file" id="foto" accept="image/*" /></label>
+    <label><span data-i18n="descricao">Descrição</span><textarea id="descricao"></textarea></label>
+    <div id="preview"></div>
+    <button type="submit" data-i18n="guardar">💾 Guardar</button>
+  </form>
+</section>
+
+  
 </body>
 </html>
