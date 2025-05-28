@@ -2,134 +2,146 @@
 <html lang="pt">
 <head>
   <meta charset="UTF-8" />
-  <title>Observações Astronómicas</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <link rel="stylesheet" href="style.css">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title data-i18n="appTitle">Observações Astronómicas</title>
+  <link rel="stylesheet" href="style.css" />
   <link rel="manifest" href="manifest.json">
+  <link rel="icon" type="image/png" href="icon-192.png">
 </head>
 <body>
   <header>
-    <h1 id="appTitle">Observações Astronómicas</h1>
+    <strong>🔭 Astro App</strong>
     <div class="top-buttons">
-      <button id="themeToggle">🌗</button>
+      <button id="themeToggle">☀️</button>
       <button id="toggleRed">🔴</button>
+      <button id="toggleLang">PT</button>
       <button id="searchToggle">🔍</button>
-      <button id="sortToggle">🅰️🔽</button>
-      <button id="toggleLang">EN</button>
     </div>
   </header>
-
-  <div id="searchBar" class="hidden">
-    <input type="search" id="searchInput" placeholder="Pesquisar observações...">
-  </div>
-
   <nav>
     <button class="tab-button active" data-tab="observacoes" data-i18n="tabObservacoes">Observações</button>
     <button class="tab-button" data-tab="favoritos" data-i18n="tabFavoritos">Favoritos</button>
     <button class="tab-button" data-tab="adicionar" data-i18n="tabAdicionar">Adicionar</button>
-    <button class="tab-button" data-tab="config" data-i18n="tabConfig">Configurações</button>
+    <button class="tab-button" data-tab="recursos">Recursos</button>
+    <button class="tab-button" data-tab="config" data-i18n="tabConfig">Config</button>
   </nav>
+  <div id="searchBar">
+    <input type="search" id="searchInput" placeholder="🔎 Procurar..." />
+  </div>
 
   <section id="observacoes" class="active"></section>
   <section id="favoritos"></section>
-
   <section id="adicionar">
     <form id="addForm">
-      <input type="hidden" id="editObject">
-      <label data-i18n="labelNome">Nome do Objeto:</label>
-      <input type="text" id="nome" required>
-      <label data-i18n="labelTipo">Tipo:</label>
-      <select id="tipo">
-        <option>Estrela</option>
-        <option>Galáxia</option>
-        <option>Aglomerado</option>
-        <option>Nebulosa</option>
-        <option>Sistema Solar</option>
-        <option>Outro</option>
-      </select>
-      <label data-i18n="labelData">Data de Observação:</label>
-      <input type="date" id="data" required>
-      <label data-i18n="labelLocal">Localização:</label>
-      <input type="text" id="local" required>
-      <label>RA:</label>
-      <input type="text" id="ra">
-      <label>DEC:</label>
-      <input type="text" id="dec">
-      <label>Magnitude:</label>
-      <input type="number" step="0.1" id="magnitude">
-      <label>Elongação:</label>
-      <input type="number" step="0.1" id="elongacao">
-      <label>Distância:</label>
-      <input type="number" step="0.1" id="distancia">
-      <select id="distUnidade">
-        <option value="ly">ly</option>
-        <option value="AU">AU</option>
-      </select>
-      <label data-i18n="labelDescricao">Descrição:</label>
-      <textarea id="descricao"></textarea>
-      <label data-i18n="labelFoto">Foto:</label>
-      <input type="file" id="foto" accept="image/*">
+      <input id="editObject" type="hidden">
+      <label><span data-i18n="nome">Nome</span> <input required id="nome" /></label>
+      <label><span data-i18n="tipo">Tipo</span>
+        <select id="tipo">
+          <option data-i18n="estrela">Estrela</option>
+          <option data-i18n="galaxia">Galáxia</option>
+          <option data-i18n="aglomerado">Aglomerado</option>
+          <option data-i18n="nebulosa">Nebulosa</option>
+          <option data-i18n="sistemasolar">Sistema Solar</option>
+          <option data-i18n="outro">Outro</option>
+        </select>
+      </label>
+      <label><span data-i18n="data">Data</span> <input type="date" id="data" /></label>
+      <label><span data-i18n="local">Local</span> <input id="local" /></label>
+      <label><span data-i18n="ra">RA</span> <input id="ra" /></label>
+      <label><span data-i18n="dec">DEC</span> <input id="dec" /></label>
+      <label><span data-i18n="magnitude">Magnitude</span> <input id="magnitude" type="number" step="0.1" /></label>
+      <label><span data-i18n="elongacao">Elongação</span> <input id="elongacao" type="number" step="0.1" /></label>
+      <div style="display: flex; gap: 0.5rem">
+        <label style="flex: 2"><span data-i18n="distancia">Distância</span> <input id="distancia" /></label>
+        <label style="flex: 1">
+          <span>Unidade</span>
+          <select id="distUnidade">
+            <option value="ly">ly</option>
+            <option value="AU">AU</option>
+          </select>
+        </label>
+      </div>
+      <label><span data-i18n="descricao">Descrição</span>
+        <textarea id="descricao" placeholder="Notas da observação..."></textarea>
+      </label>
+      <label><span data-i18n="foto">Foto</span> <input type="file" accept="image/*" id="foto" /></label>
       <div id="preview"></div>
-      <button type="submit" data-i18n="botaoGuardar">Guardar Observação</button>
+      <button type="submit" data-i18n="guardar">💾 Guardar</button>
     </form>
   </section>
 
   <section id="editar">
     <form id="editForm">
-      <input type="hidden" id="editObjectId">
-      <label>Nome do Objeto:</label>
-      <input type="text" id="editNome" required>
-      <label>Tipo:</label>
-      <select id="editTipo">
-        <option>Estrela</option>
-        <option>Galáxia</option>
-        <option>Aglomerado</option>
-        <option>Nebulosa</option>
-        <option>Sistema Solar</option>
-        <option>Outro</option>
-      </select>
-      <label>Data de Observação:</label>
-      <input type="date" id="editData" required>
-      <label>Localização:</label>
-      <input type="text" id="editLocal" required>
-      <label>RA:</label>
-      <input type="text" id="editRa">
-      <label>DEC:</label>
-      <input type="text" id="editDec">
-      <label>Magnitude:</label>
-      <input type="number" step="0.1" id="editMagnitude">
-      <label>Elongação:</label>
-      <input type="number" step="0.1" id="editElongacao">
-      <label>Distância:</label>
-      <input type="number" step="0.1" id="editDistancia">
-      <select id="editDistUnidade">
-        <option value="ly">ly</option>
-        <option value="AU">AU</option>
-      </select>
-      <label>Descrição:</label>
-      <textarea id="editDescricao"></textarea>
-      <label>Foto:</label>
-      <div id="editPreview" style="cursor:pointer; max-width:150px;"></div>
-      <input type="file" id="editFoto" accept="image/*">
-      <button type="submit">Atualizar Observação</button>
+      <input id="editObjectId" type="hidden">
+      <label><span data-i18n="nome">Nome</span> <input id="editNome" /></label>
+      <label><span data-i18n="tipo">Tipo</span>
+        <select id="editTipo">
+          <option>Estrela</option>
+          <option>Galáxia</option>
+          <option>Aglomerado</option>
+          <option>Nebulosa</option>
+          <option>Sistema Solar</option>
+          <option>Outro</option>
+        </select>
+      </label>
+      <label><span data-i18n="data">Data</span> <input id="editData" type="date" /></label>
+      <label><span data-i18n="local">Local</span> <input id="editLocal" /></label>
+      <label><span data-i18n="ra">RA</span> <input id="editRa" /></label>
+      <label><span data-i18n="dec">DEC</span> <input id="editDec" /></label>
+      <label><span data-i18n="magnitude">Magnitude</span> <input id="editMagnitude" type="number" step="0.1" /></label>
+      <label><span data-i18n="elongacao">Elongação</span> <input id="editElongacao" type="number" step="0.1" /></label>
+      <label><span data-i18n="distancia">Distância</span> <input id="editDistancia" /></label>
+      <label><span>Unidade</span>
+        <select id="editDistUnidade">
+          <option value="ly">ly</option>
+          <option value="AU">AU</option>
+        </select>
+      </label>
+      <label><span data-i18n="descricao">Descrição</span>
+        <textarea id="editDescricao"></textarea>
+      </label>
+      <div id="editPreview"></div>
+      <button type="submit" data-i18n="guardar">💾 Guardar</button>
     </form>
   </section>
 
-  <section id="config">
-    <div class="card">
-      <h3 data-i18n="configIdioma">Idioma</h3>
-      <p data-i18n="configInstrucao">Usa o botão no topo para trocar entre português e inglês.</p>
-    </div>
-    <div class="card">
-      <h3>Exportar/Importar Dados</h3>
-      <button id="exportBtn">📤 Exportar Observações</button>
-      <input type="file" id="importInput" accept=".json">
-      <button id="importBtn">📥 Importar Observações</button>
+  <section id="recursos">
+    <h2>🔗 Recursos Úteis</h2>
+    <div class="grid-container">
+      <div class="card">
+        <strong>🌌 Catálogo Messier</strong>
+        <p>Lista dos 110 objetos mais observados do céu noturno.</p>
+        <a href="https://www.nasa.gov/content/goddard/messier-catalog" target="_blank">Ver online</a>
+      </div>
+      <div class="card">
+        <strong>🔭 Simulador de Céu</strong>
+        <p>Visualize o céu em tempo real, com planetas, constelações e estrelas.</p>
+        <a href="https://stellarium-web.org/" target="_blank">Abrir Stellarium</a>
+      </div>
+      <div class="card">
+        <strong>🌓 Fases da Lua</strong>
+        <p>Calendário com todas as fases lunares.</p>
+        <a href="https://www.timeanddate.com/moon/phases/" target="_blank">Ver Fases</a>
+      </div>
+      <div class="card">
+        <strong>🌠 Eventos Astronómicos</strong>
+        <p>Chuva de meteoros, eclipses, conjunções e mais.</p>
+        <a href="https://www.timeanddate.com/astronomy/sights-to-see.html" target="_blank">Ver Eventos</a>
+      </div>
     </div>
   </section>
 
-  <script src="https://cdn.jsdelivr.net/npm/idb@5/build/iife/index-min.js"></script>
+  <section id="config">
+    <h2 data-i18n="tabConfig">Configurações</h2>
+    <div class="actions">
+      <button id="sortToggle" title="Ordenar" data-i18n="ordenar">🅰️🔽</button>
+      <button id="exportar">📤 Exportar</button>
+      <button id="importar">📥 Importar</button>
+    </div>
+    <input type="file" id="importFile" accept="application/json" style="display: none;">
+  </section>
+
+  <script src="https://unpkg.com/idb@7/build/iife/index-min.js"></script>
   <script src="script.js"></script>
 </body>
 </html>
-
