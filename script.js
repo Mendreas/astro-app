@@ -21,6 +21,12 @@ window.onload = async () => {
   configurarFiltros();
   traduzir(document.documentElement.lang);
   render();
+	
+};
+
+document.getElementById('searchToggle').onclick = () => {
+  const barra = document.getElementById('searchBar');
+  barra.classList.toggle('visible');
 };
 
 const i18n = {
@@ -101,9 +107,10 @@ function configurarEventosUI() {
   };
 
   document.getElementById('themeToggle').onclick = () => {
-    document.body.classList.toggle('light-mode');
-    document.body.classList.remove('red-mode');
-    localStorage.setItem('tema', document.body.classList.contains('light-mode') ? 'light' : 'dark');
+  document.body.classList.toggle('light-mode');
+  document.body.classList.remove('red-mode');
+  document.body.classList.toggle('dark-mode', !document.body.classList.contains('light-mode'));
+  localStorage.setItem('tema', document.body.classList.contains('light-mode') ? 'light' : 'dark');
   };
 
   document.getElementById('toggleRed').onclick = () => {
@@ -184,7 +191,7 @@ async function guardarObservacao(e) {
   document.getElementById('editObject').value = '';
   document.getElementById('preview').innerHTML = '';
   document.querySelector('[data-tab="observacoes"]').click();
-  render();
+  setTimeout(render, 50); // previne duplicação temporária
 }
 
 function toBase64(file) {
