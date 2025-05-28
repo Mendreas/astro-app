@@ -5,8 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title data-i18n="appTitle">Observações Astronómicas</title>
   <link rel="stylesheet" href="style.css" />
-  <link rel="manifest" href="manifest.json" />
-  <link rel="icon" type="image/png" href="icon-192.png" />
+  <link rel="manifest" href="manifest.json">
+  <link rel="icon" type="image/png" href="icon-192.png">
 </head>
 <body>
   <header>
@@ -36,7 +36,7 @@
 
   <section id="adicionar">
     <form id="addForm">
-      <input type="hidden" id="editObject" />
+      <input type="hidden" id="editObject">
       <label><span data-i18n="nome">Nome</span><input id="nome" /></label>
       <label><span data-i18n="tipo">Tipo</span>
         <select id="tipo">
@@ -78,7 +78,7 @@
 
   <section id="editar" style="display:none;">
     <form id="editForm">
-      <input type="hidden" id="editObjectId" />
+      <input type="hidden" id="editObjectId">
       <label><span data-i18n="nome">Nome</span><input id="editNome" /></label>
       <label><span data-i18n="tipo">Tipo</span>
         <select id="editTipo">
@@ -109,7 +109,7 @@
     </form>
   </section>
 
-  <!-- Scripts -->
+  <!-- Scripts no fim do body -->
   <script src="https://cdn.jsdelivr.net/npm/idb@7/build/umd.js"></script>
   
 <script>
@@ -455,7 +455,7 @@ if (searchInput) {
   searchInput.addEventListener('input', () => {
     console.log('Busca atualizada');
   });
-});
+}
 
 </script>
 </body>
