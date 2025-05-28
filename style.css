@@ -161,7 +161,7 @@ button[type="submit"],
 /* Estilo para modo claro adicional */
 body.light-mode header,
 body.light-mode nav {
-  background: #eee;
+  background: #ddd;
 }
 body.light-mode nav button {
   color: #111;
@@ -170,12 +170,8 @@ body.light-mode nav button {
 body.light-mode nav button.active {
   background: #bbb;
 }
-body.light-mode .card {
-  background: #fff;
-  color: #111;
-}
-body.light-mode input, body.light-mode select, body.light-mode textarea {
-  background: #f0f0f0;
-  color: #111;
+body.light-mode .card, body.light-mode input, body.light-mode select, body.light-mode textarea {
+  background-color: white;
+  color: black;
   border: 1px solid #ccc;
 }
