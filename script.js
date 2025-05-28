@@ -31,7 +31,7 @@ document.getElementById('searchToggle').onclick = () => {
 
 
 function traduzir(lang) {
-  const t = i18n[lang];
+  const t = window.i18n?.[lang] || {};
   document.title = t.appTitle;
   document.querySelector('[data-tab="observacoes"]').textContent = t.tabObservacoes;
   document.querySelector('[data-tab="favoritos"]').textContent = t.tabFavoritos;
@@ -117,7 +117,7 @@ function configurarFiltros() {
   chipContainer.style.margin = '1rem 1rem 0 1rem';
 
   const lang = document.documentElement.lang;
-  const tipos = i18n[lang].tipos;
+  const tipos = window.i18n?.[lang]?.tipos || [];
 
   tipos.forEach((tipoTrad, i) => {
     const chip = document.createElement('button');
