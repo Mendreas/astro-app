@@ -62,7 +62,11 @@ function configurarEventosUI() {
     };
   });
 
-  document.getElementById('addForm').onsubmit = guardarObservacao;
+  const formAdd = document.getElementById('addForm');
+if (formAdd) {
+  formAdd.onsubmit = guardarObservacao;
+}
+
 
   document.querySelector('[data-tab="adicionar"]').addEventListener('click', () => {
     document.getElementById('addForm').reset();
