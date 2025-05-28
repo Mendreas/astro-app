@@ -29,26 +29,6 @@ document.getElementById('searchToggle').onclick = () => {
   barra.classList.toggle('visible');
 };
 
-const i18n = {
-  pt: {
-    appTitle: "Observações Astronómicas",
-    tabObservacoes: "Observações",
-    tabFavoritos: "Favoritos",
-    tabAdicionar: "Adicionar",
-    tabConfig: "Configurações",
-    tipos: ['Todos', 'Estrela', 'Galáxia', 'Aglomerado', 'Nebulosa', 'Sistema Solar', 'Outro'],
-    magChip: 'Mag ≤ 8'
-  },
-  en: {
-    appTitle: "Astronomical Observations",
-    tabObservacoes: "Observations",
-    tabFavoritos: "Favorites",
-    tabAdicionar: "Add",
-    tabConfig: "Settings",
-    tipos: ['All', 'Star', 'Galaxy', 'Cluster', 'Nebula', 'Solar System', 'Other'],
-    magChip: 'Mag ≤ 8'
-  }
-};
 
 function traduzir(lang) {
   const t = i18n[lang];
