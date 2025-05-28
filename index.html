@@ -177,42 +177,6 @@
       <button type="submit" data-i18n="guardar">💾 Guardar</button>
     </form>
   </section>
-  
-  <section id="adicionar" class="active">
-  <form id="addForm">
-    <input type="hidden" id="editObject">
-    <label><span data-i18n="nome">Nome</span><input id="nome" /></label>
-    <label><span data-i18n="tipo">Tipo</span>
-      <select id="tipo">
-        <option value="Estrela" data-i18n="estrela">Estrela</option>
-        <option value="Galáxia" data-i18n="galaxia">Galáxia</option>
-        <option value="Aglomerado" data-i18n="aglomerado">Aglomerado</option>
-        <option value="Nebulosa" data-i18n="nebulosa">Nebulosa</option>
-        <option value="Sistema Solar" data-i18n="sistemasolar">Sistema Solar</option>
-        <option value="Outro" data-i18n="outro">Outro</option>
-      </select>
-    </label>
-    <label><span data-i18n="data">Data</span><input type="date" id="data" /></label>
-    <label><span data-i18n="local">Local</span><input id="local" /></label>
-    <label><span data-i18n="ra">RA</span><input id="ra" /></label>
-    <label><span data-i18n="dec">DEC</span><input id="dec" /></label>
-    <label><span data-i18n="magnitude">Magnitude</span><input type="number" step="0.1" id="magnitude" /></label>
-    <label><span data-i18n="elongacao">Elongação</span><input type="number" step="0.1" id="elongacao" /></label>
-    <label><span data-i18n="distancia">Distância</span><input id="distancia" /></label>
-    <label><span data-i18n="unidade">Unidade</span>
-      <select id="distUnidade">
-        <option value="AU">AU</option>
-        <option value="ly">ly</option>
-      </select>
-    </label>
-    <label><span data-i18n="foto">Foto</span><input type="file" id="foto" accept="image/*" /></label>
-    <label><span data-i18n="descricao">Descrição</span><textarea id="descricao"></textarea></label>
-    <div id="preview"></div>
-    <button type="submit" data-i18n="guardar">💾 Guardar</button>
-  </form>
-</section>
-
-  
 <script>
 // script.js completo atualizado
 let db;
@@ -240,8 +204,11 @@ window.onload = async () => {
 	
 };
 
-document.getElementById('searchToggle').onclick = () => {
+const el_searchToggle = document.getElementById('searchToggle');
+if (el_searchToggle) {
+  el_searchToggle.onclick = () => {
   const barra = document.getElementById('searchBar');
+}
   barra.classList.toggle('visible');
 };
 
@@ -259,10 +226,13 @@ function traduzir(lang) {
   });
 }
 
-document.getElementById('toggleLang').onclick = () => {
+const el_toggleLang = document.getElementById('toggleLang');
+if (el_toggleLang) {
+  el_toggleLang.onclick = () => {
   const lang = document.documentElement.lang === 'pt' ? 'en' : 'pt';
+}
   document.documentElement.lang = lang;
-  document.getElementById('toggleLang').textContent = lang.toUpperCase();
+  const el_toggleLang').textContent = lang.toUpperCase();
   traduzir(lang);
 };
 
@@ -306,21 +276,162 @@ if (formAdd) {
     setTimeout(render, 30);
   };
 
-  document.getElementById('themeToggle').onclick = () => {
+  document.getElementById('themeToggle = document.getElementById('toggleLang').textContent = lang.toUpperCase();
+  traduzir(lang);
+};
+
+function configurarEventosUI() {
+  document.querySelectorAll('.tab-button').forEach(btn => {
+    btn.onclick = () => {
+      document.querySelectorAll('.tab-button').forEach(b => b.classList.remove('active'));
+      document.querySelectorAll('section').forEach(s => s.classList.remove('active'));
+      if (btn && btn.classList) btn.classList.add('active');
+      document.getElementById(btn.dataset.tab).classList.add('active');
+      if (btn.dataset.tab === 'favoritos') renderFavoritos();
+      if (btn.dataset.tab === 'observacoes') render();
+    };
+  });
+
+  const formAdd = document.getElementById('addForm');
+if (formAdd) {
+  formAdd.onsubmit = guardarObservacao;
+}
+
+
+  document.querySelector('[data-tab="adicionar"]').addEventListener('click', () => {
+    document.getElementById('addForm').reset();
+    document.getElementById('editObject').value = '';
+    document.getElementById('preview').innerHTML = '';
+  });
+
+  document.getElementById('foto').addEventListener('change', e => {
+    const file = e.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = () => {
+      document.getElementById('preview').innerHTML = `<img class="observation-photo" src="${reader.result}">`;
+    };
+    reader.readAsDataURL(file);
+  });
+
+  document.getElementById('searchInput').oninput = e => {
+    searchTerm = e.target.value.toLowerCase();
+    document.querySelector('[data-tab="observacoes"]').click();
+    setTimeout(render, 30);
+  };
+
+  document.getElementById('themeToggle');
+if (el_toggleLang').textContent = lang.toUpperCase();
+  traduzir(lang);
+};
+
+function configurarEventosUI() {
+  document.querySelectorAll('.tab-button').forEach(btn => {
+    btn.onclick = () => {
+      document.querySelectorAll('.tab-button').forEach(b => b.classList.remove('active'));
+      document.querySelectorAll('section').forEach(s => s.classList.remove('active'));
+      if (btn && btn.classList) btn.classList.add('active');
+      document.getElementById(btn.dataset.tab).classList.add('active');
+      if (btn.dataset.tab === 'favoritos') renderFavoritos();
+      if (btn.dataset.tab === 'observacoes') render();
+    };
+  });
+
+  const formAdd = document.getElementById('addForm');
+if (formAdd) {
+  formAdd.onsubmit = guardarObservacao;
+}
+
+
+  document.querySelector('[data-tab="adicionar"]').addEventListener('click', () => {
+    document.getElementById('addForm').reset();
+    document.getElementById('editObject').value = '';
+    document.getElementById('preview').innerHTML = '';
+  });
+
+  document.getElementById('foto').addEventListener('change', e => {
+    const file = e.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = () => {
+      document.getElementById('preview').innerHTML = `<img class="observation-photo" src="${reader.result}">`;
+    };
+    reader.readAsDataURL(file);
+  });
+
+  document.getElementById('searchInput').oninput = e => {
+    searchTerm = e.target.value.toLowerCase();
+    document.querySelector('[data-tab="observacoes"]').click();
+    setTimeout(render, 30);
+  };
+
+  document.getElementById('themeToggle) {
+  el_toggleLang').textContent = lang.toUpperCase();
+  traduzir(lang);
+};
+
+function configurarEventosUI() {
+  document.querySelectorAll('.tab-button').forEach(btn => {
+    btn.onclick = () => {
+      document.querySelectorAll('.tab-button').forEach(b => b.classList.remove('active'));
+      document.querySelectorAll('section').forEach(s => s.classList.remove('active'));
+      if (btn && btn.classList) btn.classList.add('active');
+      document.getElementById(btn.dataset.tab).classList.add('active');
+      if (btn.dataset.tab === 'favoritos') renderFavoritos();
+      if (btn.dataset.tab === 'observacoes') render();
+    };
+  });
+
+  const formAdd = document.getElementById('addForm');
+if (formAdd) {
+  formAdd.onsubmit = guardarObservacao;
+}
+
+
+  document.querySelector('[data-tab="adicionar"]').addEventListener('click', () => {
+    document.getElementById('addForm').reset();
+    document.getElementById('editObject').value = '';
+    document.getElementById('preview').innerHTML = '';
+  });
+
+  document.getElementById('foto').addEventListener('change', e => {
+    const file = e.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = () => {
+      document.getElementById('preview').innerHTML = `<img class="observation-photo" src="${reader.result}">`;
+    };
+    reader.readAsDataURL(file);
+  });
+
+  document.getElementById('searchInput').oninput = e => {
+    searchTerm = e.target.value.toLowerCase();
+    document.querySelector('[data-tab="observacoes"]').click();
+    setTimeout(render, 30);
+  };
+
+  document.getElementById('themeToggle.onclick = () => {
   document.body.classList.toggle('light-mode');
+}
   document.body.classList.remove('red-mode');
   document.body.classList.toggle('dark-mode', !document.body.classList.contains('light-mode'));
   localStorage.setItem('tema', document.body.classList.contains('light-mode') ? 'light' : 'dark');
   };
 
-  document.getElementById('toggleRed').onclick = () => {
+  const el_toggleRed = document.getElementById('toggleRed');
+if (el_toggleRed) {
+  el_toggleRed.onclick = () => {
     const red = document.body.classList.toggle('red-mode');
+}
     document.body.classList.remove('light-mode', 'dark-mode');
     localStorage.setItem('tema', red ? 'red' : 'dark');
   };
 
-  document.getElementById('sortToggle').onclick = () => {
+  const el_sortToggle = document.getElementById('sortToggle');
+if (el_sortToggle) {
+  el_sortToggle.onclick = () => {
     const ordem = ['nome', 'data', 'tipo'];
+}
     const i = ordem.indexOf(sortBy);
     sortBy = ordem[(i + 1) % ordem.length];
     sortAsc = !sortAsc;
