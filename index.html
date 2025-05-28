@@ -144,5 +144,32 @@
     traduzir();
   </script>
   <script src="script.js"></script>
+
+  <section id="editar" style="display:none;">
+    <form id="editForm">
+      <input type="hidden" id="editObjectId">
+      <label><span data-i18n="nome">Nome</span><input id="editNome" /></label>
+      <label><span data-i18n="tipo">Tipo</span>
+        <select id="editTipo">
+          <option data-i18n="estrela">Estrela</option>
+          <option data-i18n="galaxia">Galáxia</option>
+          <option data-i18n="aglomerado">Aglomerado</option>
+          <option data-i18n="nebulosa">Nebulosa</option>
+          <option data-i18n="sistemasolar">Sistema Solar</option>
+          <option data-i18n="outro">Outro</option>
+        </select>
+      </label>
+      <label><span data-i18n="data">Data</span><input id="editData" type="date" /></label>
+      <label><span data-i18n="local">Local</span><input id="editLocal" /></label>
+      <label><span data-i18n="ra">RA</span><input id="editRa" /></label>
+      <label><span data-i18n="dec">DEC</span><input id="editDec" /></label>
+      <label><span data-i18n="magnitude">Magnitude</span><input id="editMagnitude" type="number" step="0.1" /></label>
+      <label><span data-i18n="elongacao">Elongação</span><input id="editElongacao" type="number" step="0.1" /></label>
+      <label><span data-i18n="distancia">Distância</span><input id="editDistancia" /></label>
+      <label><span data-i18n="descricao">Descrição</span><textarea id="editDescricao"></textarea></label>
+      <div id="editPreview"></div>
+      <button type="submit" data-i18n="guardar">💾 Guardar</button>
+    </form>
+  </section>
 </body>
 </html>

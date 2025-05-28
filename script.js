@@ -55,7 +55,7 @@ function configurarEventosUI() {
     btn.onclick = () => {
       document.querySelectorAll('.tab-button').forEach(b => b.classList.remove('active'));
       document.querySelectorAll('section').forEach(s => s.classList.remove('active'));
-      btn.classList.add('active');
+      if (btn && btn.classList) btn.classList.add('active');
       document.getElementById(btn.dataset.tab).classList.add('active');
       if (btn.dataset.tab === 'favoritos') renderFavoritos();
       if (btn.dataset.tab === 'observacoes') render();
