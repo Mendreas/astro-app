@@ -1,3 +1,4 @@
+// script.js completo atualizado
 let db;
 let tipoFiltro = null;
 let magFiltro = null;
@@ -7,8 +8,7 @@ let sortAsc = true;
 
 const { openDB } = window.idb;
 
-// Inicialização
-document.addEventListener("DOMContentLoaded", async () => {
+window.onload = async () => {
   db = await openDB('astroApp', 1, {
     upgrade(db) {
       if (!db.objectStoreNames.contains('observacoes')) {
@@ -21,7 +21,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   configurarFiltros();
   traduzir(document.documentElement.lang);
   render();
-});
+};
 
 const i18n = {
   pt: {
@@ -29,23 +29,32 @@ const i18n = {
     tabObservacoes: "Observações",
     tabFavoritos: "Favoritos",
     tabAdicionar: "Adicionar",
-    tabConfig: "Configurações"
+    tabConfig: "Configurações",
+    tipos: ['Todos', 'Estrela', 'Galáxia', 'Aglomerado', 'Nebulosa', 'Sistema Solar', 'Outro'],
+    magChip: 'Mag ≤ 8'
   },
   en: {
     appTitle: "Astronomical Observations",
     tabObservacoes: "Observations",
     tabFavoritos: "Favorites",
     tabAdicionar: "Add",
-    tabConfig: "Settings"
+    tabConfig: "Settings",
+    tipos: ['All', 'Star', 'Galaxy', 'Cluster', 'Nebula', 'Solar System', 'Other'],
+    magChip: 'Mag ≤ 8'
   }
 };
 
 function traduzir(lang) {
-  document.title = i18n[lang].appTitle;
-  document.querySelector('[data-tab="observacoes"]').textContent = i18n[lang].tabObservacoes;
-  document.querySelector('[data-tab="favoritos"]').textContent = i18n[lang].tabFavoritos;
-  document.querySelector('[data-tab="adicionar"]').textContent = i18n[lang].tabAdicionar;
-  document.querySelector('[data-tab="config"]').textContent = i18n[lang].tabConfig;
+  const t = i18n[lang];
+  document.title = t.appTitle;
+  document.querySelector('[data-tab="observacoes"]').textContent = t.tabObservacoes;
+  document.querySelector('[data-tab="favoritos"]').textContent = t.tabFavoritos;
+  document.querySelector('[data-tab="adicionar"]').textContent = t.tabAdicionar;
+  document.querySelector('[data-tab="config"]').textContent = t.tabConfig;
+  document.querySelectorAll('.chip').forEach((chip, i) => {
+    if (i < t.tipos.length) chip.textContent = t.tipos[i];
+    if (i === t.tipos.length) chip.textContent = t.magChip;
+  });
 }
 
 document.getElementById('toggleLang').onclick = () => {
@@ -85,44 +94,6 @@ function configurarEventosUI() {
     reader.readAsDataURL(file);
   });
 
-  document.getElementById('editFoto').addEventListener('change', e => {
-    const file = e.target.files[0];
-    if (!file) return;
-    const reader = new FileReader();
-    reader.onload = () => {
-      document.getElementById('editPreview').innerHTML = `<img src="${reader.result}" style="width:100px;" onclick="window.open('${reader.result}', '_blank')">`;
-    };
-    reader.readAsDataURL(file);
-  });
-
-  document.getElementById('editForm').onsubmit = async function(e) {
-    e.preventDefault();
-    const id = parseInt(document.getElementById('editObjectId').value);
-    const obs = await db.get('observacoes', id);
-    obs.nome = document.getElementById('editNome').value;
-    obs.tipo = document.getElementById('editTipo').value;
-    obs.data = document.getElementById('editData').value;
-    obs.local = document.getElementById('editLocal').value;
-    obs.ra = document.getElementById('editRa').value;
-    obs.dec = document.getElementById('editDec').value;
-    obs.magnitude = document.getElementById('editMagnitude').value;
-    obs.elongacao = document.getElementById('editElongacao').value;
-    obs.distancia = document.getElementById('editDistancia').value;
-    obs.distUnidade = document.getElementById('editDistUnidade').value;
-    obs.descricao = document.getElementById('editDescricao').value;
-
-    const file = document.getElementById('editFoto').files[0];
-    if (file) {
-      obs.foto = await toBase64(file);
-    }
-
-    await db.put('observacoes', obs);
-    document.getElementById('editForm').reset();
-    document.getElementById('observacoes').classList.add('active');
-    document.getElementById('editar').classList.remove('active');
-    render();
-  };
-
   document.getElementById('searchInput').oninput = e => {
     searchTerm = e.target.value.toLowerCase();
     document.querySelector('[data-tab="observacoes"]').click();
@@ -158,13 +129,16 @@ function configurarFiltros() {
   chipContainer.className = 'favoritos-grid';
   chipContainer.style.margin = '1rem 1rem 0 1rem';
 
-  ['Todos','Estrela','Galáxia','Aglomerado','Nebulosa','Sistema Solar','Outro'].forEach(tipo => {
+  const lang = document.documentElement.lang;
+  const tipos = i18n[lang].tipos;
+
+  tipos.forEach((tipoTrad, i) => {
     const chip = document.createElement('button');
     chip.className = 'chip';
-    chip.textContent = tipo;
+    chip.textContent = tipoTrad;
     chip.onclick = () => {
-      tipoFiltro = tipo === 'Todos' ? null : tipo;
-      if (tipo === 'Todos') magFiltro = null;  // limpa também o filtro de magnitude
+      tipoFiltro = i === 0 ? null : i18n['pt'].tipos[i];
+      if (i === 0) magFiltro = null;
       render();
     };
     chipContainer.appendChild(chip);
@@ -172,7 +146,7 @@ function configurarFiltros() {
 
   const magChip = document.createElement('button');
   magChip.className = 'chip';
-  magChip.textContent = 'Mag ≤ 8';
+  magChip.textContent = i18n[lang].magChip;
   magChip.onclick = () => {
     magFiltro = magFiltro ? null : 8;
     render();
@@ -205,6 +179,7 @@ async function guardarObservacao(e) {
   }
 
   await db.put('observacoes', obs);
+
   document.getElementById('addForm').reset();
   document.getElementById('editObject').value = '';
   document.getElementById('preview').innerHTML = '';
@@ -241,7 +216,7 @@ function ativarEdicao(obs) {
   document.getElementById('editDistancia').value = obs.distancia;
   document.getElementById('editDistUnidade').value = obs.distUnidade;
   document.getElementById('editDescricao').value = obs.descricao;
-  document.getElementById('editPreview').innerHTML = obs.foto ? `<img src="${obs.foto}" style="width:100px;" onclick="window.open('${obs.foto}', '_blank')">` : '';
+  document.getElementById('editPreview').innerHTML = obs.foto ? `<img src="${obs.foto}" class="thumbnail" onclick="window.open('${obs.foto}', '_blank')">` : '';
 }
 
 window.apagar = async function(id) {
@@ -276,7 +251,7 @@ async function render() {
     const div = document.createElement('div');
     div.className = 'card';
     div.innerHTML = `
-      ${obs.foto ? `<img class="thumbnail" src="${obs.foto}" />` : ''}
+      ${obs.foto ? `<img class="thumbnail" src="${obs.foto}" onclick="window.open('${obs.foto}', '_blank')">` : ''}
       <strong>${obs.nome}</strong>
       <div class="meta">${obs.data}</div>
     `;
@@ -302,7 +277,7 @@ function mostrarDetalhe(obs) {
     <p><strong>Elongação:</strong> ${obs.elongacao}</p>
     <p><strong>Distância:</strong> ${obs.distancia} ${obs.distUnidade}</p>
     <p><strong>Descrição:</strong> ${obs.descricao}</p>
-    ${obs.foto ? `<img class="observation-photo" src="${obs.foto}" />` : ''}
+    ${obs.foto ? `<img class="thumbnail" src="${obs.foto}" onclick="window.open('${obs.foto}', '_blank')">` : ''}
     <div class="actions">
       <button onclick="editar(${obs.id})">✏️ Editar</button>
       <button onclick="favoritar(${obs.id})">${obs.favorito ? '⭐ Remover Favorito' : '☆ Marcar Favorito'}</button>
@@ -329,7 +304,7 @@ async function renderFavoritos() {
     const div = document.createElement('div');
     div.className = 'card';
     div.innerHTML = `
-      ${obs.foto ? `<img class="thumbnail" src="${obs.foto}" />` : ''}
+      ${obs.foto ? `<img class="thumbnail" src="${obs.foto}" onclick="window.open('${obs.foto}', '_blank')">` : ''}
       <strong>${obs.nome}</strong>
       <div class="meta">${obs.data}</div>
     `;
@@ -342,6 +317,7 @@ async function renderFavoritos() {
 
   fav.appendChild(grid);
 }
+
 if ('serviceWorker' in navigator) {
   navigator.serviceWorker.register('service-worker.js')
     .then(() => console.log("✅ Service Worker registado"))
