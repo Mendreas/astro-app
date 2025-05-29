@@ -1,6 +1,6 @@
 {
-  "name": "Observações Astronómicas",
-  "short_name": "AstroApp",
+  "name": "AstroLog",
+  "short_name": "AstroLog",
   "start_url": "./",
   "display": "standalone",
   "background_color": "#000000",
