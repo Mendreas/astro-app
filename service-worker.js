@@ -2,10 +2,12 @@ const CACHE_NAME = 'astro-cache-v1';
 const urlsToCache = [
   'index.html',
   'style.css',
-  'app.js',
+  'app.js', // ✅ correto
+  'manifest.json',
   'icon-192.png',
   'icon-512.png'
 ];
+
 
 self.addEventListener('install', event => {
   event.waitUntil(
