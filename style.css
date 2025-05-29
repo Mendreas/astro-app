@@ -389,3 +389,27 @@ body.light textarea {
   position: relative;
   overflow: hidden;
 }
+
+/* Calendário */
+#calendarContainer {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 0.5rem;
+  margin-top: 1rem;
+  max-width: 400px;
+}
+
+.calendar-day {
+  padding: 0.5rem;
+  background: #1a1a1a;
+  text-align: center;
+  border-radius: 6px;
+  cursor: pointer;
+  border: 1px solid #333;
+}
+
+.calendar-day.highlight {
+  background: #7b2cbf;
+  color: white;
+  font-weight: bold;
+}

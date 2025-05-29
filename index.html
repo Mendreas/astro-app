@@ -29,6 +29,7 @@
       <button data-tab="objectos">Objectos</button>
       <button data-tab="adicionar">Adicionar</button>
       <button data-tab="recursos">Recursos</button>
+	  <button data-tab="calendario">Calendário</button>
       <button data-tab="configuracoes">Configurações</button>
     </nav>
 
@@ -130,15 +131,23 @@
         </ul>
       </section>
 
+			<section id="tab-calendario" class="tab">
+		  <h2>Calendário de Observações</h2>
+		  <div id="calendarContainer"></div>
+		  <div id="calendarResults" style="margin-top: 1rem;"></div>
+		</section>
+
+
       <section id="tab-configuracoes" class="tab">
-	  <p>Ajustes e configurações da aplicação.</p>
-	  <div class="config-actions">
-	    <button id="exportJson">📤 Exportar Observações</button>
-	    <label for="importJson" class="import-label">📥 Importar Observações
-	      <input type="file" id="importJson" accept=".json" style="display: none;" />
-	    </label>
-	  </div>
-	</section>
+  <p>Ajustes e configurações da aplicação.</p>
+  <div class="config-actions">
+    <button id="exportJson">📤 Exportar Observações</button>
+    <label for="importJson" class="import-label">📥 Importar Observações
+      <input type="file" id="importJson" accept=".json" style="display: none;" />
+    </label>
+    <button id="downloadBackup">💾 Descarregar Backup</button>
+  </div>
+</section>
     </div>
   </main>
 

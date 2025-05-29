@@ -46,8 +46,6 @@ const i18n = {
   }
 };
 
-
-
 // === IndexedDB SETUP ===
 const DB_NAME = 'AstroLogDB';
 const DB_VERSION = 1;
@@ -207,10 +205,84 @@ form.addEventListener('submit', async e => {
   const saveObs = async () => {
     await saveObservacao(obs);
     await loadObservacoes();
+	atualizarBackupJSON();
     form.reset();
     editId = null;
   };
 
+function atualizarBackupJSON() {
+  const json = JSON.stringify(observacoes, null, 2);
+  localStorage.setItem('backupAstroLog', json);
+}
+
+document.getElementById('downloadBackup').addEventListener('click', () => {
+  const data = localStorage.getItem('backupAstroLog');
+  if (!data) {
+    alert("Sem backup disponível.");
+    return;
+  }
+  const blob = new Blob([data], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'astro-backup.json';
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+});
+
+function renderCalendario() {
+  const container = document.getElementById('calendarContainer');
+  container.innerHTML = '';
+
+  const today = new Date();
+  const year = today.getFullYear();
+  const month = today.getMonth();
+  const firstDay = new Date(year, month, 1).getDay();
+  const daysInMonth = new Date(year, month + 1, 0).getDate();
+
+  const diasComObservacoes = new Set(
+    observacoes.map(o => new Date(o.data).toISOString().split('T')[0])
+  );
+
+  for (let i = 0; i < firstDay; i++) {
+    container.appendChild(document.createElement('div')); // vazio
+  }
+
+  for (let d = 1; d <= daysInMonth; d++) {
+    const date = new Date(year, month, d);
+    const dateStr = date.toISOString().split('T')[0];
+
+    const div = document.createElement('div');
+    div.className = 'calendar-day';
+    div.textContent = d;
+
+    if (diasComObservacoes.has(dateStr)) {
+      div.classList.add('highlight');
+      div.addEventListener('click', () => mostrarObservacoesDoDia(dateStr));
+    }
+
+    container.appendChild(div);
+  }
+}
+
+function mostrarObservacoesDoDia(dataISO) {
+  const lista = observacoes.filter(o => o.data.startsWith(dataISO));
+  const container = document.getElementById('calendarResults');
+
+  if (!lista.length) {
+    container.innerHTML = `<p>Sem observações para ${dataISO}</p>`;
+    return;
+  }
+
+  container.innerHTML = `<h3>Observações em ${dataISO}:</h3><ul>` +
+    lista.map(o => `<li>${getIcon(o.tipo)} ${o.nome}</li>`).join('') +
+    `</ul>`;
+}
+
+  
   if (file && file.name && file.size > 0) {
     const reader = new FileReader();
     reader.onload = async () => {
@@ -482,7 +554,9 @@ document.addEventListener('DOMContentLoaded', () => {
       if (target === 'adicionar') {
         editId = null;
         document.getElementById('observationForm').reset();
-      }
+		  else if (target === 'calendario') {
+  renderCalendario();
+       }
     });
   });
 
@@ -577,6 +651,55 @@ document.getElementById('importJson').addEventListener('change', async (event) =
   };
   reader.readAsText(file);
 });
+
+	function renderCalendario() {
+  const container = document.getElementById('calendarContainer');
+  container.innerHTML = '';
+
+  const today = new Date();
+  const year = today.getFullYear();
+  const month = today.getMonth();
+  const firstDay = new Date(year, month, 1).getDay();
+  const daysInMonth = new Date(year, month + 1, 0).getDate();
+
+  const diasComObservacoes = new Set(
+    observacoes.map(o => new Date(o.data).toISOString().split('T')[0])
+  );
+
+  for (let i = 0; i < firstDay; i++) {
+    container.appendChild(document.createElement('div')); // empty days
+  }
+
+  for (let d = 1; d <= daysInMonth; d++) {
+    const date = new Date(year, month, d);
+    const dateStr = date.toISOString().split('T')[0];
+
+    const div = document.createElement('div');
+    div.className = 'calendar-day';
+    div.textContent = d;
+
+    if (diasComObservacoes.has(dateStr)) {
+      div.classList.add('highlight');
+      div.addEventListener('click', () => mostrarObservacoesDoDia(dateStr));
+    }
+
+    container.appendChild(div);
+  }
+}
+
+function mostrarObservacoesDoDia(dataISO) {
+  const lista = observacoes.filter(o => o.data.startsWith(dataISO));
+  const container = document.getElementById('calendarResults');
+
+  if (!lista.length) {
+    container.innerHTML = `<p>Sem observações para ${dataISO}</p>`;
+    return;
+  }
+
+  container.innerHTML = `<h3>Observações em ${dataISO}:</h3><ul>` +
+    lista.map(o => `<li>${getIcon(o.tipo)} ${o.nome}</li>`).join('') +
+    `</ul>`;
+}
 
 	
 });
