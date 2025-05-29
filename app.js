@@ -701,7 +701,5 @@ function mostrarObservacoesDoDia(dataISO) {
   container.innerHTML = `<h3>Observações em ${dataISO}:</h3><ul>` +
     lista.map(o => `<li>${getIcon(o.tipo)} ${o.nome}</li>`).join('') +
     `</ul>`;
-}
-
-	
+  }
 });
