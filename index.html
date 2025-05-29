@@ -7,6 +7,13 @@
   <link rel="stylesheet" href="style.css" />
   <script defer src="app.js"></script>
 </head>
+<script>
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('service-worker.js')
+      .then(() => console.log("Service Worker registado com sucesso."))
+      .catch(err => console.error("Erro ao registar o Service Worker:", err));
+  }
+</script>
 <body>
   <header>
     <h1>AstroLog</h1>
