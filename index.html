@@ -124,8 +124,14 @@
       </section>
 
       <section id="tab-configuracoes" class="tab">
-        <p>Ajustes e configurações da aplicação.</p>
-      </section>
+	  <p>Ajustes e configurações da aplicação.</p>
+	  <div class="config-actions">
+	    <button id="exportJson">📤 Exportar Observações</button>
+	    <label for="importJson" class="import-label">📥 Importar Observações
+	      <input type="file" id="importJson" accept=".json" style="display: none;" />
+	    </label>
+	  </div>
+	</section>
     </div>
   </main>
 

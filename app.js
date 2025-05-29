@@ -532,4 +532,51 @@ document.addEventListener('DOMContentLoaded', () => {
 
     document.body.appendChild(menu);
   });
+	
+	document.getElementById('exportJson').addEventListener('click', async () => {
+  const data = await getAllObservacoes();
+  const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'astro-observacoes.json';
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+});
+
+document.getElementById('importJson').addEventListener('change', async (event) => {
+  const file = event.target.files[0];
+  if (!file) return;
+
+  const reader = new FileReader();
+  reader.onload = async () => {
+    try {
+      const data = JSON.parse(reader.result);
+      if (!Array.isArray(data)) throw new Error("Formato inválido");
+
+      const db = await openDB();
+      const tx = db.transaction(STORE_NAME, 'readwrite');
+      const store = tx.objectStore(STORE_NAME);
+      for (const obs of data) {
+        if (obs.id && obs.nome) {
+          store.put(obs);
+        }
+      }
+
+      tx.oncomplete = async () => {
+        alert("Importação concluída!");
+        await loadObservacoes();
+        event.target.value = ''; // reset file input
+      };
+    } catch (err) {
+      alert("Erro ao importar ficheiro: " + err.message);
+    }
+  };
+  reader.readAsText(file);
+});
+
+	
 });
