@@ -2,7 +2,7 @@ const CACHE_NAME = 'astro-cache-v1';
 const urlsToCache = [
   'index.html',
   'style.css',
-  'script.js',
+  'app.js',
   'icon-192.png',
   'icon-512.png'
 ];
