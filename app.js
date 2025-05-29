@@ -1,4 +1,10 @@
 // Idiomas suportados
+let observacoes = [];
+let currentLang = 'pt';
+let currentFilter = 'todos';
+let searchQuery = '';
+let editId = null;
+
 const i18n = {
   pt: {
     searchPlaceholder: "Pesquisar observações...",
@@ -12,7 +18,12 @@ const i18n = {
     intensity: "Intensidade do Filtro",
     edit: "Editar",
     delete: "Eliminar",
-    close: "Fechar"
+    close: "Fechar",
+	objectos: "Objectos",
+    adicionar: "Adicionar",
+    recursos: "Recursos",
+    configuracoes: "Configurações",
+    ver: "Ver",
   },
   en: {
     searchPlaceholder: "Search observations...",
@@ -26,17 +37,81 @@ const i18n = {
     intensity: "Filter Intensity",
     edit: "Edit",
     delete: "Delete",
-    close: "Close"
+    close: "Close",
+	objectos: "Objects",
+    adicionar: "Add",
+    recursos: "Resources",
+    configuracoes: "Settings",
+    ver: "View",
   }
 };
 
-let currentLang = 'pt';
-let currentFilter = 'todos';
-let searchQuery = '';
-let editId = null;
+
+
+// === IndexedDB SETUP ===
+const DB_NAME = 'AstroLogDB';
+const DB_VERSION = 1;
+const STORE_NAME = 'observacoes';
+
+function openDB() {
+  return new Promise((resolve, reject) => {
+    const request = indexedDB.open(DB_NAME, DB_VERSION);
+    request.onerror = () => reject(request.error);
+    request.onsuccess = () => resolve(request.result);
+    request.onupgradeneeded = () => {
+      const db = request.result;
+      if (!db.objectStoreNames.contains(STORE_NAME)) {
+        db.createObjectStore(STORE_NAME, { keyPath: 'id' });
+      }
+    };
+  });
+}
+
+async function getAllObservacoes() {
+  const db = await openDB();
+  return new Promise((resolve, reject) => {
+    const tx = db.transaction(STORE_NAME, 'readonly');
+    const store = tx.objectStore(STORE_NAME);
+    const request = store.getAll();
+    request.onsuccess = () => resolve(request.result);
+    request.onerror = () => reject(request.error);
+  });
+}
+
+async function saveObservacao(obs) {
+  const db = await openDB();
+  return new Promise((resolve, reject) => {
+    const tx = db.transaction(STORE_NAME, 'readwrite');
+    const store = tx.objectStore(STORE_NAME);
+    store.put(obs);
+    tx.oncomplete = () => resolve();
+    tx.onerror = () => reject(tx.error);
+  });
+}
+
+async function deleteObservacao(id) {
+  const db = await openDB();
+  return new Promise((resolve, reject) => {
+    const tx = db.transaction(STORE_NAME, 'readwrite');
+    const store = tx.objectStore(STORE_NAME);
+    store.delete(id);
+    tx.oncomplete = () => resolve();
+    tx.onerror = () => reject(tx.error);
+  });
+}
+
+async function loadObservacoes() {
+  observacoes = await getAllObservacoes();
+  renderObservacoes();
+}
+
+// chamada inicial
+loadObservacoes();
 
 function translateUI() {
   const t = i18n[currentLang];
+
+  // Traduzir elementos principais
   document.getElementById('searchInput').placeholder = t.searchPlaceholder;
   document.querySelector('[data-filter="todos"]').textContent = t.all;
   document.querySelector('[data-filter="recentes"]').textContent = t.recent;
@@ -46,33 +121,51 @@ function translateUI() {
   document.querySelector('button[type="submit"]').textContent = t.save;
   document.querySelector('footer label:first-child').textContent = t.redFilter;
   document.querySelector('footer label:last-of-type').textContent = t.intensity;
-}
 
-const langBtn = document.getElementById('toggleLanguage');
-langBtn.addEventListener('click', () => {
-  currentLang = currentLang === 'pt' ? 'en' : 'pt';
-  langBtn.textContent = currentLang === 'pt' ? 'EN' : 'PT';
-  translateUI();
-  renderObservacoes();
-});
-
-const tabs = document.querySelectorAll('nav button');
-const tabSections = document.querySelectorAll('.tab');
-tabs.forEach(tab => {
-  tab.addEventListener('click', () => {
-    const target = tab.dataset.tab;
-    tabSections.forEach(section => section.classList.remove('active'));
-    document.getElementById(`tab-${target}`).classList.add('active');
-    document.querySelector('footer').style.display = (target === 'configuracoes') ? 'flex' : 'none';
-    if (target === 'adicionar') {
-      editId = null;
-      document.getElementById('observationForm').reset();
+  // ✅ Traduzir nomes das tabs
+  document.querySelectorAll("nav button[data-tab]").forEach(btn => {
+    const key = btn.getAttribute("data-tab");
+    if (t[key]) {
+      btn.textContent = t[key];
     }
   });
-});
+
+  // ✅ Traduzir botões "Ver" das observações
+  document.querySelectorAll(".observation-card button.view-btn").forEach(btn => {
+    btn.textContent = `🔍 ${t.ver}`;
+  });
+}
+
 
 const redToggle = document.getElementById('redFilterToggle');
 const redSlider = document.getElementById('redFilterIntensity');
+const redButton = document.getElementById('toggleRedFilter');
+
+function applyRedFilter(active) {
+  if (active) {
+    document.body.classList.add('red-filter');
+    const intensity = parseInt(redSlider.value);
+    document.body.style.backgroundColor = `rgba(255, 0, 0, ${intensity / 100})`;
+  } else {
+    document.body.classList.remove('red-filter');
+    document.body.style.backgroundColor = '';
+  }
+}
+
+// Quando se clica no botão vermelho da barra superior
+redButton.addEventListener('click', () => {
+  redToggle.checked = !redToggle.checked;
+  applyRedFilter(redToggle.checked);
+});
+
+// Quando se muda o toggle ou intensidade nas configurações
+redToggle.addEventListener('change', () => {
+  applyRedFilter(redToggle.checked);
+});
+
+redSlider.addEventListener('input', () => {
+  if (redToggle.checked) applyRedFilter(true);
+});
 
 function updateRedFilterClass() {
   document.body.classList.remove('intensity-20', 'intensity-40', 'intensity-60', 'intensity-80', 'intensity-100');
@@ -97,45 +190,45 @@ const obsList = document.getElementById('observationsList');
 const searchInput = document.getElementById('searchInput');
 const filterButtons = document.querySelectorAll('[data-filter]');
 
-let observacoes = JSON.parse(localStorage.getItem('observacoes')) || [];
+async function loadObservacoes() {
+  observacoes = await getAllObservacoes();
+  renderObservacoes();
+}
 
-form.addEventListener('submit', e => {
+form.addEventListener('submit', async e => {
   e.preventDefault();
   const data = new FormData(form);
   const obs = Object.fromEntries(data.entries());
   obs.favorito = !!data.get('favorito');
+  obs.id = editId || Date.now();
 
   const file = data.get('imagem');
-  const saveObs = () => {
-    if (editId) {
-      observacoes = observacoes.map(o => o.id === editId ? { ...obs, id: editId } : o);
-      editId = null;
-    } else {
-      obs.id = Date.now();
-      observacoes.push(obs);
-    }
-    localStorage.setItem('observacoes', JSON.stringify(observacoes));
-    renderObservacoes();
+
+  const saveObs = async () => {
+    await saveObservacao(obs);
+    await loadObservacoes();
     form.reset();
+    editId = null;
   };
 
   if (file && file.name && file.size > 0) {
     const reader = new FileReader();
-    reader.onload = () => {
+    reader.onload = async () => {
       obs.imagem = reader.result;
-      saveObs();
+      await saveObs();
     };
-    reader.onerror = () => {
-      alert("Erro ao carregar imagem. A observação será guardada sem imagem.");
-      saveObs();
+    reader.onerror = async () => {
+      alert("Erro ao carregar imagem. A observação será guardada sem imagem nova.");
+      await saveObs();
     };
     reader.readAsDataURL(file);
   } else {
     const original = observacoes.find(o => o.id === editId);
     if (editId && original?.imagem) obs.imagem = original.imagem;
-    saveObs();
+    await saveObs();
   }
 });
+
 
 searchInput.addEventListener('input', () => {
   searchQuery = searchInput.value.toLowerCase();
@@ -155,8 +248,11 @@ function renderObservacoes() {
   obsList.innerHTML = '';
   let list = observacoes;
 
-  if (currentFilter === 'favoritos') list = list.filter(o => o.favorito);
-  else if (currentFilter === 'recentes') list = list.sort((a, b) => new Date(b.data) - new Date(a.data));
+  if (currentFilter === 'favoritos') {
+    list = list.filter(o => o.favorito);
+  } else if (currentFilter === 'recentes') {
+    list = list.sort((a, b) => new Date(b.data) - new Date(a.data));
+  }
 
   if (searchQuery) {
     list = list.filter(o =>
@@ -169,21 +265,34 @@ function renderObservacoes() {
   list.forEach(obs => {
     const card = document.createElement('div');
     card.className = 'observation-card';
+
     const icon = getIcon(obs.tipo);
+    const data = new Date(obs.data).toLocaleDateString();
+
+    const imgHTML = obs.imagem
+      ? `<img src="${obs.imagem}" style="max-width: 100%; max-height: 100px; cursor: pointer;" onclick="window.open('${obs.imagem}', '_blank')" />`
+      : '';
+
+    const viewBtn = `<button class="view-btn" onclick="viewObservation(${obs.id})">🔍 ${i18n[currentLang].ver}</button>`;
+    const editBtn = `<button onclick="editObservation(${obs.id})">✏️ ${i18n[currentLang].edit}</button>`;
+    const deleteBtn = `<button onclick="deleteObservation(${obs.id})">🗑️ ${i18n[currentLang].delete}</button>`;
+
     card.innerHTML = `
       <div class="title">${icon} ${obs.nome} ${obs.favorito ? '⭐' : ''}</div>
       <div><small>${obs.tipo}</small></div>
-      <div><small>${new Date(obs.data).toLocaleDateString()} - ${obs.local}</small></div>
-      ${obs.imagem ? `<img src="${obs.imagem}" style="max-width: 100%; max-height: 100px; cursor: pointer;" onclick="window.open('${obs.imagem}', '_blank')" />` : ''}
+      <div><small>${data} - ${obs.local}</small></div>
+      ${imgHTML}
       <div style="margin-top: 0.5rem">
-        <button onclick="viewObservation(${obs.id})">🔍 Ver</button>
-        <button onclick="editObservation(${obs.id})">✏️ ${i18n[currentLang].edit}</button>
-        <button onclick="deleteObservation(${obs.id})">🗑️ ${i18n[currentLang].delete}</button>
+        ${viewBtn}
+        ${editBtn}
+        ${deleteBtn}
       </div>
     `;
+
     obsList.appendChild(card);
   });
 }
+
 
 function getIcon(tipo) {
   const icons = {
@@ -202,6 +311,7 @@ window.viewObservation = function(id) {
   if (!obs) return;
   const modal = document.createElement('div');
   modal.className = 'modal';
+  modal.id = 'view-modal';
   modal.innerHTML = `
     <div class="modal-content">
       <h3>${obs.nome}</h3>
@@ -214,17 +324,45 @@ window.viewObservation = function(id) {
       <p><strong>Magnitude:</strong> ${obs.magnitude || ''}</p>
       <p><strong>Elongação:</strong> ${obs.elongacao || ''}</p>
       <p><strong>Descrição:</strong> ${obs.descricao || ''}</p>
-      ${obs.imagem ? `<img src="${obs.imagem}" style="max-width:100%; max-height:200px; margin-top:1rem;" />` : ''}
+      ${obs.imagem ? `<img src="${obs.imagem}" style="max-width:100%; max-height:200px; margin-top:1rem; cursor:pointer" onclick="openImageModal('${obs.imagem}')" />` : ''}
       <button onclick="closeModal()">${i18n[currentLang].close}</button>
     </div>
   `;
   document.body.appendChild(modal);
 };
 
+window.openImageModal = function(imgSrc) {
+  const modal = document.createElement('div');
+  modal.className = 'modal';
+  modal.id = 'image-modal';
+  modal.innerHTML = `
+    <div class="modal-content">
+      <img src="${imgSrc}" style="max-width:100%; max-height:80vh; display:block; margin: 0 auto 1rem;" />
+      <div style="text-align:center">
+        <button onclick="closeModalById('image-modal')">${i18n[currentLang].close}</button>
+        <button onclick="closeModalById('image-modal'); closeModalById('view-modal')">${i18n[currentLang].close} tudo</button>
+      </div>
+    </div>
+  `;
+  document.body.appendChild(modal);
+};
+
+window.closeModalById = function(id) {
+  const modal = document.getElementById(id);
+  if (modal) modal.remove();
+};
+
 window.closeModal = function() {
   const modal = document.querySelector('.modal');
   if (modal) modal.remove();
 };
+
+window.closeModal = function() {
+  const modal = document.querySelector('.modal');
+  if (modal) modal.remove();
+};
+
+// ... (código anterior mantém-se inalterado)
 
 window.editObservation = function(id) {
   const obs = observacoes.find(o => o.id === id);
@@ -237,11 +375,26 @@ window.editObservation = function(id) {
       <h3>${i18n[currentLang].edit}</h3>
       <form id="modalForm">
         <input name="nome" value="${obs.nome}" required />
-        <input name="tipo" value="${obs.tipo}" required />
-        <input name="data" value="${obs.data}" required />
+
+        <select name="tipo" required>
+          <option${obs.tipo === 'Estrela' ? ' selected' : ''}>Estrela</option>
+          <option${obs.tipo === 'Galáxia' ? ' selected' : ''}>Galáxia</option>
+          <option${obs.tipo === 'Aglomerado' ? ' selected' : ''}>Aglomerado</option>
+          <option${obs.tipo === 'Nebulosa' ? ' selected' : ''}>Nebulosa</option>
+          <option${obs.tipo === 'Sistema Solar' ? ' selected' : ''}>Sistema Solar</option>
+          <option${obs.tipo === 'Outro' ? ' selected' : ''}>Outro</option>
+        </select>
+
+        <input name="data" type="datetime-local" value="${obs.data}" required />
         <input name="local" value="${obs.local}" required />
+        <input name="ra" value="${obs.ra || ''}" placeholder="RA" />
+        <input name="dec" value="${obs.dec || ''}" placeholder="DEC" />
+        <input name="distancia" value="${obs.distancia || ''}" placeholder="Distância" />
+        <input name="magnitude" value="${obs.magnitude || ''}" placeholder="Magnitude" />
         <textarea name="descricao">${obs.descricao || ''}</textarea>
         <label><input type="checkbox" name="favorito" ${obs.favorito ? 'checked' : ''}/> Favorito</label>
+        <label>Imagem (opcional)</label>
+        <input type="file" name="imagem" accept="image/*" />
         <button type="submit">${i18n[currentLang].save}</button>
         <button type="button" onclick="closeModal()">${i18n[currentLang].cancel}</button>
       </form>
@@ -249,29 +402,134 @@ window.editObservation = function(id) {
   `;
   document.body.appendChild(modal);
   const modalForm = modal.querySelector('form');
-  modalForm.addEventListener('submit', e => {
+  modalForm.addEventListener('submit', async e => {
     e.preventDefault();
     const data = new FormData(modalForm);
     const newObs = Object.fromEntries(data.entries());
     newObs.id = id;
     newObs.favorito = !!data.get('favorito');
-    const original = observacoes.find(o => o.id === id);
-    if (original.imagem) newObs.imagem = original.imagem;
-    observacoes = observacoes.map(o => o.id === id ? newObs : o);
-    localStorage.setItem('observacoes', JSON.stringify(observacoes));
-    renderObservacoes();
-    closeModal();
+
+    const file = data.get('imagem');
+    const saveEdit = async () => {
+      const original = observacoes.find(o => o.id === id);
+      if (original?.imagem && !newObs.imagem) newObs.imagem = original.imagem;
+      await saveObservacao(newObs);
+      await loadObservacoes();
+      closeModal();
+    };
+
+    if (file && file.size > 0) {
+      const reader = new FileReader();
+      reader.onload = async () => {
+        newObs.imagem = reader.result;
+        await saveEdit();
+      };
+      reader.onerror = async () => {
+        alert("Erro ao carregar imagem. A observação será guardada sem imagem nova.");
+        await saveEdit();
+      };
+      reader.readAsDataURL(file);
+    } else {
+      await saveEdit();
+    }
   });
 };
 
-window.deleteObservation = function(id) {
+// ... (resto do código mantém-se)
+
+
+window.deleteObservation = async function(id) {
   if (confirm('Eliminar esta observação?')) {
-    observacoes = observacoes.filter(o => o.id !== id);
-    localStorage.setItem('observacoes', JSON.stringify(observacoes));
-    renderObservacoes();
+    await deleteObservacao(id);
+    await loadObservacoes();
   }
 };
 
-renderObservacoes();
-translateUI();
-updateRedFilterClass();
+document.addEventListener('DOMContentLoaded', () => {
+  loadObservacoes();
+  translateUI();
+  updateRedFilterClass();
+  renderObservacoes();
+
+  // Alternar idioma
+  const langBtn = document.getElementById('toggleLanguage');
+  langBtn.addEventListener('click', () => {
+    currentLang = currentLang === 'pt' ? 'en' : 'pt';
+    langBtn.textContent = currentLang === 'pt' ? 'EN' : 'PT';
+    translateUI();
+    renderObservacoes();
+  });
+
+  // Navegação entre tabs
+  const tabs = document.querySelectorAll('nav button');
+  const tabSections = document.querySelectorAll('.tab');
+
+  tabs.forEach(tab => {
+    tab.addEventListener('click', () => {
+      const target = tab.dataset.tab;
+
+      tabs.forEach(t => t.classList.remove('active'));
+      tab.classList.add('active');
+
+      tabSections.forEach(section => section.classList.remove('active'));
+      document.getElementById(`tab-${target}`).classList.add('active');
+
+      document.querySelector('footer').style.display = (target === 'configuracoes') ? 'flex' : 'none';
+
+      // Remover dropdown visível, se existir
+      document.querySelectorAll('.dropdown-menu').forEach(m => m.remove());
+
+      if (target === 'adicionar') {
+        editId = null;
+        document.getElementById('observationForm').reset();
+      }
+    });
+  });
+
+  // Filtro por tipo
+  const filterBtn = document.getElementById('filterByType');
+  filterBtn.addEventListener('click', async () => {
+    if (!observacoes || observacoes.length === 0) observacoes = await getAllObservacoes();
+    if (!observacoes.length) {
+      alert("Sem observações para filtrar.");
+      return;
+    }
+
+    // Remover menus existentes
+    document.querySelectorAll('.dropdown-menu').forEach(m => m.remove());
+
+    const tipos = [...new Set(observacoes.map(o => o.tipo).filter(Boolean))];
+    const menu = document.createElement('div');
+    menu.className = 'dropdown-menu';
+
+    tipos.forEach(tipo => {
+      const item = document.createElement('div');
+      item.textContent = tipo;
+      item.addEventListener('click', () => {
+        currentFilter = 'tipo';
+        searchQuery = tipo.toLowerCase();
+        renderObservacoes();
+        menu.remove();
+      });
+      menu.appendChild(item);
+    });
+
+    const allItem = document.createElement('div');
+    allItem.textContent = i18n[currentLang].all;
+    allItem.addEventListener('click', () => {
+      currentFilter = 'todos';
+      searchQuery = '';
+      renderObservacoes();
+      menu.remove();
+    });
+    menu.appendChild(allItem);
+
+    const rect = filterBtn.getBoundingClientRect();
+    menu.style.position = 'absolute';
+    menu.style.top = `${rect.bottom + window.scrollY}px`;
+    menu.style.left = `${rect.left + window.scrollX}px`;
+    menu.style.zIndex = 1000;
+
+    document.body.appendChild(menu);
+  });
+});

@@ -199,27 +199,23 @@ footer {
 /* Modal */
 .modal {
   position: fixed;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 100vh;
-  background: rgba(0, 0, 0, 0.6);
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0, 0, 0, 0.7);
   display: flex;
-  align-items: center;
   justify-content: center;
-  z-index: 10000;
+  align-items: center;
+  z-index: 9999;
+  padding: 1rem;
 }
 
 .modal-content {
-  background: #1e1e1e;
-  padding: 2rem;
-  border-radius: 12px;
-  max-width: 500px;
-  width: 90%;
-  box-shadow: 0 0 10px rgba(0,0,0,0.8);
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
+  background: #000;
+  padding: 1.5rem;
+  border-radius: 8px;
+  max-height: 90vh;
+  overflow-y: auto;
+  width: 100%;
+  max-width: 600px;
 }
 
 .modal-content h3 {
@@ -269,25 +265,73 @@ footer {
   display: block;
 }
 
-/* Red filter overlay */
-body.red-filter::after {
-  content: "";
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 100vh;
-  pointer-events: none;
-  background-color: rgba(255, 0, 0, 0.2);
-  mix-blend-mode: multiply;
-  z-index: 9999;
+/* === Filtro Vermelho Uniforme === */
+body.red-filter {
+  background-color: #360700 !important;
+  color: #ff5555 !important;
 }
 
-body.red-filter.intensity-20::after { background-color: rgba(255, 0, 0, 0.2); }
-body.red-filter.intensity-40::after { background-color: rgba(255, 0, 0, 0.4); }
-body.red-filter.intensity-60::after { background-color: rgba(255, 0, 0, 0.6); }
-body.red-filter.intensity-80::after { background-color: rgba(255, 0, 0, 0.8); }
-body.red-filter.intensity-100::after { background-color: rgba(255, 0, 0, 1.0); }
+/* Fundos consistentes em todos os elementos principais */
+body.red-filter header {
+  background-color: #360700 !important;
+  background-image: none !important;
+  color: #ff5555 !important;
+}
+
+body.red-filter.intensity-20 { background-color: #240000 !important; }
+body.red-filter.intensity-40 { background-color: #2c0000 !important; }
+body.red-filter.intensity-60 { background-color: #360700 !important; }
+body.red-filter.intensity-80 { background-color: #3e0a00 !important; }
+body.red-filter.intensity-100 { background-color: #4a0d00 !important; }
+
+body.red-filter nav,
+body.red-filter footer,
+body.red-filter .tab,
+body.red-filter .observation-card,
+body.red-filter .filters button,
+body.red-filter .modal-content,
+body.red-filter form,
+body.red-filter input,
+body.red-filter select,
+body.red-filter textarea {
+  background-color: #2a0500 !important;
+  color: #ff5555 !important;
+  border: 1px solid #550000 !important;
+}
+body.red-filter button,
+body.red-filter .dropdown-menu,
+body.red-filter .dropdown-menu div,
+body.red-filter #tab-recursos li,
+body.red-filter #tab-recursos a,
+body.red-filter #tab-recursos img {
+  background-color: #360700 !important;
+  color: #ff5555 !important;
+  border-color: #550000 !important;
+}
+
+/* Textos e botões em destaque */
+body.red-filter .filters button.active,
+body.red-filter nav button.active,
+body.red-filter .form-actions button,
+body.red-filter .modal-content h3,
+body.red-filter .view-btn,
+body.red-filter button:hover {
+  color: #ff8888 !important;
+}
+
+
+/* Modal backdrop */
+body.red-filter .modal {
+  background-color: rgba(0, 0, 0, 0.85);
+}
+
+
+/* Placeholder nos inputs */
+body.red-filter input::placeholder,
+body.red-filter textarea::placeholder {
+  color: #A61500 !important;
+}
+
 
 /* Light mode */
 body.light {
@@ -301,4 +345,24 @@ body.light textarea {
   background: #fff;
   color: #000;
   border: 1px solid #ccc;
+}
+
+.dropdown-menu {
+  background-color: #222;
+  color: #fff;
+  border: 1px solid #555;
+  padding: 0.5rem;
+  border-radius: 4px;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.5);
+  font-size: 0.9rem;
+  min-width: 150px;
+}
+
+.dropdown-menu div {
+  padding: 5px;
+  cursor: pointer;
+}
+
+.dropdown-menu div:hover {
+  background-color: #444;
 }
