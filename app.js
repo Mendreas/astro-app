@@ -711,4 +711,3 @@ function mostrarObservacoesDoDia(dataISO) {
     lista.map(o => `<li>${getIcon(o.tipo)} ${o.nome}</li>`).join('') +
     `</ul>`;
   }
-});
