@@ -552,11 +552,12 @@ document.addEventListener('DOMContentLoaded', () => {
       document.querySelectorAll('.dropdown-menu').forEach(m => m.remove());
 
       if (target === 'adicionar') {
-        editId = null;
-        document.getElementById('observationForm').reset();
-		  else if (target === 'calendario') {
+  editId = null;
+  document.getElementById('observationForm').reset();
+} else if (target === 'calendario') {
   renderCalendario();
-       }
+}
+
     });
   });
 
@@ -672,7 +673,7 @@ document.getElementById('importJson').addEventListener('change', async (event) =
 
   for (let d = 1; d <= daysInMonth; d++) {
     const date = new Date(year, month, d);
-    const dateStr = date.toISOString().split('T')[0];
+    const dateStr = date.toLocaleDateString('sv-SE'); // formato YYYY-MM-DD
 
     const div = document.createElement('div');
     div.className = 'calendar-day';
