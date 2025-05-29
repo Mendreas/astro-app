@@ -546,6 +546,12 @@ tabs.forEach(tab => {
     tab.classList.add('active');
 
     tabSections.forEach(section => section.classList.remove('active'));
+	  if (target === 'adicionar') {
+  editId = null;
+  document.getElementById('observationForm').reset();
+} else if (target === 'calendario') {
+  renderCalendario();
+}
     document.getElementById(`tab-${target}`).classList.add('active');
 
     document.querySelector('footer').style.display = (target === 'configuracoes') ? 'flex' : 'none';
@@ -672,6 +678,9 @@ document.getElementById('importJson').addEventListener('change', async (event) =
     container.appendChild(document.createElement('div')); // empty days
   }
 
+  console.log("Calendário carregado", observacoes);
+
+  
   for (let d = 1; d <= daysInMonth; d++) {
     const date = new Date(year, month, d);
     const dateStr = date.toLocaleDateString('sv-SE'); // formato YYYY-MM-DD
