@@ -517,11 +517,13 @@ window.deleteObservation = async function(id) {
   }
 };
 
-document.addEventListener('DOMContentLoaded', () => {
-  loadObservacoes();
+document.addEventListener('DOMContentLoaded', async () => {
+  await loadObservacoes();         // garantir que 'observacoes' está carregado
   translateUI();
   updateRedFilterClass();
   renderObservacoes();
+});
+
 
   // Alternar idioma
   const langBtn = document.getElementById('toggleLanguage');
@@ -534,32 +536,31 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Navegação entre tabs
   const tabs = document.querySelectorAll('nav button');
-  const tabSections = document.querySelectorAll('.tab');
+const tabSections = document.querySelectorAll('.tab');
 
-  tabs.forEach(tab => {
-    tab.addEventListener('click', () => {
-      const target = tab.dataset.tab;
+tabs.forEach(tab => {
+  tab.addEventListener('click', () => {
+    const target = tab.dataset.tab;
 
-      tabs.forEach(t => t.classList.remove('active'));
-      tab.classList.add('active');
+    tabs.forEach(t => t.classList.remove('active'));
+    tab.classList.add('active');
 
-      tabSections.forEach(section => section.classList.remove('active'));
-      document.getElementById(`tab-${target}`).classList.add('active');
+    tabSections.forEach(section => section.classList.remove('active'));
+    document.getElementById(`tab-${target}`).classList.add('active');
 
-      document.querySelector('footer').style.display = (target === 'configuracoes') ? 'flex' : 'none';
+    document.querySelector('footer').style.display = (target === 'configuracoes') ? 'flex' : 'none';
 
       // Remover dropdown visível, se existir
       document.querySelectorAll('.dropdown-menu').forEach(m => m.remove());
 
-      if (target === 'adicionar') {
-  editId = null;
-  document.getElementById('observationForm').reset();
-} else if (target === 'calendario') {
-  renderCalendario();
-}
-
-    });
+ if (target === 'adicionar') {
+      editId = null;
+      document.getElementById('observationForm').reset();
+    } else if (target === 'calendario') {
+      renderCalendario();
+    }
   });
+});
 
   // Filtro por tipo
   const filterBtn = document.getElementById('filterByType');
