@@ -28,7 +28,15 @@ const i18n = {
     recursos: "Recursos",
     configuracoes: "Configurações",
     ver: "Ver",
-  },
+  	cielo: "Céu",
+    observeHoje: "O que observar hoje",
+    observeSemana: "O que observar esta semana",
+    analiseCeu: "Análise do Céu",
+    unistellar: "Programa Citizen Science da Unistellar",
+    localizar: "Detetar Localização",
+    verObjetos: "Ver Objetos Visíveis",
+    semDados: "Não foi possível obter a localização ou dados de céu.",
+  },	
   en: {
     searchPlaceholder: "Search observations...",
     all: "All",
@@ -49,6 +57,14 @@ const i18n = {
     recursos: "Resources",
     configuracoes: "Settings",
     ver: "View",
+ 	cielo: "Sky",
+    observeHoje: "What to observe today",
+    observeSemana: "What to observe this week",
+    analiseCeu: "Sky Analysis",
+    unistellar: "Unistellar Citizen Science Program",
+    localizar: "Detect Location",
+    verObjetos: "Show Visible Objects",
+    semDados: "Could not obtain location or sky data.",
   }
 };
 
