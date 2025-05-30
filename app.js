@@ -31,11 +31,11 @@ const i18n = {
   	cielo: "Céu",
     skyTitle: "🔭 Céu Hoje",
     getSkyData: "Obter eventos astronómicos",
-    skySummary: "Sugestões do que observar esta noite, previsões para a próxima semana, e fenómenos visíveis."
+    skySummary: "Sugestões do que observar esta noite, previsões para a próxima semana, e fenómenos visíveis.",
     observeHoje: "O que observar hoje?",
     proximaSemana: "O que observar na próxima semana?",
     ceuAnalise: "Análise do céu (deep sky, planetas, cometas)",
-    citizenScience: "Ligar ao Citizen Science da Unistellar"
+    citizenScience: "Ligar ao Citizen Science da Unistellar",
     localizar: "Detetar Localização",
     verObjetos: "Ver Objetos Visíveis",
     semDados: "Não foi possível obter a localização ou dados de céu.",
@@ -63,11 +63,11 @@ const i18n = {
  	cielo: "Sky",
   	skyTitle: "🔭 Sky Tonight",
   	getSkyData: "Fetch Astronomical Events",
-  	skySummary: "Suggestions for tonight, upcoming week forecasts and visible events."
+  	skySummary: "Suggestions for tonight, upcoming week forecasts and visible events.",
     observeHoje: "What to observe tonight?",
     proximaSemana: "What to observe next week?",
     ceuAnalise: "Sky analysis (deep sky, planets, comets)",
-    citizenScience: "Link to Unistellar Citizen Science"
+    citizenScience: "Link to Unistellar Citizen Science",
     localizar: "Detect Location",
     verObjetos: "Show Visible Objects",
     semDados: "Could not obtain location or sky data.",
