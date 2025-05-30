@@ -111,7 +111,9 @@ async function loadObservacoes() {
 loadObservacoes();
 
 function translateUI() {
-  const t = i18n[currentLang];
+  console.log("Traduzindo UI para:", currentLang);
+	
+	const t = i18n[currentLang];
 
   document.getElementById('searchInput').placeholder = t.searchPlaceholder;
   document.querySelector('[data-filter="todos"]').textContent = t.all;
@@ -543,7 +545,6 @@ document.addEventListener('DOMContentLoaded', async () => {
   renderObservacoes();         // garantir que 'observacoes' está carregado
   translateUI();
   updateRedFilterClass();
-  renderObservacoes();
 });
 
 
