@@ -111,7 +111,6 @@ loadObservacoes();
 function translateUI() {
   const t = i18n[currentLang];
 
-  // Traduzir elementos principais
   document.getElementById('searchInput').placeholder = t.searchPlaceholder;
   document.querySelector('[data-filter="todos"]').textContent = t.all;
   document.querySelector('[data-filter="recentes"]').textContent = t.recent;
@@ -122,7 +121,7 @@ function translateUI() {
   document.querySelector('footer label:first-child').textContent = t.redFilter;
   document.querySelector('footer label:last-of-type').textContent = t.intensity;
 
-  // ✅ Traduzir nomes das tabs
+  // Traduzir nomes das tabs
   document.querySelectorAll("nav button[data-tab]").forEach(btn => {
     const key = btn.getAttribute("data-tab");
     if (t[key]) {
@@ -130,11 +129,18 @@ function translateUI() {
     }
   });
 
-  // ✅ Traduzir botões "Ver" das observações
+  // Traduzir botões "Ver" das observações
   document.querySelectorAll(".observation-card button.view-btn").forEach(btn => {
     btn.textContent = `🔍 ${t.ver}`;
   });
+
+  // ✅ Atualizar título do calendário se estiver visível
+  const calendarioVisivel = document.getElementById('tab-calendario').classList.contains('active');
+  if (calendarioVisivel) {
+    renderCalendario();  // volta a desenhar o calendário com o mês no idioma certo
+  }
 }
+
 
 
 const redToggle = document.getElementById('redFilterToggle');
