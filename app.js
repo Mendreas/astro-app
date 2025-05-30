@@ -29,6 +29,9 @@ const i18n = {
     configuracoes: "Configurações",
     ver: "Ver",
   	cielo: "Céu",
+    skyTitle: "🔭 Céu Hoje",
+    getSkyData: "Obter eventos astronómicos",
+    skySummary: "Sugestões do que observar esta noite, previsões para a próxima semana, e fenómenos visíveis."
     observeHoje: "O que observar hoje",
     observeSemana: "O que observar esta semana",
     analiseCeu: "Análise do Céu",
@@ -58,6 +61,9 @@ const i18n = {
     configuracoes: "Settings",
     ver: "View",
  	cielo: "Sky",
+  	skyTitle: "🔭 Sky Tonight",
+  	getSkyData: "Fetch Astronomical Events",
+  	skySummary: "Suggestions for tonight, upcoming week forecasts and visible events."
     observeHoje: "What to observe today",
     observeSemana: "What to observe this week",
     analiseCeu: "Sky Analysis",
@@ -142,6 +148,11 @@ function translateUI() {
   document.querySelector('button[type="submit"]').textContent = t.save;
   document.querySelector('footer label:first-child').textContent = t.redFilter;
   document.querySelector('footer label:last-of-type').textContent = t.intensity;
+	document.querySelector('[data-tab="cielo"]').textContent = t.cielo;
+	document.getElementById('skyTitle').textContent = t.skyTitle;
+	document.getElementById('getSkyData').textContent = t.getSkyData;
+	document.getElementById('skySummary').textContent = t.skySummary;
+
 
   // Traduzir nomes das tabs
   document.querySelectorAll("nav button[data-tab]").forEach(btn => {
@@ -565,6 +576,35 @@ document.addEventListener('DOMContentLoaded', async () => {
   translateUI();
   updateRedFilterClass();
 });
+
+function renderSkyTab() {
+  const btn = document.getElementById("getSkyData");
+  const output = document.getElementById("skyInfo");
+  if (!btn || !output) return;
+
+  btn.addEventListener("click", () => {
+    output.innerHTML = `<li>🔄 A obter dados...</li>`;
+    fetch("https://astro-colibri.com/api/events")
+      .then(res => res.json())
+      .then(data => {
+        output.innerHTML = "";
+        if (!data || data.length === 0) {
+          output.innerHTML = `<li>⚠️ Sem eventos disponíveis neste momento.</li>`;
+          return;
+        }
+
+        data.forEach(event => {
+          const li = document.createElement("li");
+          li.textContent = `${event.type || 'Evento'} em ${event.time || 'tempo desconhecido'} RA: ${event.ra || '?'} / Dec: ${event.dec || '?'}`;
+          output.appendChild(li);
+        });
+      })
+      .catch(err => {
+        console.error("Erro ao obter dados do Astro-Colibri", err);
+        output.innerHTML = "<li>❌ Erro ao carregar dados.</li>";
+      });
+  });
+}
 
 
   // Alternar idioma
