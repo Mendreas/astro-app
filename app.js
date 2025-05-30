@@ -235,6 +235,7 @@ document.getElementById('downloadBackup').addEventListener('click', () => {
   URL.revokeObjectURL(url);
 });
 
+
 function renderCalendario() {
   const container = document.getElementById('calendarContainer');
   const title = document.getElementById('calendarMonthYear');
@@ -243,10 +244,10 @@ function renderCalendario() {
   const firstDay = new Date(calendarioAno, calendarioMes, 1).getDay();
   const daysInMonth = new Date(calendarioAno, calendarioMes + 1, 0).getDate();
 
-  // Atualizar o título
-  const nomeMes = new Date(calendarioAno, calendarioMes).toLocaleString('pt-PT', { month: 'long' });
-
-  title.textContent = `${capitalize(nomeMes)} ${calendarioAno}`;
+  const locale = (currentLang === 'pt') ? 'pt-PT' : 'en-US';
+  const nomeMes = new Date(calendarioAno, calendarioMes).toLocaleString(locale, { month: 'long' });
+  const capitalizado = nomeMes.charAt(0).toUpperCase() + nomeMes.slice(1);
+  title.textContent = `${capitalizado} ${calendarioAno}`;
 
   const diasComObservacoes = new Set(
     observacoes.map(o => normalizarDataLocal(o.data))
@@ -255,6 +256,24 @@ function renderCalendario() {
   for (let i = 0; i < firstDay; i++) {
     container.appendChild(document.createElement('div'));
   }
+
+  for (let d = 1; d <= daysInMonth; d++) {
+    const date = new Date(calendarioAno, calendarioMes, d);
+    const dateStr = normalizarDataLocal(date);
+
+    const div = document.createElement('div');
+    div.className = 'calendar-day';
+    div.textContent = d;
+
+    if (diasComObservacoes.has(dateStr)) {
+      div.classList.add('highlight');
+      div.addEventListener('click', () => mostrarObservacoesDoDia(dateStr));
+    }
+
+    container.appendChild(div);
+  }
+}
+
 
   for (let d = 1; d <= daysInMonth; d++) {
     const date = new Date(calendarioAno, calendarioMes, d);
@@ -666,23 +685,45 @@ document.getElementById('importJson').addEventListener('change', async (event) =
   reader.readAsText(file);
 });
 
-	function renderCalendario() {
+	
+function renderCalendario() {
   const container = document.getElementById('calendarContainer');
+  const title = document.getElementById('calendarMonthYear');
   container.innerHTML = '';
 
-  const today = new Date();
-  const year = today.getFullYear();
-  const month = today.getMonth();
-  const firstDay = new Date(year, month, 1).getDay();
-  const daysInMonth = new Date(year, month + 1, 0).getDate();
+  const firstDay = new Date(calendarioAno, calendarioMes, 1).getDay();
+  const daysInMonth = new Date(calendarioAno, calendarioMes + 1, 0).getDate();
+
+  const locale = (currentLang === 'pt') ? 'pt-PT' : 'en-US';
+  const nomeMes = new Date(calendarioAno, calendarioMes).toLocaleString(locale, { month: 'long' });
+  const capitalizado = nomeMes.charAt(0).toUpperCase() + nomeMes.slice(1);
+  title.textContent = `${capitalizado} ${calendarioAno}`;
 
   const diasComObservacoes = new Set(
-    observacoes.map(o => new Date(o.data).toISOString().split('T')[0])
+    observacoes.map(o => normalizarDataLocal(o.data))
   );
 
   for (let i = 0; i < firstDay; i++) {
-    container.appendChild(document.createElement('div')); // empty days
+    container.appendChild(document.createElement('div'));
   }
+
+  for (let d = 1; d <= daysInMonth; d++) {
+    const date = new Date(calendarioAno, calendarioMes, d);
+    const dateStr = normalizarDataLocal(date);
+
+    const div = document.createElement('div');
+    div.className = 'calendar-day';
+    div.textContent = d;
+
+    if (diasComObservacoes.has(dateStr)) {
+      div.classList.add('highlight');
+      div.addEventListener('click', () => mostrarObservacoesDoDia(dateStr));
+    }
+
+    container.appendChild(div);
+  }
+}
+
 
   console.log("Calendário carregado", observacoes);
 
