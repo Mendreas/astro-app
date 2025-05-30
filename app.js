@@ -241,41 +241,39 @@ document.getElementById('downloadBackup').addEventListener('click', () => {
 
 function renderCalendario() {
   const container = document.getElementById('calendarContainer');
-  const titleEl  = document.getElementById('calendarMonthYear');
+  const titleEl = document.getElementById('calendarMonthYear');
   container.innerHTML = '';
 
-  const firstDay   = new Date(calendarioAno, calendarioMes, 1).getDay();
-  const daysInMonth= new Date(calendarioAno, calendarioMes+1,0).getDate();
+  const firstDay = new Date(calendarioAno, calendarioMes, 1).getDay();
+  const daysInMonth = new Date(calendarioAno, calendarioMes + 1, 0).getDate();
 
-  // título: mês e ano no idioma atual
-  const locale = currentLang==='pt' ? 'pt-PT' : 'en-US';
+  const locale = currentLang === 'pt' ? 'pt-PT' : 'en-US';
   const nomeMes = new Date(calendarioAno, calendarioMes)
-                    .toLocaleString(locale,{month:'long'});
-  titleEl.textContent = capitalize(nomeMes)+' '+calendarioAno;
+    .toLocaleString(locale, { month: 'long' });
+  titleEl.textContent = capitalize(nomeMes) + ' ' + calendarioAno;
 
-  // dias vazios até o primeiro dia da semana
-  for (let i=0;i<firstDay;i++){
-    container.appendChild(document.createElement('div'));
+  // Dias vazios até ao primeiro dia do mês
+  for (let i = 0; i < firstDay; i++) {
+    const emptyDiv = document.createElement('div');
+    container.appendChild(emptyDiv);
   }
 
-  // dias do mês
-  const diasComObs = new Set(observacoes.map(o=>normalizeDateISO(o.data)));
-  for (let d=1; d<=daysInMonth; d++){
-    const date    = new Date(calendarioAno, calendarioMes, d);
+  const diasComObs = new Set(observacoes.map(o => normalizeDateISO(o.data)));
+
+  for (let d = 1; d <= daysInMonth; d++) {
+    const date = new Date(calendarioAno, calendarioMes, d);
     const dateStr = normalizeDateISO(date);
-    const div     = document.createElement('div');
+    const div = document.createElement('div');
     div.className = 'calendar-day';
-    div.textContent= d;
+    div.textContent = d;
 
     if (diasComObs.has(dateStr)) {
       div.classList.add('highlight');
-      div.addEventListener('click',()=>mostrarObservacoesDoDia(dateStr));
+      div.addEventListener('click', () => mostrarObservacoesDoDia(dateStr));
     }
+
     container.appendChild(div);
   }
-}
-
-console.log("Calendário carregado", observacoes);
 }
 });
 
@@ -571,17 +569,6 @@ document.addEventListener('DOMContentLoaded', async ()=>{
       if (calendarioMes>11){ calendarioMes=0; calendarioAno++; }
       renderCalendario();
     });
-
-
-      // Remover dropdown visível, se existir
-      document.querySelectorAll('.dropdown-menu').forEach(m => m.remove());
-
- if (target === 'adicionar') {
-      editId = null;
-      document.getElementById('observationForm').reset();
-    } else if (target === 'calendario') {
-      renderCalendario();
-    }
   });
 });
 
