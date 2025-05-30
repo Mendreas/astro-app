@@ -260,6 +260,11 @@ footer {
   color: inherit;
 }
 
+#tab-recursos li a {
+  color: #fff !important;
+}
+
+
 #tab-recursos img {
   width: 100%;
   height: 150px;
