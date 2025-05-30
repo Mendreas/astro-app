@@ -462,3 +462,12 @@ body.light textarea {
   padding: 0.5rem 1rem;
   margin-bottom: 1rem;
 }
+
+#tab-cielo ul {
+  list-style-type: none;
+  padding: 0;
+}
+
+#tab-cielo li {
+  padding: 0.25rem 0;
+}

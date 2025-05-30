@@ -27,13 +27,33 @@
 
   <main>
     <nav>
-      <button data-tab="objectos">Objectos</button>
-      <button data-tab="adicionar">Adicionar</button>
-      <button data-tab="recursos">Recursos</button>
-	  <button data-tab="calendario"></button>
-      <button data-tab="configuracoes">Configurações</button>
-	  <button data-tab="cielo">Céu</button>
-    </nav>
+  <button data-tab="objectos">Objectos</button>
+  <button data-tab="adicionar">Adicionar</button>
+  <button data-tab="recursos">Recursos</button>
+  <button data-tab="calendario">Calendário</button>
+  <button data-tab="configuracoes">Configurações</button>
+  <button data-tab="cielo">🔭 Céu</button> <!-- Ícone adicionado -->
+</nav>
+
+<!-- ABA "CÉU" -->
+<section id="tab-cielo" class="tab">
+  <h2 id="skyTitle">🔭 Céu Hoje</h2>
+  <p id="skySummary">
+    Sugestões do que observar esta noite, previsões para a próxima semana, e fenómenos visíveis.
+  </p>
+  <button id="getSkyData">Obter eventos astronómicos</button>
+  <ul id="skyInfo" style="margin-top:1rem;"></ul>
+
+  <div style="margin-top:2rem">
+    <h3>🌌 Citizen Science</h3>
+    <a href="https://science.unistellar.com/" target="_blank" style="display:inline-block;text-align:center">
+      <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/7/71/Unistellar_logo.png/320px-Unistellar_logo.png"
+           alt="Unistellar" style="max-width:150px; display:block; margin: 0 auto 0.5rem;">
+      Unistellar Citizen Science
+    </a>
+  </div>
+</section>
+
 
     <div class="content">
       <section id="tab-objectos" class="tab active">
