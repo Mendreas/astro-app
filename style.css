@@ -448,3 +448,17 @@ body.light textarea {
   min-width: 140px;
   text-align: center;
 }
+
+#tab-cielo {
+  background-color: #111;
+  color: white;
+  padding: 1rem;
+}
+
+#tab-cielo button {
+  background-color: #222;
+  color: white;
+  border: 1px solid #555;
+  padding: 0.5rem 1rem;
+  margin-bottom: 1rem;
+}

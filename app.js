@@ -586,6 +586,10 @@ tabs.forEach(tab => {
 
     tabs.forEach(t => t.classList.remove('active'));
     tab.classList.add('active');
+	  
+	   if (target === 'cielo') {
+      renderSkyTab(); // <-- importante
+    }
 
     tabSections.forEach(section => section.classList.remove('active'));
 	  if (target === 'adicionar') {
