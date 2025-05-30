@@ -685,44 +685,6 @@ document.getElementById('importJson').addEventListener('change', async (event) =
   reader.readAsText(file);
 });
 
-	function renderCalendario() {
-  const container = document.getElementById('calendarContainer');
-  container.innerHTML = '';
-
-  const today = new Date();
-  const year = today.getFullYear();
-  const month = today.getMonth();
-  const firstDay = new Date(year, month, 1).getDay();
-  const daysInMonth = new Date(year, month + 1, 0).getDate();
-
-  const diasComObservacoes = new Set(
-    observacoes.map(o => new Date(o.data).toISOString().split('T')[0])
-  );
-
-  for (let i = 0; i < firstDay; i++) {
-    container.appendChild(document.createElement('div')); // empty days
-  }
-
-  console.log("Calendário carregado", observacoes);
-
-  
-  for (let d = 1; d <= daysInMonth; d++) {
-    const date = new Date(year, month, d);
-    const dateStr = date.toLocaleDateString('sv-SE'); // formato YYYY-MM-DD
-
-    const div = document.createElement('div');
-    div.className = 'calendar-day';
-    div.textContent = d;
-
-    if (diasComObservacoes.has(dateStr)) {
-      div.classList.add('highlight');
-      div.addEventListener('click', () => mostrarObservacoesDoDia(dateStr));
-    }
-
-    container.appendChild(div);
-  }
-}
-
 function mostrarObservacoesDoDia(dataISO) {
   const lista = observacoes.filter(o => o.data.startsWith(dataISO));
   const container = document.getElementById('calendarResults');
