@@ -258,24 +258,24 @@ function renderCalendario() {
   }
 
   for (let d = 1; d <= daysInMonth; d++) {
-    const date = new Date(calendarioAno, calendarioMes, d);
-    const dateStr = normalizarDataLocal(date);
+  const date = new Date(calendarioAno, calendarioMes, d);
+  const dateStr = normalizarDataLocal(date);
 
-    const div = document.createElement('div');
-    div.className = 'calendar-day';
-    div.textContent = d;
+  const div = document.createElement('div');
+  div.className = 'calendar-day';
+  div.textContent = d;
 
-    if (diasComObservacoes.has(dateStr)) {
-      div.classList.add('highlight');
-      div.addEventListener('click', () => mostrarObservacoesDoDia(dateStr));
-    }
-
-    container.appendChild(div);
+  if (diasComObservacoes.has(dateStr)) {
+    div.classList.add('highlight');
+    div.addEventListener('click', () => mostrarObservacoesDoDia(dateStr));
   }
-}
-console.log("Calendário carregado", observacoes);
 
+  container.appendChild(div);
 }
+
+console.log("Calendário carregado", observacoes);
+}
+
 
 
 function mostrarObservacoesDoDia(dataISO) {
