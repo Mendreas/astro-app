@@ -23,7 +23,7 @@ const i18n = {
     close: "Fechar",
 	objectos: "Objectos",
     adicionar: "Adicionar",
-	 calendario: "Calendário",
+	calendario: "Calendário",
   	calendarTitle: "Calendário de Observações",
     recursos: "Recursos",
     configuracoes: "Configurações",
@@ -35,7 +35,7 @@ const i18n = {
     observeHoje: "O que observar hoje?",
     proximaSemana: "O que observar na próxima semana?",
     ceuAnalise: "Análise do céu (deep sky, planetas, cometas)",
-    citizenScience: "Ligar ao Citizen Science da Unistellar",
+    citizenScience: "Ligar ao Citizen Science da Unistellar"
     localizar: "Detetar Localização",
     verObjetos: "Ver Objetos Visíveis",
     semDados: "Não foi possível obter a localização ou dados de céu.",
@@ -67,7 +67,7 @@ const i18n = {
     observeHoje: "What to observe tonight?",
     proximaSemana: "What to observe next week?",
     ceuAnalise: "Sky analysis (deep sky, planets, comets)",
-    citizenScience: "Link to Unistellar Citizen Science",
+    citizenScience: "Link to Unistellar Citizen Science"
     localizar: "Detect Location",
     verObjetos: "Show Visible Objects",
     semDados: "Could not obtain location or sky data.",
