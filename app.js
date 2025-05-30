@@ -23,7 +23,8 @@ const i18n = {
     close: "Fechar",
 	objectos: "Objectos",
     adicionar: "Adicionar",
-	calendario: "Calendário",
+	 calendario: "Calendário",
+  	calendarTitle: "Calendário de Observações",
     recursos: "Recursos",
     configuracoes: "Configurações",
     ver: "Ver",
@@ -44,6 +45,7 @@ const i18n = {
 	objectos: "Objects",
     adicionar: "Add",
 	calendario: "Calendar",
+  	calendarTitle: "Observation Calendar",
     recursos: "Resources",
     configuracoes: "Settings",
     ver: "View",
@@ -138,11 +140,12 @@ function translateUI() {
     btn.textContent = `🔍 ${t.ver}`;
   });
 
-  // ✅ Atualizar título do calendário se estiver visível
-  const calendarioVisivel = document.getElementById('tab-calendario').classList.contains('active');
-  if (calendarioVisivel) {
-    renderCalendario();  // volta a desenhar o calendário com o mês no idioma certo
-  }
+  // Atualizar título do calendário se estiver visível
+const calendarioVisivel = document.getElementById('tab-calendario').classList.contains('active');
+if (calendarioVisivel) {
+  document.querySelector('#tab-calendario h2').textContent = i18n[currentLang].calendarTitle;
+  renderCalendario(); // força atualização do mês no idioma correto
+	}
 }
 
 
@@ -694,7 +697,10 @@ function renderCalendario() {
   const daysInMonth = new Date(calendarioAno, calendarioMes + 1, 0).getDate();
 
   // Atualizar o título
-  const nomeMes = new Date(calendarioAno, calendarioMes).toLocaleString('pt-PT', { month: 'long' });
+  const locale = (currentLang === 'pt') ? 'pt-PT' : 'en-US';
+	const nomeMes = new Date(calendarioAno, calendarioMes).toLocaleString(locale, { month: 'long' });
+	const capitalizado = nomeMes.charAt(0).toUpperCase() + nomeMes.slice(1);
+	title.textContent = `${capitalizado} ${calendarioAno}`;
 
   title.textContent = `${capitalize(nomeMes)} ${calendarioAno}`;
 
