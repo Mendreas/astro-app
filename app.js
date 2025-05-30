@@ -32,7 +32,7 @@ const i18n = {
     skyTitle: "🔭 Céu Hoje",
     getSkyData: "Obter eventos astronómicos",
     skySummary: "Sugestões do que observar esta noite, previsões para a próxima semana, e fenómenos visíveis.",
-    observeHoje: "O que observar hoje?",
+	observeHoje: "O que observar hoje?",
     proximaSemana: "O que observar na próxima semana?",
     ceuAnalise: "Análise do céu (deep sky, planetas, cometas)",
     citizenScience: "Ligar ao Citizen Science da Unistellar",
@@ -829,26 +829,23 @@ document.getElementById('nextMonth').addEventListener('click', () => {
 });
 
 document.getElementById("getSkyData").addEventListener("click", () => {
-  fetch("https://astro-colibri.com/api/events")
-    .then(res => res.json())
-    .then(data => {
-      const skyInfo = document.getElementById("skyInfo");
-      skyInfo.innerHTML = "";
+  const skyInfo = document.getElementById("skyInfo");
+  skyInfo.innerHTML = "<li>🔄 A carregar dados simulados...</li>";
 
-      if (!data || data.length === 0) {
-        skyInfo.innerHTML = "<li>Sem eventos disponíveis neste momento.</li>";
-        return;
-      }
-
-      data.forEach(event => {
-        const li = document.createElement("li");
-        li.textContent = `${event.type || 'Evento'} em ${event.time || 'sem data'} | RA: ${event.ra || '?'} / Dec: ${event.dec || '?'}`;
-        skyInfo.appendChild(li);
-      });
-    })
-    .catch(err => {
-      console.error("Erro ao obter eventos do Astro-Colibri", err);
-      document.getElementById("skyInfo").innerHTML = "<li>Erro ao carregar dados.</li>";
+  // Dados simulados
+  setTimeout(() => {
+    skyInfo.innerHTML = "";
+    const eventos = [
+      { tipo: "🌕 Lua Cheia", data: "2025-06-03", descricao: "Boa noite para observar crateras lunares." },
+      { tipo: "🔭 Marte em oposição", data: "2025-06-05", descricao: "Marte visível toda a noite, a olho nu." },
+      { tipo: "☄️ Cometa 12P/Pons-Brooks", data: "2025-06-08", descricao: "Cometa visível a oeste após o pôr do sol." }
+    ];
+    eventos.forEach(ev => {
+      const li = document.createElement("li");
+      li.textContent = `${ev.tipo} — ${ev.data}: ${ev.descricao}`;
+      skyInfo.appendChild(li);
     });
+  }, 1000);
 });
+
 
