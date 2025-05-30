@@ -275,7 +275,7 @@ function renderCalendario() {
 
 console.log("Calendário carregado", observacoes);
 }
-
+});
 
 
 function mostrarObservacoesDoDia(dataISO) {
