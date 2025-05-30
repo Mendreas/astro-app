@@ -598,42 +598,12 @@ window.deleteObservation = async function(id) {
 };
 
 document.addEventListener('DOMContentLoaded', async () => {
-  // Corrigido para evitar erro de 'await fora de função async'
   observacoes = await getAllObservacoes();
-  renderObservacoes();         // garantir que 'observacoes' está carregado
+  renderObservacoes();
   translateUI();
   updateRedFilterClass();
+  renderSkyTab(); // 👈 ADICIONA ISTO AQUI
 });
-
-function renderSkyTab() {
-  const btn = document.getElementById("getSkyData");
-  const output = document.getElementById("skyInfo");
-  if (!btn || !output) return;
-
-  btn.addEventListener("click", () => {
-    output.innerHTML = `<li>🔄 A obter dados...</li>`;
-    fetch("https://astro-colibri.com/api/events")
-      .then(res => res.json())
-      .then(data => {
-        output.innerHTML = "";
-        if (!data || data.length === 0) {
-          output.innerHTML = `<li>⚠️ Sem eventos disponíveis neste momento.</li>`;
-          return;
-        }
-
-        data.forEach(event => {
-          const li = document.createElement("li");
-          li.textContent = `${event.type || 'Evento'} em ${event.time || 'tempo desconhecido'} RA: ${event.ra || '?'} / Dec: ${event.dec || '?'}`;
-          output.appendChild(li);
-        });
-      })
-      .catch(err => {
-        console.error("Erro ao obter dados do Astro-Colibri", err);
-        output.innerHTML = "<li>❌ Erro ao carregar dados.</li>";
-      });
-  });
-}
-
 
 
   // Alternar idioma
