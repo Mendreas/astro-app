@@ -685,6 +685,44 @@ document.getElementById('importJson').addEventListener('change', async (event) =
   reader.readAsText(file);
 });
 
+function renderCalendario() {
+  const container = document.getElementById('calendarContainer');
+  const title = document.getElementById('calendarMonthYear');
+  container.innerHTML = '';
+
+  const firstDay = new Date(calendarioAno, calendarioMes, 1).getDay();
+  const daysInMonth = new Date(calendarioAno, calendarioMes + 1, 0).getDate();
+
+  // Atualizar o título
+  const nomeMes = new Date(calendarioAno, calendarioMes).toLocaleString('pt-PT', { month: 'long' });
+
+  title.textContent = `${capitalize(nomeMes)} ${calendarioAno}`;
+
+  const diasComObservacoes = new Set(
+    observacoes.map(o => normalizarDataLocal(o.data))
+  );
+
+  for (let i = 0; i < firstDay; i++) {
+    container.appendChild(document.createElement('div'));
+  }
+
+  for (let d = 1; d <= daysInMonth; d++) {
+    const date = new Date(calendarioAno, calendarioMes, d);
+    const dateStr = normalizarDataLocal(date);
+
+    const div = document.createElement('div');
+    div.className = 'calendar-day';
+    div.textContent = d;
+
+    if (diasComObservacoes.has(dateStr)) {
+      div.classList.add('highlight');
+      div.addEventListener('click', () => mostrarObservacoesDoDia(dateStr));
+    }
+
+    container.appendChild(div);
+  }
+}
+
 function mostrarObservacoesDoDia(dataISO) {
   const lista = observacoes.filter(o => o.data.startsWith(dataISO));
   const container = document.getElementById('calendarResults');
