@@ -274,7 +274,6 @@ function renderCalendario() {
 
     container.appendChild(div);
   }
-}
 });
 
 
