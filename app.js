@@ -148,10 +148,10 @@ function translateUI() {
   document.querySelector('button[type="submit"]').textContent = t.save;
   document.querySelector('footer label:first-child').textContent = t.redFilter;
   document.querySelector('footer label:last-of-type').textContent = t.intensity;
-	document.querySelector('[data-tab="cielo"]').textContent = t.cielo;
-	document.getElementById('skyTitle').textContent = t.skyTitle;
-	document.getElementById('getSkyData').textContent = t.getSkyData;
-	document.getElementById('skySummary').textContent = t.skySummary;
+  document.querySelector('[data-tab="cielo"]').textContent = t.cielo;
+  document.getElementById('skyTitle').textContent = t.skyTitle;
+  document.getElementById('getSkyData').textContent = t.getSkyData;
+  document.getElementById('skySummary').textContent = t.skySummary;
 
 
   // Traduzir nomes das tabs
@@ -827,3 +827,28 @@ document.getElementById('nextMonth').addEventListener('click', () => {
   }
   renderCalendario();
 });
+
+document.getElementById("getSkyData").addEventListener("click", () => {
+  fetch("https://astro-colibri.com/api/events")
+    .then(res => res.json())
+    .then(data => {
+      const skyInfo = document.getElementById("skyInfo");
+      skyInfo.innerHTML = "";
+
+      if (!data || data.length === 0) {
+        skyInfo.innerHTML = "<li>Sem eventos disponíveis neste momento.</li>";
+        return;
+      }
+
+      data.forEach(event => {
+        const li = document.createElement("li");
+        li.textContent = `${event.type || 'Evento'} em ${event.time || 'sem data'} | RA: ${event.ra || '?'} / Dec: ${event.dec || '?'}`;
+        skyInfo.appendChild(li);
+      });
+    })
+    .catch(err => {
+      console.error("Erro ao obter eventos do Astro-Colibri", err);
+      document.getElementById("skyInfo").innerHTML = "<li>Erro ao carregar dados.</li>";
+    });
+});
+
