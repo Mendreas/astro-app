@@ -4,6 +4,8 @@ let currentLang = 'pt';
 let currentFilter = 'todos';
 let searchQuery = '';
 let editId = null;
+let calendarioMes = new Date().getMonth();
+let calendarioAno = new Date().getFullYear();
 
 const i18n = {
   pt: {
@@ -235,25 +237,27 @@ document.getElementById('downloadBackup').addEventListener('click', () => {
 
 function renderCalendario() {
   const container = document.getElementById('calendarContainer');
+  const title = document.getElementById('calendarMonthYear');
   container.innerHTML = '';
 
-  const today = new Date();
-  const year = today.getFullYear();
-  const month = today.getMonth();
-  const firstDay = new Date(year, month, 1).getDay();
-  const daysInMonth = new Date(year, month + 1, 0).getDate();
+  const firstDay = new Date(calendarioAno, calendarioMes, 1).getDay();
+  const daysInMonth = new Date(calendarioAno, calendarioMes + 1, 0).getDate();
+
+  // Atualizar o título
+  const nomeMes = new Date(calendarioAno, calendarioMes).toLocaleString('default', { month: 'long' });
+  title.textContent = `${capitalize(nomeMes)} ${calendarioAno}`;
 
   const diasComObservacoes = new Set(
-    observacoes.map(o => new Date(o.data).toISOString().split('T')[0])
+    observacoes.map(o => normalizarDataLocal(o.data))
   );
 
   for (let i = 0; i < firstDay; i++) {
-    container.appendChild(document.createElement('div')); // vazio
+    container.appendChild(document.createElement('div'));
   }
 
   for (let d = 1; d <= daysInMonth; d++) {
-    const date = new Date(year, month, d);
-    const dateStr = date.toISOString().split('T')[0];
+    const date = new Date(calendarioAno, calendarioMes, d);
+    const dateStr = normalizarDataLocal(date);
 
     const div = document.createElement('div');
     div.className = 'calendar-day';
@@ -267,6 +271,7 @@ function renderCalendario() {
     container.appendChild(div);
   }
 }
+
 
 function mostrarObservacoesDoDia(dataISO) {
   const lista = observacoes.filter(o => o.data.startsWith(dataISO));
@@ -711,3 +716,29 @@ function mostrarObservacoesDoDia(dataISO) {
     lista.map(o => `<li>${getIcon(o.tipo)} ${o.nome}</li>`).join('') +
     `</ul>`;
   }
+
+function normalizarDataLocal(data) {
+  return new Date(data).toLocaleDateString('sv-SE'); // YYYY-MM-DD
+}
+
+function capitalize(str) {
+  return str.charAt(0).toUpperCase() + str.slice(1);
+}
+
+document.getElementById('prevMonth').addEventListener('click', () => {
+  calendarioMes--;
+  if (calendarioMes < 0) {
+    calendarioMes = 11;
+    calendarioAno--;
+  }
+  renderCalendario();
+});
+
+document.getElementById('nextMonth').addEventListener('click', () => {
+  calendarioMes++;
+  if (calendarioMes > 11) {
+    calendarioMes = 0;
+    calendarioAno++;
+  }
+  renderCalendario();
+});

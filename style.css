@@ -413,3 +413,27 @@ body.light textarea {
   color: white;
   font-weight: bold;
 }
+
+#calendarHeader {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 1rem;
+  margin-top: 1rem;
+  font-size: 1.2rem;
+}
+
+#calendarHeader button {
+  background: #333;
+  color: white;
+  border: none;
+  padding: 0.4rem 0.8rem;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+#calendarMonthYear {
+  font-weight: bold;
+  min-width: 140px;
+  text-align: center;
+}
