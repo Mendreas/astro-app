@@ -607,6 +607,7 @@ function renderSkyTab() {
 }
 
 
+
   // Alternar idioma
   const langBtn = document.getElementById('toggleLanguage');
   langBtn.addEventListener('click', () => {
