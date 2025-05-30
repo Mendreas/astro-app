@@ -275,21 +275,6 @@ function renderCalendario() {
 }
 console.log("Calendário carregado", observacoes);
 
-  for (let d = 1; d <= daysInMonth; d++) {
-    const date = new Date(calendarioAno, calendarioMes, d);
-    const dateStr = normalizarDataLocal(date);
-
-    const div = document.createElement('div');
-    div.className = 'calendar-day';
-    div.textContent = d;
-
-    if (diasComObservacoes.has(dateStr)) {
-      div.classList.add('highlight');
-      div.addEventListener('click', () => mostrarObservacoesDoDia(dateStr));
-    }
-
-    container.appendChild(div);
-  }
 }
 
 
