@@ -150,8 +150,8 @@ function translateUI() {
   document.querySelector('footer label:last-of-type').textContent = t.intensity;
   document.querySelector('[data-tab="cielo"]').textContent = t.cielo;
   document.getElementById('skyTitle').textContent = t.skyTitle;
-  document.getElementById('getSkyData').textContent = t.getSkyData;
   document.getElementById('skySummary').textContent = t.skySummary;
+  document.getElementById('getSkyData').textContent = t.getSkyData;
 
 
   // Traduzir nomes das tabs
