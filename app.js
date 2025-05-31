@@ -258,11 +258,6 @@ const obsList = document.getElementById('observationsList');
 const searchInput = document.getElementById('searchInput');
 const filterButtons = document.querySelectorAll('[data-filter]');
 
-async function loadObservacoes() {
-  observacoes = await getAllObservacoes();
-  renderObservacoes();
-}
-
 form.addEventListener('submit', async e => {
   e.preventDefault();
   const data = new FormData(form);
