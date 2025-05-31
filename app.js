@@ -828,6 +828,51 @@ document.getElementById('nextMonth').addEventListener('click', () => {
   renderCalendario();
 });
 
+async function carregarGraficoCeu() {
+  const lat = 38.7169;  // Exemplo: Lisboa
+  const lon = -9.1399;
+
+  const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&hourly=cloudcover&timezone=auto`;
+
+  try {
+    const res = await fetch(url);
+    const data = await res.json();
+
+    const horas = data.hourly.time.slice(0, 24).map(t => t.split("T")[1].slice(0, 5)); // só hoje
+    const cobertura = data.hourly.cloudcover.slice(0, 24).map(v => 100 - v); // inverter: mais céu limpo = melhor
+
+    const ctx = document.getElementById("skyQualityChart").getContext("2d");
+
+    new Chart(ctx, {
+      type: "line",
+      data: {
+        labels: horas,
+        datasets: [{
+          label: "Qualidade do Céu (%)",
+          data: cobertura,
+          borderColor: "aqua",
+          backgroundColor: "rgba(0,255,255,0.1)",
+          tension: 0.3,
+          fill: true
+        }]
+      },
+      options: {
+        scales: {
+          y: { beginAtZero: true, max: 100 },
+          x: { title: { display: true, text: "Hora" } }
+        }
+      }
+    });
+
+  } catch (err) {
+    console.error("Erro ao carregar gráfico de céu:", err);
+  }
+}
+
+document.querySelector('[data-tab="cielo"]').addEventListener("click", () => {
+  carregarGraficoCeu();
+});
+
 document.getElementById("getSkyData").addEventListener("click", () => {
   const skyInfo = document.getElementById("skyInfo");
   skyInfo.innerHTML = "<li>🔄 A carregar dados simulados...</li>";
