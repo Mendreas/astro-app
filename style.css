@@ -519,3 +519,8 @@ body.light textarea {
   max-height: 100vh;
   box-sizing: border-box;
 }
+
+#skyChart {
+  max-width: 100%;
+  margin: 1rem auto;
+}
