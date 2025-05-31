@@ -617,7 +617,7 @@ async function carregarGraficoCeuComLocalizacao() {
     const locResp = await fetch(`https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lon}&format=json`);
     const locData = await locResp.json();
     const local = locData.address.city || locData.address.town || locData.address.village || "Localização";
-    document.getElementById("skyLocation").textContent = `📍 ${local}`;
+    document.getElementById("skyLocationName").textContent = `📍 ${local}`;
 
     // Obter dados de qualidade do céu da API Open-Meteo
     const endDate = new Date();
