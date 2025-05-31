@@ -510,3 +510,12 @@ body.light textarea {
   border-radius: 8px;
   padding: 1rem;
 }
+
+#tab-cielo {
+  background-color: #111;
+  color: white;
+  padding: 1rem;
+  overflow-y: auto;
+  max-height: 100vh;
+  box-sizing: border-box;
+}
