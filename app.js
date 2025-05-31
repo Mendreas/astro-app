@@ -927,10 +927,6 @@ async function carregarGraficoCeu() {
   }
 }
 
-document.querySelector('[data-tab="cielo"]').addEventListener("click", () => {
-  carregarGraficoCeu();
-});
-
 document.getElementById("getSkyData").addEventListener("click", () => {
   const skyInfo = document.getElementById("skyInfo");
   skyInfo.innerHTML = "<li>🔄 A carregar dados simulados...</li>";
