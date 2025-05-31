@@ -605,6 +605,64 @@ document.addEventListener('DOMContentLoaded', async () => {
   renderSkyTab(); // 👈 ADICIONA ISTO AQUI
 });
 
+// Nova função para obter localização e carregar o gráfico
+async function carregarGraficoCeuComLocalizacao() {
+  if (!navigator.geolocation) {
+    document.getElementById("skyLocation").textContent = "Geolocalização não suportada.";
+    return;
+  }
+
+  navigator.geolocation.getCurrentPosition(async (pos) => {
+    const lat = pos.coords.latitude.toFixed(4);
+    const lon = pos.coords.longitude.toFixed(4);
+
+    // Obter nome da localidade
+    const nomeURL = `https://geocoding-api.open-meteo.com/v1/reverse?latitude=${lat}&longitude=${lon}&language=pt&format=json`;
+    const nomeRes = await fetch(nomeURL);
+    const nomeData = await nomeRes.json();
+    const nome = nomeData?.results?.[0]?.name || "Localização desconhecida";
+
+    document.getElementById("skyLocation").textContent = `📍 Localização: ${nome}`;
+
+    // Obter dados meteorológicos
+    const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&hourly=cloudcover&timezone=auto`;
+    const res = await fetch(url);
+    const data = await res.json();
+
+    const horas = data.hourly.time.slice(0, 24).map(t => t.split("T")[1].slice(0, 5));
+    const cobertura = data.hourly.cloudcover.slice(0, 24).map(v => 100 - v);
+
+    const ctx = document.getElementById("skyQualityChart").getContext("2d");
+
+    new Chart(ctx, {
+      type: "line",
+      data: {
+        labels: horas,
+        datasets: [{
+          label: "Qualidade do Céu (%)",
+          data: cobertura,
+          borderColor: "aqua",
+          backgroundColor: "rgba(0,255,255,0.1)",
+          tension: 0.3,
+          fill: true
+        }]
+      },
+      options: {
+        scales: {
+          y: { beginAtZero: true, max: 100 },
+          x: { title: { display: true, text: "Hora" } }
+        }
+      }
+    });
+  }, () => {
+    document.getElementById("skyLocation").textContent = "⚠️ Localização não autorizada.";
+  });
+}
+
+// Chamar quando muda para a tab Céu
+document.querySelector('[data-tab="cielo"]').addEventListener("click", () => {
+  carregarGraficoCeuComLocalizacao();
+});
 
   // Alternar idioma
   const langBtn = document.getElementById('toggleLanguage');
