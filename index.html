@@ -7,16 +7,15 @@
   <link rel="stylesheet" href="style.css" />
   <link rel="manifest" href="manifest.json" />
   <script>
-  if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.register('service-worker.js')
-      .then(() => console.log("Service Worker registado com sucesso."))
-      .catch(err => console.error("Erro ao registar o Service Worker:", err));
-  }
-</script>
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('service-worker.js')
+        .then(() => console.log("Service Worker registado com sucesso."))
+        .catch(err => console.error("Erro ao registar o Service Worker:", err));
+    }
+  </script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script defer src="app.js"></script>
 </head>
-
 <body>
   <header>
     <h1>AstroLog</h1>
@@ -29,13 +28,13 @@
 
   <main>
     <nav>
-  <button data-tab="objectos">Objectos</button>
-  <button data-tab="adicionar">Adicionar</button>
-  <button data-tab="recursos">Recursos</button>
-  <button data-tab="calendario">Calendário</button>
-  <button data-tab="cielo">🔭 Céu</button> <!-- Ícone adicionado -->
-  <button data-tab="configuracoes">Configurações</button>
-</nav>
+      <button data-tab="objectos">Objectos</button>
+      <button data-tab="adicionar">Adicionar</button>
+      <button data-tab="recursos">Recursos</button>
+      <button data-tab="calendario">Calendário</button>
+      <button data-tab="cielo">🔭 Céu</button>
+      <button data-tab="configuracoes">Configurações</button>
+    </nav>
 
     <div class="content">
       <section id="tab-objectos" class="tab active">
@@ -52,7 +51,6 @@
         <form id="observationForm">
           <label>Nome do Objecto *</label>
           <input type="text" name="nome" required />
-
           <label>Tipo de Objecto *</label>
           <select name="tipo" required>
             <option>Estrela</option>
@@ -62,23 +60,18 @@
             <option>Sistema Solar</option>
             <option>Outro</option>
           </select>
-
           <label>Data da Observação *</label>
           <input type="datetime-local" name="data" required />
-
           <label>Localidade *</label>
           <input type="text" name="local" required />
-
           <label>Latitude</label>
           <input type="text" name="lat" />
           <label>Longitude</label>
           <input type="text" name="lon" />
-
           <label>Ascensão Reta (RA)</label>
           <input type="text" name="ra" />
           <label>Declinação (DEC)</label>
           <input type="text" name="dec" />
-
           <label>Distância</label>
           <input type="number" name="distancia" />
           <select name="unidadeDistancia">
@@ -86,32 +79,24 @@
             <option>AU</option>
             <option>Parsecs</option>
           </select>
-
           <label>Magnitude</label>
           <input type="text" name="magnitude" />
-
           <label>Elongação</label>
           <input type="text" name="elongacao" />
-
           <label>Descrição</label>
           <textarea name="descricao"></textarea>
-
           <label>Notas Pessoais</label>
           <textarea name="notas"></textarea>
-
           <label>Imagem</label>
           <input type="file" name="imagem" accept="image/*" />
-
           <label>Favorito</label>
           <input type="checkbox" name="favorito" />
-
           <div class="form-actions">
             <button type="reset">Cancelar</button>
             <button type="submit">Guardar</button>
           </div>
         </form>
       </section>
-
 <section id="tab-recursos" class="tab">
   <ul>
     <li>
