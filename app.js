@@ -607,55 +607,62 @@ document.addEventListener('DOMContentLoaded', async () => {
 
 // Nova função para obter localização e carregar o gráfico
 async function carregarGraficoCeuComLocalizacao() {
-  if (!navigator.geolocation) {
-    document.getElementById("skyLocation").textContent = "Geolocalização não suportada.";
-    return;
-  }
+  if (!navigator.geolocation) return;
 
-  navigator.geolocation.getCurrentPosition(async (pos) => {
-    const lat = pos.coords.latitude.toFixed(4);
-    const lon = pos.coords.longitude.toFixed(4);
+  navigator.geolocation.getCurrentPosition(async position => {
+    const lat = position.coords.latitude;
+    const lon = position.coords.longitude;
 
-    // Obter nome da localidade
-    const nomeURL = `https://geocoding-api.open-meteo.com/v1/reverse?latitude=${lat}&longitude=${lon}&language=pt&format=json`;
-    const nomeRes = await fetch(nomeURL);
-    const nomeData = await nomeRes.json();
-    const nome = nomeData?.results?.[0]?.name || "Localização desconhecida";
+    // Mostrar nome da localização
+    const locResp = await fetch(`https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lon}&format=json`);
+    const locData = await locResp.json();
+    const local = locData.address.city || locData.address.town || locData.address.village || "Localização";
+    document.getElementById("skyLocation").textContent = `📍 ${local}`;
 
-    document.getElementById("skyLocation").textContent = `📍 Localização: ${nome}`;
+    // Obter dados de qualidade do céu da API Open-Meteo
+    const endDate = new Date();
+    endDate.setDate(endDate.getDate() + 4);
+    const dateStr = endDate.toISOString().split("T")[0];
 
-    // Obter dados meteorológicos
-    const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&hourly=cloudcover&timezone=auto`;
-    const res = await fetch(url);
-    const data = await res.json();
+    const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&daily=cloud_cover,seeing,transparency&timezone=auto&end_date=${dateStr}`;
 
-    const horas = data.hourly.time.slice(0, 24).map(t => t.split("T")[1].slice(0, 5));
-    const cobertura = data.hourly.cloudcover.slice(0, 24).map(v => 100 - v);
+    const response = await fetch(url);
+    const data = await response.json();
 
-    const ctx = document.getElementById("skyQualityChart").getContext("2d");
+    const dias = data.daily.time;
+    const seeing = data.daily.seeing;
+    const transparency = data.daily.transparency;
 
-    new Chart(ctx, {
-      type: "line",
+    const ctx = document.getElementById("skyChart").getContext("2d");
+    if (window.skyChartInstance) window.skyChartInstance.destroy(); // evitar duplicados
+
+    window.skyChartInstance = new Chart(ctx, {
+      type: 'line',
       data: {
-        labels: horas,
-        datasets: [{
-          label: "Qualidade do Céu (%)",
-          data: cobertura,
-          borderColor: "aqua",
-          backgroundColor: "rgba(0,255,255,0.1)",
-          tension: 0.3,
-          fill: true
-        }]
+        labels: dias,
+        datasets: [
+          {
+            label: 'Seeing',
+            data: seeing,
+            borderWidth: 2,
+          },
+          {
+            label: 'Transparência',
+            data: transparency,
+            borderWidth: 2,
+          }
+        ]
       },
       options: {
+        responsive: true,
         scales: {
-          y: { beginAtZero: true, max: 100 },
-          x: { title: { display: true, text: "Hora" } }
+          y: {
+            beginAtZero: true,
+            max: 5
+          }
         }
       }
     });
-  }, () => {
-    document.getElementById("skyLocation").textContent = "⚠️ Localização não autorizada.";
   });
 }
 
