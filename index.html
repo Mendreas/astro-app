@@ -6,9 +6,7 @@
   <title>AstroLog</title>
   <link rel="stylesheet" href="style.css" />
   <link rel="manifest" href="manifest.json" />
-  <script defer src="app.js"></script>
-</head>
-<script>
+  <script>
   if ('serviceWorker' in navigator) {
     navigator.serviceWorker.register('service-worker.js')
       .then(() => console.log("Service Worker registado com sucesso."))
@@ -16,6 +14,9 @@
   }
 </script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script defer src="app.js"></script>
+</head>
+
 <body>
   <header>
     <h1>AstroLog</h1>
