@@ -772,11 +772,6 @@ document.getElementById('nextMonth').addEventListener('click', () => {
 });
 
 
-<script>
-document.getElementById('addObservationBtn').onclick = () => {
-  document.getElementById('addObservationModal').style.display = 'block';
-};
-
 document.getElementById('closeAddModal').onclick = closeAddForm;
 document.getElementById('cancelAdd').onclick = closeAddForm;
 
