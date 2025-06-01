@@ -200,57 +200,11 @@ function updateRedFilterClass() {
 redToggle.addEventListener('change', updateRedFilterClass);
 redSlider.addEventListener('input', updateRedFilterClass);
 
-const form = document.getElementById('observationForm');
-const obsList = document.getElementById('observationsList');
-const searchInput = document.getElementById('searchInput');
-const filterButtons = document.querySelectorAll('[data-filter]');
-
 async function loadObservacoes() {
   observacoes = await getAllObservacoes();
   renderObservacoes();
 }
 
-form.addEventListener('submit', async e => {
-  e.preventDefault();
-  const data = new FormData(form);
-  const obs = Object.fromEntries(data.entries());
-  obs.favorito = !!data.get('favorito');
-  obs.id = editId || Date.now();
-
-  const file = data.get('imagem');
-
-  const saveObs = async () => {
-    await saveObservacao(obs);
-    // Corrigido para evitar erro de 'await fora de função async'
-  observacoes = await getAllObservacoes();
-  renderObservacoes();
-	atualizarBackupJSON();
-    form.reset();
-    editId = null;
-  };
-
-function atualizarBackupJSON() {
-  const json = JSON.stringify(observacoes, null, 2);
-  localStorage.setItem('backupAstroLog', json);
-}
-
-document.getElementById('downloadBackup').addEventListener('click', () => {
-  const data = localStorage.getItem('backupAstroLog');
-  if (!data) {
-    alert("Sem backup disponível.");
-    return;
-  }
-  const blob = new Blob([data], { type: 'application/json' });
-  const url = URL.createObjectURL(blob);
-
-  const a = document.createElement('a');
-  a.href = url;
-  a.download = 'astro-backup.json';
-  document.body.appendChild(a);
-  a.click();
-  document.body.removeChild(a);
-  URL.revokeObjectURL(url);
-});
 
 function renderCalendario() {
   const container = document.getElementById('calendarContainer');
