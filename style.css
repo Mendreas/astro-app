@@ -468,3 +468,18 @@ body.light textarea {
   font-size: 0.9rem;
   color: #fff;
 }
+
+.card-img {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  width: 100%;
+}
+
+.card-img img {
+  max-height: 100px;
+  max-width: 100%;
+  object-fit: contain;
+}
