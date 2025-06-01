@@ -824,5 +824,5 @@ document.getElementById('addObservationForm').onsubmit = async function(e) {
     await saveObs();
   }
 };
-});
+
 
