@@ -486,27 +486,6 @@ function getIcon(tipo) {
 // =========================
 // EXPORTAÇÃO E IMPORTAÇÃO
 // =========================
-  
-if (file && file.name && file.size > 0) {
-  const reader = new FileReader();
-  reader.onload = async () => {
-    obs.imagem = reader.result;
-    await saveObs();
-  };
-  reader.onerror = async () => {
-    alert("Erro ao carregar imagem. A observação será guardada sem imagem nova.");
-    await saveObs();
-  };
-  reader.readAsDataURL(file);
-} else {
-  (async () => {
-    const original = observacoes.find(o => o.id === editId);
-    if (editId && original?.imagem) obs.imagem = original.imagem;
-    await saveObs();
-  })();
-}
-
-
 
 searchInput.addEventListener('input', () => {
   searchQuery = searchInput.value.toLowerCase();
