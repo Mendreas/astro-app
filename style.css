@@ -1,6 +1,6 @@
 /* =========================
-   GLOBAL RESET & TYPOGRAPHY
-   ========================= */
+   GLOBAL & RESET
+========================= */
 body {
   margin: 0;
   font-family: 'Segoe UI', sans-serif;
@@ -13,6 +13,7 @@ body {
   overflow: hidden;
 }
 
+/* ========== HEADER ========== */
 header {
   height: 48px;
   display: flex;
@@ -25,12 +26,10 @@ header {
   z-index: 10;
   position: relative;
 }
-
 .header-controls {
   display: flex;
   gap: 0.5rem;
 }
-
 .header-controls input {
   padding: 0.4rem 1rem;
   border: none;
@@ -39,7 +38,6 @@ header {
   color: white;
   outline: none;
 }
-
 .header-controls button {
   background: #2a2a2a;
   border: none;
@@ -49,9 +47,7 @@ header {
   cursor: pointer;
 }
 
-/* =========================
-   MAIN LAYOUT
-   ========================= */
+/* ========== LAYOUT ========== */
 main {
   display: flex;
   flex: 1;
@@ -69,7 +65,6 @@ nav {
   position: relative;
   z-index: 5;
 }
-
 nav button {
   background: none;
   border: none;
@@ -80,7 +75,6 @@ nav button {
   padding: 0.5rem;
   transition: color 0.3s;
 }
-
 nav button:hover,
 nav button.active {
   color: #a463ff;
@@ -95,14 +89,11 @@ nav button.active {
 .tab {
   display: none;
 }
-
 .tab.active {
   display: block;
 }
 
-/* =========================
-   FORM STYLING
-   ========================= */
+/* ========== FORM ELEMENTS ========== */
 form {
   display: flex;
   flex-direction: column;
@@ -113,37 +104,28 @@ form {
   border-radius: 12px;
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.5);
 }
-
-input,
-select,
-textarea,
-button {
+input, select, textarea, button {
   padding: 0.6rem;
   border-radius: 8px;
   border: none;
   background: #252525;
   color: white;
 }
-
-input[type='checkbox'] {
+input[type="checkbox"] {
   width: auto;
 }
-
 .form-actions {
   display: flex;
   justify-content: flex-end;
   gap: 1rem;
 }
 
-/* =========================
-   FILTER BUTTONS & CARDS
-   ========================= */
+/* ========== FILTER BUTTONS ========== */
 .filters {
   display: flex;
   gap: 1rem;
   margin-bottom: 1rem;
 }
-
 .filters button {
   background: #222;
   border: none;
@@ -153,19 +135,18 @@ input[type='checkbox'] {
   cursor: pointer;
   transition: background 0.3s;
 }
-
 .filters button:hover,
 .filters button.active {
   background: #7b2cbf;
   color: white;
 }
 
+/* ========== OBSERVATION CARDS ========== */
 #observationsList {
   display: flex;
   flex-wrap: wrap;
   gap: 1.5rem;
 }
-
 .observation-card {
   background: #1e1e1e;
   border-radius: 12px;
@@ -177,17 +158,14 @@ input[type='checkbox'] {
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
   transition: transform 0.2s, box-shadow 0.2s;
 }
-
 .observation-card:hover {
   transform: translateY(-3px);
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.4);
 }
-
 .observation-card .title {
   font-weight: bold;
   font-size: 1.1rem;
 }
-
 .observation-card img {
   border-radius: 6px;
   max-height: 120px;
@@ -195,9 +173,7 @@ input[type='checkbox'] {
   width: 100%;
 }
 
-/* =========================
-   FOOTER (Red Filter)
-   ========================= */
+/* ========== FOOTER (CONFIGURAÇÕES) ========== */
 footer {
   margin-top: 2rem;
   padding: 1rem 2rem;
@@ -206,56 +182,35 @@ footer {
   flex-direction: column;
   gap: 0.5rem;
 }
-
-.tab#tab-configuracoes.active + footer {
+#tab-configuracoes.active + footer {
   display: flex;
 }
 
-/* =========================
-   MODAL STYLING
-   ========================= */
+/* ========== MODAL COMMON ========== */
 .modal {
   display: none;
   position: fixed;
   z-index: 999;
-  left: 0;
-  top: 0;
-  width: 100%;
-  height: 100%;
+  left: 0; top: 0;
+  width: 100%; height: 100%;
   background-color: rgba(0, 0, 0, 0.6);
 }
-
 .modal-content {
   background-color: #111;
   color: #fff;
   margin: 10% auto;
   padding: 20px;
   border-radius: 8px;
-  width: 90%;
-  max-width: 500px;
+  width: 90%; max-width: 500px;
   position: relative;
 }
-
-.modal-content h3 {
-  margin: 0;
-  color: #9d4edd;
-}
-
 .modal-content .close {
   position: absolute;
-  top: 10px;
-  right: 15px;
+  top: 10px; right: 15px;
   color: white;
   font-size: 24px;
   cursor: pointer;
 }
-
-.modal-content form button {
-  margin-top: 1rem;
-  background: #7b2cbf;
-  color: white;
-}
-
 .success-msg {
   color: #4caf50;
   margin-top: 1rem;
@@ -263,36 +218,22 @@ footer {
   text-align: center;
 }
 
-/* =========================
-   RED FILTER THEMING
-   ========================= */
+/* ========== RED FILTER STYLES ========== */
 body.red-filter {
   background-color: #360700 !important;
   color: #ff5555 !important;
 }
-
+/* Uniform backgrounds for major elements under red-filter: */
 body.red-filter header {
   background-color: #360700 !important;
   background-image: none !important;
   color: #ff5555 !important;
 }
-
-body.red-filter.intensity-20 {
-  background-color: #240000 !important;
-}
-body.red-filter.intensity-40 {
-  background-color: #2c0000 !important;
-}
-body.red-filter.intensity-60 {
-  background-color: #360700 !important;
-}
-body.red-filter.intensity-80 {
-  background-color: #3e0a00 !important;
-}
-body.red-filter.intensity-100 {
-  background-color: #4a0d00 !important;
-}
-
+body.red-filter.intensity-20 { background-color: #240000 !important; }
+body.red-filter.intensity-40 { background-color: #2c0000 !important; }
+body.red-filter.intensity-60 { background-color: #360700 !important; }
+body.red-filter.intensity-80 { background-color: #3e0a00 !important; }
+body.red-filter.intensity-100 { background-color: #4a0d00 !important; }
 body.red-filter nav,
 body.red-filter footer,
 body.red-filter .tab,
@@ -307,7 +248,6 @@ body.red-filter textarea {
   color: #ff5555 !important;
   border: 1px solid #550000 !important;
 }
-
 body.red-filter button,
 body.red-filter .dropdown-menu,
 body.red-filter .dropdown-menu div,
@@ -318,7 +258,6 @@ body.red-filter #tab-recursos img {
   color: #ff5555 !important;
   border-color: #550000 !important;
 }
-
 body.red-filter .filters button.active,
 body.red-filter nav button.active,
 body.red-filter .form-actions button,
@@ -327,24 +266,19 @@ body.red-filter .view-btn,
 body.red-filter button:hover {
   color: #ff8888 !important;
 }
-
 body.red-filter .modal {
   background-color: rgba(0, 0, 0, 0.85);
 }
-
 body.red-filter input::placeholder,
 body.red-filter textarea::placeholder {
   color: #A61500 !important;
 }
 
-/* =========================
-   LIGHT MODE OVERRIDES
-   ========================= */
+/* ========== LIGHT MODE ========== */
 body.light {
   background-color: #f0f0f0;
   color: #000;
 }
-
 body.light input,
 body.light select,
 body.light textarea {
@@ -353,39 +287,32 @@ body.light textarea {
   border: 1px solid #ccc;
 }
 
-/* =========================
-   DROPDOWN MENU (for “Filtrar por tipo”)
-   ========================= */
+/* ========== DROPDOWN MENU ========== */
 .dropdown-menu {
   background-color: #222;
   color: #fff;
   border: 1px solid #555;
   padding: 0.5rem;
   border-radius: 4px;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.5);
+  box-shadow: 0 2px 5px rgba(0,0,0,0.5);
   font-size: 0.9rem;
   min-width: 150px;
 }
-
 .dropdown-menu div {
   padding: 5px;
   cursor: pointer;
 }
-
 .dropdown-menu div:hover {
   background-color: #444;
 }
 
-/* =========================
-   CONFIG ACTIONS STYLING
-   ========================= */
+/* ========== CONFIG ACTIONS ========== */
 .config-actions {
   display: flex;
   gap: 1rem;
   flex-wrap: wrap;
   margin-top: 1rem;
 }
-
 .config-actions button,
 .config-actions .import-label {
   background: #2a2a2a;
@@ -395,16 +322,13 @@ body.light textarea {
   cursor: pointer;
   border: none;
 }
-
 .config-actions .import-label {
   display: inline-block;
   position: relative;
   overflow: hidden;
 }
 
-/* =========================
-   CALENDAR STYLING
-   ========================= */
+/* ========== CALENDAR ========== */
 #calendarContainer {
   display: grid;
   grid-template-columns: repeat(7, 1fr);
@@ -412,7 +336,6 @@ body.light textarea {
   margin-top: 1rem;
   max-width: 400px;
 }
-
 .calendar-day {
   padding: 0.5rem;
   background: #1a1a1a;
@@ -421,13 +344,11 @@ body.light textarea {
   cursor: pointer;
   border: 1px solid #333;
 }
-
 .calendar-day.highlight {
   background: #7b2cbf;
   color: white;
   font-weight: bold;
 }
-
 #calendarHeader {
   display: flex;
   justify-content: center;
@@ -436,7 +357,6 @@ body.light textarea {
   margin-top: 1rem;
   font-size: 1.2rem;
 }
-
 #calendarHeader button {
   background: #333;
   color: white;
@@ -445,26 +365,34 @@ body.light textarea {
   border-radius: 6px;
   cursor: pointer;
 }
-
 #calendarMonthYear {
   font-weight: bold;
   min-width: 140px;
   text-align: center;
 }
 
-/* =========================
-   “+” BUTTON STYLING
-   ========================= */
-#top-bar {
-  position: fixed;
-  top: 0;
-  right: 0;
+/* ========== CARD IMAGE CONTAINER ========== */
+.card-img {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  overflow: hidden;
   padding: 0.5rem;
-  z-index: 20;
+}
+.card-img img {
+  width: auto;
+  height: auto;
+  max-width: 100%;
+  max-height: 100px;
+  object-fit: contain;
 }
 
+/* ========== ADD BUTTON ========== */
 #addObservationBtn {
   font-size: 1.5rem;
+  margin-left: 1rem;
   background: none;
   border: none;
   color: white;
