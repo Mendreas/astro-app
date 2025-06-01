@@ -275,6 +275,51 @@ footer {
   max-height: 150px;
 }
 
+/* Aplicar os mesmos estilos aos links úteis */
+#tab-links ul {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  justify-content: center;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+#tab-links li {
+  background-color: #000;
+  border-radius: 0.5rem;
+  overflow: hidden;
+  padding: 0;
+}
+
+#tab-links li:hover {
+  transform: scale(1.03);
+}
+
+#tab-links a {
+  display: block;
+  text-decoration: none;
+  color: inherit;
+}
+
+#tab-links li a {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  text-decoration: none;
+  color: #fff;
+  background-color: #000;
+}
+
+#tab-links li img {
+  object-fit: contain;
+  background-color: #000;
+  flex-grow: 1;
+  padding: 1rem;
+  max-height: 150px;
+}
+
 
 /* === Filtro Vermelho Uniforme === */
 body.red-filter {
