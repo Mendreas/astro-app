@@ -537,7 +537,6 @@ tabs.forEach(tab => {
     tabSections.forEach(section => section.classList.remove('active'));
 	  if (target === 'adicionar') {
   editId = null;
-  document.getElementById('observationForm').reset();
 } else if (target === 'calendario') {
   renderCalendario();
 }
@@ -550,7 +549,7 @@ tabs.forEach(tab => {
 
  if (target === 'adicionar') {
       editId = null;
-      document.getElementById('observationForm').reset();
+      
     } else if (target === 'calendario') {
       renderCalendario();
     }
