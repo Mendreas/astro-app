@@ -108,7 +108,7 @@ async function deleteObservacao(id) {
   const db = await openDB();
   return new Promise((resolve, reject) => {
     const tx = db.transaction(STORE_NAME, 'readwrite');
-    const store = tx.objectStore(STER_NAME);
+    const store = tx.objectStore(STORE_NAME);
     store.delete(id);
     tx.oncomplete = () => resolve();
     tx.onerror = () => reject(tx.error);
@@ -257,9 +257,6 @@ importInput.addEventListener('change', async (event) => {
   reader.readAsText(file);
 });
 
-
-// chamada inicial
-loadObservacoes();
 
 // =========================
 // EVENTOS E INICIALIZAÇÃO
@@ -493,53 +490,8 @@ function getIcon(tipo) {
 // =========================
 // EXPORTAÇÃO E IMPORTAÇÃO
 // =========================
-document.getElementById('exportJson').addEventListener('click', async () => {
-  const data = await getAllObservacoes();
-  const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href = url;
-  a.download = 'astro-observacoes.json';
-  document.body.appendChild(a);
-  a.click();
-  document.body.removeChild(a);
-  URL.revokeObjectURL(url);
-});
 
-document.getElementById('importJson').addEventListener('change', async (event) => {
-  const file = event.target.files[0];
-  if (!file) return;
 
-  const reader = new FileReader();
-
-  reader.onload = async () => {
-    try {
-      const data = JSON.parse(reader.result);
-      if (!Array.isArray(data)) throw new Error("Formato inválido");
-
-      const db = await openDB();
-      const tx = db.transaction(STORE_NAME, 'readwrite');
-      const store = tx.objectStore(STORE_NAME);
-
-      for (const obs of data) {
-        if (obs.id && obs.nome) {
-          store.put(obs);
-        }
-      }
-
-      tx.oncomplete = async () => {
-        alert("Importação concluída!");
-        observacoes = await getAllObservacoes();
-        renderObservacoes();
-        event.target.value = ''; // limpa o campo input
-      };
-    } catch (err) {
-      alert("Erro ao importar: " + err.message);
-    }
-  };
-
-  reader.readAsText(file);
-});
 
 
 const file = obs.imagem;
@@ -674,11 +626,6 @@ window.openImageModal = function(imgSrc) {
 
 window.closeModalById = function(id) {
   const modal = document.getElementById(id);
-  if (modal) modal.remove();
-};
-
-window.closeModal = function() {
-  const modal = document.querySelector('.modal');
   if (modal) modal.remove();
 };
 
@@ -865,108 +812,6 @@ tabs.forEach(tab => {
     document.body.appendChild(menu);
   });
 	
-	document.getElementById('exportJson').addEventListener('click', async () => {
-  const data = await getAllObservacoes();
-  const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
-  const url = URL.createObjectURL(blob);
-
-  const a = document.createElement('a');
-  a.href = url;
-  a.download = 'astro-observacoes.json';
-  document.body.appendChild(a);
-  a.click();
-  document.body.removeChild(a);
-  URL.revokeObjectURL(url);
-});
-
-document.getElementById('importJson').addEventListener('change', async (event) => {
-  const file = event.target.files[0];
-  if (!file) return;
-
-  const reader = new FileReader();
-  reader.onload = async () => {
-    try {
-      const data = JSON.parse(reader.result);
-      if (!Array.isArray(data)) throw new Error("Formato inválido");
-
-      const db = await openDB();
-      const tx = db.transaction(STORE_NAME, 'readwrite');
-      const store = tx.objectStore(STORE_NAME);
-      for (const obs of data) {
-        if (obs.id && obs.nome) {
-          store.put(obs);
-        }
-      }
-
-      tx.oncomplete = async () => {
-        alert("Importação concluída!");
-        // Corrigido para evitar erro de 'await fora de função async'
-  observacoes = await getAllObservacoes();
-  renderObservacoes();
-        event.target.value = ''; // reset file input
-      };
-    } catch (err) {
-      alert("Erro ao importar ficheiro: " + err.message);
-    }
-  };
-  reader.readAsText(file);
-});
-
-function renderCalendario() {
-  const container = document.getElementById('calendarContainer');
-  const title = document.getElementById('calendarMonthYear');
-  container.innerHTML = '';
-
-  const firstDay = new Date(calendarioAno, calendarioMes, 1).getDay();
-  const daysInMonth = new Date(calendarioAno, calendarioMes + 1, 0).getDate();
-
-  // Atualizar o título
-  const locale = (currentLang === 'pt') ? 'pt-PT' : 'en-US';
-	const nomeMes = new Date(calendarioAno, calendarioMes).toLocaleString(locale, { month: 'long' });
-	const capitalizado = nomeMes.charAt(0).toUpperCase() + nomeMes.slice(1);
-	title.textContent = `${capitalizado} ${calendarioAno}`;
-
-  title.textContent = `${capitalize(nomeMes)} ${calendarioAno}`;
-
-  const diasComObservacoes = new Set(
-    observacoes.map(o => normalizarDataLocal(o.data))
-  );
-
-  for (let i = 0; i < firstDay; i++) {
-    container.appendChild(document.createElement('div'));
-  }
-
-  for (let d = 1; d <= daysInMonth; d++) {
-    const date = new Date(calendarioAno, calendarioMes, d);
-    const dateStr = normalizarDataLocal(date);
-
-    const div = document.createElement('div');
-    div.className = 'calendar-day';
-    div.textContent = d;
-
-    if (diasComObservacoes.has(dateStr)) {
-      div.classList.add('highlight');
-      div.addEventListener('click', () => mostrarObservacoesDoDia(dateStr));
-    }
-
-    container.appendChild(div);
-  }
-}
-
-function mostrarObservacoesDoDia(dataISO) {
-  const lista = observacoes.filter(o => o.data.startsWith(dataISO));
-  const container = document.getElementById('calendarResults');
-
-  if (!lista.length) {
-    container.innerHTML = `<p>Sem observações para ${dataISO}</p>`;
-    return;
-  }
-
-  container.innerHTML = `<h3>Observações em ${dataISO}:</h3><ul>` +
-    lista.map(o => `<li>${getIcon(o.tipo)} ${o.nome}</li>`).join('') +
-    `</ul>`;
-  }
-
 function normalizarDataLocal(data) {
   return new Date(data).toLocaleDateString('sv-SE'); // YYYY-MM-DD
 }
@@ -996,46 +841,3 @@ document.getElementById('nextMonth').addEventListener('click', () => {
 document.getElementById('closeAddModal').onclick = closeAddForm;
 document.getElementById('cancelAdd').onclick = closeAddForm;
 
-function closeAddForm() {
-  document.getElementById('addObservationForm').reset();
-  document.getElementById('addObservationModal').style.display = 'none';
-  document.getElementById('addSuccessMsg').style.display = 'none';
-}
-
-document.getElementById('addObservationForm').onsubmit = async function(e) {
-  e.preventDefault();
-
-  const form = document.getElementById('addObservationForm');
-  const data = new FormData(form);
-  const obs = Object.fromEntries(data.entries());
-  obs.favorito = !!data.get('favorito');
-  obs.id = Date.now();
-
-  const file = data.get('imagem');
-
-  const saveObs = async () => {
-    await saveObservacao(obs);
-    observacoes = await getAllObservacoes();
-    renderObservacoes();
-    atualizarBackupJSON();
-    document.getElementById('addSuccessMsg').style.display = 'block';
-    setTimeout(() => {
-      closeAddForm();
-    }, 1500);
-  };
-
-  if (file && file.name && file.size > 0) {
-    const reader = new FileReader();
-    reader.onload = async () => {
-      obs.imagem = reader.result;
-      await saveObs();
-    };
-    reader.onerror = async () => {
-      alert("Erro ao carregar imagem. A observação será guardada sem imagem nova.");
-      await saveObs();
-    };
-    reader.readAsDataURL(file);
-  } else {
-        await saveObs();
-  }
-};
