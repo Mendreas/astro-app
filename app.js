@@ -1,3 +1,5 @@
+// AstroLog – app.js consolidado
+
 // =========================
 // VARIÁVEIS GLOBAIS
 // =========================
@@ -122,206 +124,10 @@ async function loadObservacoes() {
   observacoes = await getAllObservacoes();
   renderObservacoes();
 }
-
 loadObservacoes();
 
 // =========================
-// EVENTOS DE INTERFACE
-// =========================
-
-// Alternar idioma (PT ↔ EN)
-const langBtn = document.getElementById('toggleLanguage');
-langBtn.addEventListener('click', () => {
-  currentLang = currentLang === 'pt' ? 'en' : 'pt';
-  langBtn.textContent = currentLang === 'pt' ? 'EN' : 'PT';
-  translateUI();
-  renderObservacoes();
-});
-
-// Navegação entre tabs
-const tabs = document.querySelectorAll('nav button');
-const tabSections = document.querySelectorAll('.tab');
-tabs.forEach(tab => {
-  tab.addEventListener('click', () => {
-    const target = tab.dataset.tab;
-    tabs.forEach(t => t.classList.remove('active'));
-    tab.classList.add('active');
-    tabSections.forEach(section => section.classList.remove('active'));
-    document.getElementById(`tab-${target}`).classList.add('active');
-    document.querySelector('footer').style.display = target === 'configuracoes' ? 'flex' : 'none';
-    if (target === 'calendario') renderCalendario();
-  });
-});
-
-// “Filtrar por tipo” dropdown
-const filterBtn = document.getElementById('filterByType');
-filterBtn.addEventListener('click', async () => {
-  if (!observacoes || observacoes.length === 0) observacoes = await getAllObservacoes();
-  if (!observacoes.length) {
-    alert("Sem observações para filtrar.");
-    return;
-  }
-
-  document.querySelectorAll('.dropdown-menu').forEach(m => m.remove());
-  const tipos = [...new Set(observacoes.map(o => o.tipo).filter(Boolean))];
-  const menu = document.createElement('div');
-  menu.className = 'dropdown-menu';
-
-  tipos.forEach(tipo => {
-    const item = document.createElement('div');
-    item.textContent = tipo;
-    item.addEventListener('click', () => {
-      currentFilter = 'tipo';
-      searchQuery = tipo.toLowerCase();
-      renderObservacoes();
-      menu.remove();
-    });
-    menu.appendChild(item);
-  });
-
-  const allItem = document.createElement('div');
-  allItem.textContent = i18n[currentLang].all;
-  allItem.addEventListener('click', () => {
-    currentFilter = 'todos';
-    searchQuery = '';
-    renderObservacoes();
-    menu.remove();
-  });
-  menu.appendChild(allItem);
-
-  const rect = filterBtn.getBoundingClientRect();
-  menu.style.position = 'absolute';
-  menu.style.top = `${rect.bottom + window.scrollY}px`;
-  menu.style.left = `${rect.left + window.scrollX}px`;
-  menu.style.zIndex = 1000;
-
-  document.body.appendChild(menu);
-});
-
-// Campo de pesquisa
-const searchInput = document.getElementById('searchInput');
-searchInput.addEventListener('input', () => {
-  searchQuery = searchInput.value.toLowerCase();
-  renderObservacoes();
-});
-
-// Filtros rápidos (Todos, Recentes, Favoritos)
-const filterButtons = document.querySelectorAll('[data-filter]');
-filterButtons.forEach(btn => {
-  btn.addEventListener('click', () => {
-    currentFilter = btn.dataset.filter;
-    filterButtons.forEach(b => b.classList.remove('active'));
-    btn.classList.add('active');
-    renderObservacoes();
-  });
-});
-
-// Exportar Observações para JSON
-const exportBtn = document.getElementById('exportJson');
-exportBtn.addEventListener('click', async () => {
-  const data = await getAllObservacoes();
-  const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href = url;
-  a.download = 'astro-observacoes.json';
-  document.body.appendChild(a);
-  a.click();
-  document.body.removeChild(a);
-  URL.revokeObjectURL(url);
-});
-
-// Importar Observações de JSON
-const importInput = document.getElementById('importJson');
-importInput.addEventListener('change', async event => {
-  const file = event.target.files[0];
-  if (!file) return;
-
-  const reader = new FileReader();
-  reader.onload = async () => {
-    try {
-      const data = JSON.parse(reader.result);
-      if (!Array.isArray(data)) throw new Error("Formato inválido");
-
-      const db = await openDB();
-      const tx = db.transaction(STORE_NAME, 'readwrite');
-      const store = tx.objectStore(STORE_NAME);
-      data.forEach(obs => {
-        if (obs.id && obs.nome) store.put(obs);
-      });
-
-      tx.oncomplete = async () => {
-        alert("Importação concluída!");
-        observacoes = await getAllObservacoes();
-        renderObservacoes();
-        importInput.value = '';
-      };
-    } catch (err) {
-      alert("Erro ao importar: " + err.message);
-    }
-  };
-  reader.readAsText(file);
-});
-
-// =========================
-// RED FILTER CONTROLS
-// =========================
-const redToggle = document.getElementById('redFilterToggle');
-const redSlider = document.getElementById('redFilterIntensity');
-const redButton = document.getElementById('toggleRedFilter');
-
-function applyRedFilter(active) {
-  if (active) {
-    document.body.classList.add('red-filter');
-    const intensity = parseInt(redSlider.value);
-    document.body.style.backgroundColor = `rgba(255, 0, 0, ${intensity / 100})`;
-  } else {
-    document.body.classList.remove('red-filter');
-    document.body.style.backgroundColor = '';
-  }
-}
-
-function updateRedFilterClass() {
-  document.body.classList.remove(
-    'intensity-20',
-    'intensity-40',
-    'intensity-60',
-    'intensity-80',
-    'intensity-100'
-  );
-  if (redToggle.checked) {
-    document.body.classList.add('red-filter');
-    const val = parseInt(redSlider.value);
-    if (val > 80) document.body.classList.add('intensity-100');
-    else if (val > 60) document.body.classList.add('intensity-80');
-    else if (val > 40) document.body.classList.add('intensity-60');
-    else if (val > 20) document.body.classList.add('intensity-40');
-    else document.body.classList.add('intensity-20');
-  } else {
-    document.body.classList.remove('red-filter');
-  }
-}
-
-// Click on top‐bar red button toggles the filter
-redButton.addEventListener('click', () => {
-  redToggle.checked = !redToggle.checked;
-  applyRedFilter(redToggle.checked);
-  updateRedFilterClass();
-});
-
-// Adjusting toggle or slider in settings
-redToggle.addEventListener('change', () => {
-  applyRedFilter(redToggle.checked);
-  updateRedFilterClass();
-});
-
-redSlider.addEventListener('input', () => {
-  if (redToggle.checked) applyRedFilter(true);
-  updateRedFilterClass();
-});
-
-// =========================
-// ADD OBSERVATION MODAL
+// EVENTOS GERAIS E INICIALIZAÇÃO
 // =========================
 document.addEventListener('DOMContentLoaded', async () => {
   observacoes = await getAllObservacoes();
@@ -329,14 +135,19 @@ document.addEventListener('DOMContentLoaded', async () => {
   translateUI();
   updateRedFilterClass();
 
+  // === Botão “＋” abre modal de adição
   const addBtn = document.getElementById('addObservationBtn');
-  addBtn.addEventListener('click', () => {
-    document.getElementById('addObservationModal').style.display = 'block';
-  });
+  if (addBtn) {
+    addBtn.addEventListener('click', () => {
+      document.getElementById('addObservationModal').style.display = 'block';
+    });
+  }
 
+  // === Fechar modal de adição
   document.getElementById('closeAddModal').onclick = closeAddForm;
   document.getElementById('cancelAdd').onclick = closeAddForm;
 
+  // === Submissão do formulário de adição
   document.getElementById('addObservationForm').onsubmit = async function (e) {
     e.preventDefault();
     const form = this;
@@ -372,20 +183,28 @@ document.addEventListener('DOMContentLoaded', async () => {
   };
 });
 
+// =========================
+// FECHAR O MODAL DE ADIÇÃO
+// =========================
 function closeAddForm() {
   document.getElementById('addObservationForm').reset();
   document.getElementById('addObservationModal').style.display = 'none';
   document.getElementById('addSuccessMsg').style.display = 'none';
 }
 
+// =========================
+// BACKUP LOCALSTORAGE (JSON) – para download rápido
+// =========================
 function atualizarBackupJSON() {
   const json = JSON.stringify(observacoes, null, 2);
   localStorage.setItem('backupAstroLog', json);
 }
 
 // =========================
-// UI TRANSLATION (i18n) & ICON HELPERS
+// FUNÇÕES AUXILIARES
 // =========================
+
+// Traduz UI (placeholders, labels e botões) conforme currentLang (pt/en).
 function translateUI() {
   const t = i18n[currentLang];
 
@@ -394,67 +213,265 @@ function translateUI() {
   document.querySelector('[data-filter="recentes"]').textContent = t.recent;
   document.querySelector('[data-filter="favoritos"]').textContent = t.favorites;
   document.getElementById('filterByType').textContent = t.filterType;
-
+  document.querySelector('button[type="reset"]').textContent = t.cancel;
   document.querySelector('button[type="submit"]').textContent = t.save;
-  document.querySelector('button[type="button"]#cancelAdd').textContent = t.cancel;
-
   document.querySelector('footer label:first-child').textContent = t.redFilter;
   document.querySelector('footer label:last-of-type').textContent = t.intensity;
 
-  // Translate tab labels
-  document.querySelectorAll('nav button[data-tab]').forEach(btn => {
-    const key = btn.getAttribute('data-tab');
+  // Tabs
+  document.querySelectorAll("nav button[data-tab]").forEach(btn => {
+    const key = btn.getAttribute("data-tab");
     if (t[key]) {
       btn.textContent = t[key];
     }
   });
 
-  // Translate “Ver” buttons in cards after they render
-  document.querySelectorAll('.observation-card button.view-btn').forEach(btn => {
+  // Botões “🔍 Ver” dentro dos cards
+  document.querySelectorAll(".observation-card button.view-btn").forEach(btn => {
     btn.textContent = `🔍 ${t.ver}`;
   });
 
-  // If calendar tab is active, update its title
+  // Atualizar título do calendário se já estiver visível
   const calendarioVisivel = document.getElementById('tab-calendario').classList.contains('active');
   if (calendarioVisivel) {
-    document.getElementById('calendarTitle').textContent = t.calendarTitle;
-    renderCalendario(); // re-render month name
+    document.querySelector('#tab-calendario h2').textContent = t.calendarTitle;
+    renderCalendario();
   }
 }
 
+// Aplica ou remove a classe `red-filter` no BODY e define a cor de fundo “vermelha” conforme intensity.
+function applyRedFilter(active) {
+  if (active) {
+    document.body.classList.add('red-filter');
+    const intensity = parseInt(redSlider.value);
+    document.body.style.backgroundColor = `rgba(255, 0, 0, ${intensity / 100})`;
+  } else {
+    document.body.classList.remove('red-filter');
+    document.body.style.backgroundColor = '';
+  }
+}
+
+// Atualiza a classe de intensidade (20/40/60/80/100) quando o toggle ou slider mudam.
+function updateRedFilterClass() {
+  document.body.classList.remove('intensity-20', 'intensity-40', 'intensity-60', 'intensity-80', 'intensity-100');
+  if (redToggle.checked) {
+    document.body.classList.add('red-filter');
+    const val = parseInt(redSlider.value);
+    if (val > 80) document.body.classList.add('intensity-100');
+    else if (val > 60) document.body.classList.add('intensity-80');
+    else if (val > 40) document.body.classList.add('intensity-60');
+    else if (val > 20) document.body.classList.add('intensity-40');
+    else document.body.classList.add('intensity-20');
+  } else {
+    document.body.classList.remove('red-filter');
+  }
+}
+
+// Retorna data no formato YYYY-MM-DD (sv-SE) para comparação no calendário.
+function normalizarDataLocal(data) {
+  return new Date(data).toLocaleDateString('sv-SE');
+}
+
+// Capitaliza a primeira letra de uma palavra
+function capitalize(str) {
+  return str.charAt(0).toUpperCase() + str.slice(1);
+}
+
+// Map de ícones por tipo
 function getIcon(tipo) {
   const icons = {
     'Estrela': '⭐',
     'Galáxia': '🌌',
-    'Aglomerado': '✨',
-    'Nebulosa': '☁️',
-    'Sistema Solar': '🪐',
     'Planeta': '🪐',
-    'Cometa': '☄️',
+    'Cometa': '☁️',
     'Outro': '🔭'
   };
   return icons[tipo] || '❔';
 }
 
 // =========================
-// RENDER OBSERVAÇÕES (LIST & CARDS)
+// MANIPULAÇÃO DO RED FILTER
+// =========================
+const redToggle = document.getElementById('redFilterToggle');
+const redSlider = document.getElementById('redFilterIntensity');
+const redButton = document.getElementById('toggleRedFilter');
+
+redButton.addEventListener('click', () => {
+  redToggle.checked = !redToggle.checked;
+  applyRedFilter(redToggle.checked);
+});
+redToggle.addEventListener('change', () => {
+  applyRedFilter(redToggle.checked);
+});
+redSlider.addEventListener('input', () => {
+  if (redToggle.checked) applyRedFilter(true);
+});
+redToggle.addEventListener('change', updateRedFilterClass);
+redSlider.addEventListener('input', updateRedFilterClass);
+
+// =========================
+// FILTROS, PESQUISA E VISUALIZAÇÃO DE TABS
+// =========================
+const searchInput = document.getElementById('searchInput');
+const filterButtons = document.querySelectorAll('[data-filter]');
+const filterBtnByType = document.getElementById('filterByType');
+
+// Pesquisa em tempo real
+searchInput.addEventListener('input', () => {
+  searchQuery = searchInput.value.toLowerCase();
+  renderObservacoes();
+});
+
+// Filtrar por “Todos/Recentes/Favoritos”
+filterButtons.forEach(btn => {
+  btn.addEventListener('click', () => {
+    currentFilter = btn.dataset.filter;
+    filterButtons.forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    renderObservacoes();
+  });
+});
+
+// Filtrar por tipo (exibe dropdown dos tipos únicos presentes)
+filterBtnByType.addEventListener('click', async () => {
+  if (!observacoes || observacoes.length === 0) observacoes = await getAllObservacoes();
+  if (!observacoes.length) {
+    alert("Sem observações para filtrar.");
+    return;
+  }
+  document.querySelectorAll('.dropdown-menu').forEach(m => m.remove());
+
+  const tipos = [...new Set(observacoes.map(o => o.tipo).filter(Boolean))];
+  const menu = document.createElement('div');
+  menu.className = 'dropdown-menu';
+
+  tipos.forEach(tipo => {
+    const item = document.createElement('div');
+    item.textContent = tipo;
+    item.addEventListener('click', () => {
+      currentFilter = 'tipo';
+      searchQuery = tipo.toLowerCase();
+      renderObservacoes();
+      menu.remove();
+    });
+    menu.appendChild(item);
+  });
+
+  const allItem = document.createElement('div');
+  allItem.textContent = i18n[currentLang].all;
+  allItem.addEventListener('click', () => {
+    currentFilter = 'todos';
+    searchQuery = '';
+    renderObservacoes();
+    menu.remove();
+  });
+  menu.appendChild(allItem);
+
+  const rect = filterBtnByType.getBoundingClientRect();
+  menu.style.position = 'absolute';
+  menu.style.top = `${rect.bottom + window.scrollY}px`;
+  menu.style.left = `${rect.left + window.scrollX}px`;
+  menu.style.zIndex = 1000;
+
+  document.body.appendChild(menu);
+});
+
+// Troca de Tabs
+const tabs = document.querySelectorAll('nav button[data-tab]');
+const tabSections = document.querySelectorAll('.tab');
+
+tabs.forEach(tab => {
+  tab.addEventListener('click', () => {
+    const target = tab.dataset.tab;
+
+    tabs.forEach(t => t.classList.remove('active'));
+    tab.classList.add('active');
+
+    tabSections.forEach(sec => sec.classList.remove('active'));
+    document.getElementById(`tab-${target}`).classList.add('active');
+
+    // Exibir rodapé apenas em “configurações”
+    document.querySelector('footer').style.display = (target === 'configuracoes') ? 'flex' : 'none';
+
+    // Fechar qualquer dropdown ainda aberto
+    document.querySelectorAll('.dropdown-menu').forEach(m => m.remove());
+
+    // Se mudar para Calendário, renderiza-o
+    if (target === 'calendario') renderCalendario();
+  });
+});
+
+// =========================
+// EXPORTAR / IMPORTAR OBSERVAÇÕES (JSON)
+// =========================
+document.getElementById('exportJson').addEventListener('click', async () => {
+  const data = await getAllObservacoes();
+  const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'astro-observacoes.json';
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+});
+
+document.getElementById('importJson').addEventListener('change', async (event) => {
+  const file = event.target.files[0];
+  if (!file) return;
+
+  const reader = new FileReader();
+  reader.onload = async () => {
+    try {
+      const data = JSON.parse(reader.result);
+      if (!Array.isArray(data)) throw new Error("Formato inválido");
+      const db = await openDB();
+      const tx = db.transaction(STORE_NAME, 'readwrite');
+      const store = tx.objectStore(STORE_NAME);
+      for (const obs of data) {
+        if (obs.id && obs.nome) {
+          store.put(obs);
+        }
+      }
+      tx.oncomplete = async () => {
+        alert("Importação concluída!");
+        observacoes = await getAllObservacoes();
+        renderObservacoes();
+        event.target.value = '';
+      };
+    } catch (err) {
+      alert("Erro ao importar: " + err.message);
+    }
+  };
+  reader.readAsText(file);
+});
+
+// =========================
+// RENDERIZAÇÃO DAS OBSERVAÇÕES
 // =========================
 function renderObservacoes() {
   obsList.innerHTML = '';
-  let list = observacoes.slice(); // clone array
+  let list = observacoes.slice(); // clone
 
+  // Filtrar Favoritos ou Ordenar Recentes
   if (currentFilter === 'favoritos') {
     list = list.filter(o => o.favorito);
   } else if (currentFilter === 'recentes') {
     list = list.sort((a, b) => new Date(b.data) - new Date(a.data));
   }
 
-  if (searchQuery) {
-    list = list.filter(
-      o =>
-        o.nome.toLowerCase().includes(searchQuery) ||
-        o.tipo.toLowerCase().includes(searchQuery) ||
-        o.local.toLowerCase().includes(searchQuery)
+  // Filtro por tipo (já armazenado em searchQuery se for o caso)
+  if (currentFilter === 'tipo' && searchQuery) {
+    list = list.filter(o => o.tipo.toLowerCase() === searchQuery);
+  }
+
+  // Filtro de texto (nome, tipo ou local)
+  if (searchQuery && currentFilter !== 'tipo') {
+    list = list.filter(o =>
+      o.nome.toLowerCase().includes(searchQuery) ||
+      (o.tipo && o.tipo.toLowerCase().includes(searchQuery)) ||
+      (o.local && o.local.toLowerCase().includes(searchQuery))
     );
   }
 
@@ -463,12 +480,10 @@ function renderObservacoes() {
     card.className = 'observation-card';
 
     const icon = getIcon(obs.tipo);
-    const formattedDate = new Date(obs.data).toLocaleDateString(
-      currentLang === 'pt' ? 'pt-PT' : 'en-US'
-    );
+    const dataStr = new Date(obs.data).toLocaleDateString();
 
     const imgHTML = obs.imagem
-      ? `<img src="${obs.imagem}" style="max-width:100%; max-height:100px; cursor:pointer" onclick="window.open('${obs.imagem}', '_blank')" />`
+      ? `<img src="${obs.imagem}" style="max-width: 100%; max-height: 100px; cursor: pointer;" onclick="window.open('${obs.imagem}', '_blank')" />`
       : '';
 
     const viewBtn = `<button class="view-btn" onclick="viewObservation(${obs.id})">🔍 ${i18n[currentLang].ver}</button>`;
@@ -478,23 +493,22 @@ function renderObservacoes() {
     card.innerHTML = `
       <div class="title">${icon} ${obs.nome} ${obs.favorito ? '⭐' : ''}</div>
       <div><small>${obs.tipo}</small></div>
-      <div><small>${formattedDate} - ${obs.local}</small></div>
+      <div><small>${dataStr} - ${obs.local || ''}</small></div>
       ${imgHTML}
-      <div style="margin-top:0.5rem">
+      <div style="margin-top: 0.5rem">
         ${viewBtn}
         ${editBtn}
         ${deleteBtn}
       </div>
     `;
-
     obsList.appendChild(card);
   });
 }
 
 // =========================
-// VIEW OBSERVATION (MODAL)
+// VIEW OBSERVATION (Modal de visualização detalhada)
 // =========================
-window.viewObservation = function (id) {
+window.viewObservation = function(id) {
   const obs = observacoes.find(o => o.id === id);
   if (!obs) return;
 
@@ -506,11 +520,12 @@ window.viewObservation = function (id) {
       <h3>${obs.nome}</h3>
       <p><strong>Tipo:</strong> ${obs.tipo}</p>
       <p><strong>Data:</strong> ${new Date(obs.data).toLocaleString()}</p>
-      <p><strong>Local:</strong> ${obs.local}</p>
+      <p><strong>Local:</strong> ${obs.local || ''}</p>
       <p><strong>RA:</strong> ${obs.ra || ''}</p>
       <p><strong>DEC:</strong> ${obs.dec || ''}</p>
       <p><strong>Distância:</strong> ${obs.distancia || ''} ${obs.unidadeDistancia || ''}</p>
       <p><strong>Magnitude:</strong> ${obs.magnitude || ''}</p>
+      <p><strong>Elongação:</strong> ${obs.elongacao || ''}</p>
       <p><strong>Descrição:</strong> ${obs.descricao || ''}</p>
       ${obs.imagem ? `<img src="${obs.imagem}" style="max-width:100%; max-height:200px; margin-top:1rem; cursor:pointer" onclick="openImageModal('${obs.imagem}')" />` : ''}
       <button onclick="closeModal()">${i18n[currentLang].close}</button>
@@ -519,14 +534,14 @@ window.viewObservation = function (id) {
   document.body.appendChild(modal);
 };
 
-window.openImageModal = function (imgSrc) {
+window.openImageModal = function(imgSrc) {
   const modal = document.createElement('div');
   modal.className = 'modal';
   modal.id = 'image-modal';
   modal.innerHTML = `
     <div class="modal-content">
-      <img src="${imgSrc}" style="max-width:100%; max-height:80vh; display:block; margin:0 auto 1rem;" />
-      <div style="text-align:center">
+      <img src="${imgSrc}" style="max-width:100%; max-height:80vh; display: block; margin: 0 auto 1rem;" />
+      <div style="text-align:center;">
         <button onclick="closeModalById('image-modal')">${i18n[currentLang].close}</button>
         <button onclick="closeModalById('image-modal'); closeModalById('view-modal')">${i18n[currentLang].close} tudo</button>
       </div>
@@ -535,36 +550,35 @@ window.openImageModal = function (imgSrc) {
   document.body.appendChild(modal);
 };
 
-window.closeModalById = function (id) {
+window.closeModalById = function(id) {
   const modal = document.getElementById(id);
   if (modal) modal.remove();
 };
 
-window.closeModal = function () {
+window.closeModal = function() {
   const modal = document.querySelector('.modal');
   if (modal) modal.remove();
 };
 
 // =========================
-// EDIT OBSERVATION (MODAL)
+// EDIT OBSERVATION (Modal de edição)
 // =========================
-window.editObservation = function (id) {
+window.editObservation = function(id) {
   const obs = observacoes.find(o => o.id === id);
   if (!obs) return;
-  editId = id;
 
+  editId = id;
   const modal = document.createElement('div');
   modal.className = 'modal';
   modal.innerHTML = `
     <div class="modal-content">
       <h3>${i18n[currentLang].edit}</h3>
       <form id="modalForm">
-        <label>
-          Nome
+        <label>Nome
           <input name="nome" value="${obs.nome}" required />
         </label>
-        <label>
-          Tipo
+
+        <label>Tipo
           <select name="tipo" required>
             <option${obs.tipo === 'Estrela' ? ' selected' : ''}>Estrela</option>
             <option${obs.tipo === 'Galáxia' ? ' selected' : ''}>Galáxia</option>
@@ -573,45 +587,41 @@ window.editObservation = function (id) {
             <option${obs.tipo === 'Outro' ? ' selected' : ''}>Outro</option>
           </select>
         </label>
-        <label>
-          Data
-          <input name="data" type="datetime-local" value="${obs.data}" required />
+
+        <label>Data
+          <input name="data" type="date" value="${obs.data.substring(0,10)}" required />
         </label>
-        <label>
-          Local
-          <input name="local" value="${obs.local}" required />
+        <label>Local
+          <input name="local" value="${obs.local || ''}" />
         </label>
-        <label>
-          RA
+        <label>RA
           <input name="ra" value="${obs.ra || ''}" placeholder="RA" />
         </label>
-        <label>
-          DEC
+        <label>DEC
           <input name="dec" value="${obs.dec || ''}" placeholder="DEC" />
         </label>
-        <label>
-          Distância
+        <label>Distância
           <input name="distancia" value="${obs.distancia || ''}" placeholder="Distância" />
+          <select name="unidadeDistancia">
+            <option${obs.unidadeDistancia === 'ly' ? ' selected' : ''} value="ly">ly</option>
+            <option${obs.unidadeDistancia === 'AU' ? ' selected' : ''} value="AU">AU</option>
+          </select>
         </label>
-        <label>
-          Magnitude
-          <input name="magnitude" value="${obs.magnitude || ''}" placeholder="Magnitude" />
+        <label>Magnitude
+          <input name="magnitude" value="${obs.magnitude || ''}" placeholder="Magnitude" step="0.1" />
         </label>
-        <label>
-          Descrição
+        <label>Descrição
           <textarea name="descricao">${obs.descricao || ''}</textarea>
         </label>
         <label>
-          <input type="checkbox" name="favorito" ${obs.favorito ? 'checked' : ''} /> Favorito
+          <input type="checkbox" name="favorito" ${obs.favorito ? 'checked' : ''}/> Favorito
         </label>
-        <label>
-          Imagem (opcional)
+        <label>Imagem (opcional)
           <input type="file" name="imagem" accept="image/*" />
         </label>
-        <div class="form-actions">
-          <button type="submit">${i18n[currentLang].save}</button>
-          <button type="button" onclick="closeModal()">${i18n[currentLang].cancel}</button>
-        </div>
+
+        <button type="submit">${i18n[currentLang].save}</button>
+        <button type="button" onclick="closeModal()">${i18n[currentLang].cancel}</button>
       </form>
     </div>
   `;
@@ -625,6 +635,7 @@ window.editObservation = function (id) {
     newObs.id = id;
     newObs.favorito = !!data.get('favorito');
 
+    // Conservar a imagem anterior se o usuário não inserir arquivo novo
     const file = data.get('imagem');
     const saveEdit = async () => {
       const original = observacoes.find(o => o.id === id);
@@ -655,7 +666,7 @@ window.editObservation = function (id) {
 // =========================
 // DELETE OBSERVATION
 // =========================
-window.deleteObservation = async function (id) {
+window.deleteObservacao = async function(id) {
   if (confirm('Eliminar esta observação?')) {
     await deleteObservacao(id);
     observacoes = await getAllObservacoes();
@@ -664,7 +675,7 @@ window.deleteObservation = async function (id) {
 };
 
 // =========================
-// CALENDAR FUNCTIONS
+// CALENDÁRIO (MÊS ATUAL & CLASSES “highlight”)
 // =========================
 function renderCalendario() {
   const container = document.getElementById('calendarContainer');
@@ -674,24 +685,26 @@ function renderCalendario() {
   const firstDay = new Date(calendarioAno, calendarioMes, 1).getDay();
   const daysInMonth = new Date(calendarioAno, calendarioMes + 1, 0).getDate();
 
-  // Month name in appropriate locale
-  const locale = currentLang === 'pt' ? 'pt-PT' : 'en-US';
-  const nomeMes = new Date(calendarioAno, calendarioMes).toLocaleString(locale, {
-    month: 'long'
-  });
+  // Atualizar TÍTULO do mês (em pt ou en dependendo de currentLang)
+  const locale = (currentLang === 'pt') ? 'pt-PT' : 'en-US';
+  const nomeMes = new Date(calendarioAno, calendarioMes).toLocaleString(locale, { month: 'long' });
   title.textContent = `${capitalize(nomeMes)} ${calendarioAno}`;
 
+  // Dias que têm observações
   const diasComObservacoes = new Set(
     observacoes.map(o => normalizarDataLocal(o.data))
   );
 
+  // Adicionar “células vazias” antes do primeiro dia
   for (let i = 0; i < firstDay; i++) {
     container.appendChild(document.createElement('div'));
   }
 
+  // Adicionar cada dia do mês
   for (let d = 1; d <= daysInMonth; d++) {
     const date = new Date(calendarioAno, calendarioMes, d);
     const dateStr = normalizarDataLocal(date);
+
     const div = document.createElement('div');
     div.className = 'calendar-day';
     div.textContent = d;
@@ -704,26 +717,22 @@ function renderCalendario() {
   }
 }
 
+// Mostrar lista de observações no dia clicado
 function mostrarObservacoesDoDia(dataISO) {
   const lista = observacoes.filter(o => o.data.startsWith(dataISO));
   const container = document.getElementById('calendarResults');
+
   if (!lista.length) {
     container.innerHTML = `<p>Sem observações para ${dataISO}</p>`;
     return;
   }
+
   container.innerHTML = `<h3>Observações em ${dataISO}:</h3><ul>` +
     lista.map(o => `<li>${getIcon(o.tipo)} ${o.nome}</li>`).join('') +
     `</ul>`;
 }
 
-function normalizarDataLocal(data) {
-  return new Date(data).toLocaleDateString('sv-SE'); // outputs YYYY-MM-DD
-}
-
-function capitalize(str) {
-  return str.charAt(0).toUpperCase() + str.slice(1);
-}
-
+// Navegação de mês anterior / próximo
 document.getElementById('prevMonth').addEventListener('click', () => {
   calendarioMes--;
   if (calendarioMes < 0) {
@@ -732,7 +741,6 @@ document.getElementById('prevMonth').addEventListener('click', () => {
   }
   renderCalendario();
 });
-
 document.getElementById('nextMonth').addEventListener('click', () => {
   calendarioMes++;
   if (calendarioMes > 11) {
