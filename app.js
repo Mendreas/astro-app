@@ -817,10 +817,3 @@ document.getElementById('addObservationForm').onsubmit = async function(e) {
     await saveObs();
   }
 };
-
-	
-  document.getElementById('addSuccessMsg').style.display = 'block';
-  setTimeout(() => {
-    closeAddForm();
-  }, 1500);
-};
