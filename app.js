@@ -58,6 +58,7 @@ const i18n = {
 const DB_NAME = 'AstroLogDB';
 const DB_VERSION = 1;
 const STORE_NAME = 'observacoes';
+const obsList = document.getElementById('observationsList');
 
 function openDB() {
   return new Promise((resolve, reject) => {
@@ -259,6 +260,7 @@ function mostrarObservacoesDoDia(dataISO) {
     `</ul>`;
 }
 
+const file = obs.imagem;
   
 if (file && file.name && file.size > 0) {
   const reader = new FileReader();
