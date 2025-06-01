@@ -770,3 +770,69 @@ document.getElementById('nextMonth').addEventListener('click', () => {
   }
   renderCalendario();
 });
+
+
+<script>
+document.getElementById('addObservationBtn').onclick = () => {
+  document.getElementById('addObservationModal').style.display = 'block';
+};
+
+document.getElementById('closeAddModal').onclick = closeAddForm;
+document.getElementById('cancelAdd').onclick = closeAddForm;
+
+function closeAddForm() {
+  document.getElementById('addObservationForm').reset();
+  document.getElementById('addObservationModal').style.display = 'none';
+  document.getElementById('addSuccessMsg').style.display = 'none';
+}
+
+document.getElementById('addObservationForm').onsubmit = function(e) {
+  e.preventDefault();
+  // Aqui chama a função de guardar observação
+  // Exemplo: saveObservation(...)
+	
+  document.getElementById('addObservationForm').onsubmit = async function(e) {
+  e.preventDefault();
+
+  const form = document.getElementById('addObservationForm');
+  const data = new FormData(form);
+  const obs = Object.fromEntries(data.entries());
+  obs.favorito = !!data.get('favorito');
+  obs.id = Date.now();
+
+  const file = data.get('imagem');
+
+  const saveObs = async () => {
+    await saveObservacao(obs);
+    observacoes = await getAllObservacoes();
+    renderObservacoes();
+    atualizarBackupJSON();
+    document.getElementById('addSuccessMsg').style.display = 'block';
+    setTimeout(() => {
+      closeAddForm();
+    }, 1500);
+  };
+
+  if (file && file.name && file.size > 0) {
+    const reader = new FileReader();
+    reader.onload = async () => {
+      obs.imagem = reader.result;
+      await saveObs();
+    };
+    reader.onerror = async () => {
+      alert("Erro ao carregar imagem. A observação será guardada sem imagem nova.");
+      await saveObs();
+    };
+    reader.readAsDataURL(file);
+  } else {
+    await saveObs();
+  }
+};
+
+	
+  document.getElementById('addSuccessMsg').style.display = 'block';
+  setTimeout(() => {
+    closeAddForm();
+  }, 1500);
+};
+</script>
