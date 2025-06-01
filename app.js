@@ -829,4 +829,3 @@ document.getElementById('addObservationForm').onsubmit = function(e) {
     closeAddForm();
   }, 1500);
 };
-</script>
