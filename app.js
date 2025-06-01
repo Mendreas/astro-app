@@ -27,6 +27,7 @@ const i18n = {
   	calendarTitle: "Calendário de Observações",
     recursos: "Recursos",
     configuracoes: "Configurações",
+	links: "Links Úteis", // novo
     ver: "Ver",
   },
   en: {
@@ -48,6 +49,7 @@ const i18n = {
   	calendarTitle: "Observation Calendar",
     recursos: "Resources",
     configuracoes: "Settings",
+	links: "Useful Links", // novo
     ver: "View",
   }
 };
