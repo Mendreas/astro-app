@@ -633,26 +633,33 @@ document.getElementById('importJson').addEventListener('change', async (event) =
   if (!file) return;
 
   const reader = new FileReader();
+
   reader.onload = async () => {
     try {
       const data = JSON.parse(reader.result);
       if (!Array.isArray(data)) throw new Error("Formato inválido");
+
       const db = await openDB();
       const tx = db.transaction(STORE_NAME, 'readwrite');
       const store = tx.objectStore(STORE_NAME);
+
       for (const obs of data) {
-        if (obs.id && obs.nome) store.put(obs);
+        if (obs.id && obs.nome) {
+          store.put(obs);
+        }
       }
+
       tx.oncomplete = async () => {
         alert("Importação concluída!");
         observacoes = await getAllObservacoes();
         renderObservacoes();
-        event.target.value = '';
+        event.target.value = ''; // limpa o campo input
       };
     } catch (err) {
       alert("Erro ao importar: " + err.message);
     }
   };
+
   reader.readAsText(file);
 });
 
