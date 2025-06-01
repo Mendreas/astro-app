@@ -545,6 +545,14 @@ window.deleteObservation = async function(id) {
 };
 
 document.addEventListener('DOMContentLoaded', async () => {
+	
+	  const addBtn = document.getElementById('addObservationBtn');
+  if (addBtn) {
+    addBtn.addEventListener('click', () => {
+      document.getElementById('addObservationModal').style.display = 'block';
+    });
+  }
+	
   // Corrigido para evitar erro de 'await fora de função async'
   observacoes = await getAllObservacoes();
   renderObservacoes();         // garantir que 'observacoes' está carregado
@@ -817,7 +825,5 @@ document.getElementById('addObservationForm').onsubmit = async function(e) {
     await saveObs();
   }
 };
-
-document.getElementById('addObservationBtn')?.addEventListener('click', () => {
-  document.getElementById('addObservationModal').style.display = 'block';
 });
+
