@@ -780,12 +780,7 @@ function closeAddForm() {
   document.getElementById('addSuccessMsg').style.display = 'none';
 }
 
-document.getElementById('addObservationForm').onsubmit = function(e) {
-  e.preventDefault();
-  // Aqui chama a função de guardar observação
-  // Exemplo: saveObservation(...)
-	
-  document.getElementById('addObservationForm').onsubmit = async function(e) {
+document.getElementById('addObservationForm').onsubmit = async function(e) {
   e.preventDefault();
 
   const form = document.getElementById('addObservationForm');
