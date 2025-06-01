@@ -1,3 +1,6 @@
+/* =========================
+   GLOBAL RESET & TYPOGRAPHY
+   ========================= */
 body {
   margin: 0;
   font-family: 'Segoe UI', sans-serif;
@@ -46,6 +49,9 @@ header {
   cursor: pointer;
 }
 
+/* =========================
+   MAIN LAYOUT
+   ========================= */
 main {
   display: flex;
   flex: 1;
@@ -94,6 +100,9 @@ nav button.active {
   display: block;
 }
 
+/* =========================
+   FORM STYLING
+   ========================= */
 form {
   display: flex;
   flex-direction: column;
@@ -102,10 +111,13 @@ form {
   background: #1a1a1a;
   padding: 2rem;
   border-radius: 12px;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.5);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.5);
 }
 
-input, select, textarea, button {
+input,
+select,
+textarea,
+button {
   padding: 0.6rem;
   border-radius: 8px;
   border: none;
@@ -113,7 +125,7 @@ input, select, textarea, button {
   color: white;
 }
 
-input[type="checkbox"] {
+input[type='checkbox'] {
   width: auto;
 }
 
@@ -123,6 +135,9 @@ input[type="checkbox"] {
   gap: 1rem;
 }
 
+/* =========================
+   FILTER BUTTONS & CARDS
+   ========================= */
 .filters {
   display: flex;
   gap: 1rem;
@@ -159,13 +174,13 @@ input[type="checkbox"] {
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
   transition: transform 0.2s, box-shadow 0.2s;
 }
 
 .observation-card:hover {
   transform: translateY(-3px);
-  box-shadow: 0 4px 8px rgba(0,0,0,0.4);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.4);
 }
 
 .observation-card .title {
@@ -180,6 +195,9 @@ input[type="checkbox"] {
   width: 100%;
 }
 
+/* =========================
+   FOOTER (Red Filter)
+   ========================= */
 footer {
   margin-top: 2rem;
   padding: 1rem 2rem;
@@ -193,14 +211,18 @@ footer {
   display: flex;
 }
 
-/* Modal */
+/* =========================
+   MODAL STYLING
+   ========================= */
 .modal {
   display: none;
   position: fixed;
   z-index: 999;
-  left: 0; top: 0;
-  width: 100%; height: 100%;
-  background-color: rgba(0,0,0,0.6);
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.6);
 }
 
 .modal-content {
@@ -209,7 +231,8 @@ footer {
   margin: 10% auto;
   padding: 20px;
   border-radius: 8px;
-  width: 90%; max-width: 500px;
+  width: 90%;
+  max-width: 500px;
   position: relative;
 }
 
@@ -218,18 +241,19 @@ footer {
   color: #9d4edd;
 }
 
+.modal-content .close {
+  position: absolute;
+  top: 10px;
+  right: 15px;
+  color: white;
+  font-size: 24px;
+  cursor: pointer;
+}
+
 .modal-content form button {
   margin-top: 1rem;
   background: #7b2cbf;
   color: white;
-}
-
-.modal-content .close {
-  position: absolute;
-  top: 10px; right: 15px;
-  color: white;
-  font-size: 24px;
-  cursor: pointer;
 }
 
 .success-msg {
@@ -239,24 +263,35 @@ footer {
   text-align: center;
 }
 
-/* === Filtro Vermelho Uniforme === */
+/* =========================
+   RED FILTER THEMING
+   ========================= */
 body.red-filter {
   background-color: #360700 !important;
   color: #ff5555 !important;
 }
 
-/* Fundos consistentes em todos os elementos principais */
 body.red-filter header {
   background-color: #360700 !important;
   background-image: none !important;
   color: #ff5555 !important;
 }
 
-body.red-filter.intensity-20 { background-color: #240000 !important; }
-body.red-filter.intensity-40 { background-color: #2c0000 !important; }
-body.red-filter.intensity-60 { background-color: #360700 !important; }
-body.red-filter.intensity-80 { background-color: #3e0a00 !important; }
-body.red-filter.intensity-100 { background-color: #4a0d00 !important; }
+body.red-filter.intensity-20 {
+  background-color: #240000 !important;
+}
+body.red-filter.intensity-40 {
+  background-color: #2c0000 !important;
+}
+body.red-filter.intensity-60 {
+  background-color: #360700 !important;
+}
+body.red-filter.intensity-80 {
+  background-color: #3e0a00 !important;
+}
+body.red-filter.intensity-100 {
+  background-color: #4a0d00 !important;
+}
 
 body.red-filter nav,
 body.red-filter footer,
@@ -284,7 +319,6 @@ body.red-filter #tab-recursos img {
   border-color: #550000 !important;
 }
 
-/* Textos e botões em destaque */
 body.red-filter .filters button.active,
 body.red-filter nav button.active,
 body.red-filter .form-actions button,
@@ -292,22 +326,20 @@ body.red-filter .modal-content h3,
 body.red-filter .view-btn,
 body.red-filter button:hover {
   color: #ff8888 !important;
+}
 
-
-/* Modal backdrop */
 body.red-filter .modal {
   background-color: rgba(0, 0, 0, 0.85);
 }
 
-
-/* Placeholder nos inputs */
 body.red-filter input::placeholder,
 body.red-filter textarea::placeholder {
   color: #A61500 !important;
 }
 
-
-/* Light mode */
+/* =========================
+   LIGHT MODE OVERRIDES
+   ========================= */
 body.light {
   background-color: #f0f0f0;
   color: #000;
@@ -321,13 +353,16 @@ body.light textarea {
   border: 1px solid #ccc;
 }
 
+/* =========================
+   DROPDOWN MENU (for “Filtrar por tipo”)
+   ========================= */
 .dropdown-menu {
   background-color: #222;
   color: #fff;
   border: 1px solid #555;
   padding: 0.5rem;
   border-radius: 4px;
-  box-shadow: 0 2px 5px rgba(0,0,0,0.5);
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.5);
   font-size: 0.9rem;
   min-width: 150px;
 }
@@ -341,6 +376,9 @@ body.light textarea {
   background-color: #444;
 }
 
+/* =========================
+   CONFIG ACTIONS STYLING
+   ========================= */
 .config-actions {
   display: flex;
   gap: 1rem;
@@ -364,7 +402,9 @@ body.light textarea {
   overflow: hidden;
 }
 
-/* Calendário */
+/* =========================
+   CALENDAR STYLING
+   ========================= */
 #calendarContainer {
   display: grid;
   grid-template-columns: repeat(7, 1fr);
@@ -412,126 +452,21 @@ body.light textarea {
   text-align: center;
 }
 
-/* Estilos partilhados entre Recursos e Links Úteis */
-#tab-recursos ul,
-#tab-links ul {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 1rem;
-  justify-content: center;
-  list-style: none;
-  padding: 0;
-  margin: 0;
-}
-
-#tab-recursos li,
-#tab-links li {
-  display: flex;
-  flex-direction: column;
-  background-color: #000;
-  border-radius: 0.5rem;
-  overflow: hidden;
-  width: 500px;
-  height: 240px;
-  box-shadow: 0 0 5px rgba(255, 255, 255, 0.1);
-  transition: transform 0.2s;
-  position: relative;
-}
-
-#tab-recursos li:hover,
-#tab-links li:hover {
-  transform: scale(1.03);
-}
-
-#tab-recursos li a,
-#tab-links li a {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: space-between; /* antes era center */
-  text-align: center;
-  padding: 1rem;
-  height: 100%;
-  width: 100%;
-  text-decoration: none;
-  color: #fff;
-  position: relative;
-}
-
-#tab-recursos li a::after,
-#tab-links li a::after {
-  content: attr(title);
-  position: absolute;
-  bottom: 0;
-  left: 0;
+/* =========================
+   “+” BUTTON STYLING
+   ========================= */
+#top-bar {
+  position: fixed;
+  top: 0;
   right: 0;
-  font-size: 0.85rem;
-  text-align: center;
-  color: #fff;
-  background: rgba(0, 0, 0, 0.6);
-  padding: 0.4rem;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.card-img {
-  flex: 1;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 100%;
-  overflow: hidden;
   padding: 0.5rem;
+  z-index: 20;
 }
 
-.card-img img {
-  width: auto;
-  height: auto;
-  max-width: 100%;
-  max-height: 100px;
-  object-fit: contain;
-}
-
-<!-- CSS A ADICIONAR AO style.css -->
-<style>
 #addObservationBtn {
   font-size: 1.5rem;
-  margin-left: 1rem;
   background: none;
   border: none;
   color: white;
   cursor: pointer;
 }
-.modal {
-  display: none;
-  position: fixed;
-  z-index: 999;
-  left: 0; top: 0;
-  width: 100%; height: 100%;
-  background-color: rgba(0,0,0,0.6);
-}
-.modal-content {
-  background-color: #111;
-  color: #fff;
-  margin: 10% auto;
-  padding: 20px;
-  border-radius: 8px;
-  width: 90%; max-width: 500px;
-  position: relative;
-}
-.modal-content .close {
-  position: absolute;
-  top: 10px; right: 15px;
-  color: white;
-  font-size: 24px;
-  cursor: pointer;
-}
-.success-msg {
-  color: #4caf50;
-  margin-top: 1rem;
-  font-weight: bold;
-  text-align: center;
-}
-</style>
-
