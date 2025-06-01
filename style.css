@@ -438,7 +438,7 @@ body.light textarea {
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center; /* centra tudo verticalmente */
+  justify-content: space-between; /* antes era center */
   text-align: center;
   padding: 1rem;
   height: 100%;
@@ -450,12 +450,21 @@ body.light textarea {
 
 #tab-recursos li img,
 #tab-links li img {
+  display: block;
+  margin: 0 auto;
   max-height: 100px;
   max-width: 100%;
   object-fit: contain;
-  margin-bottom: auto; /* empurra o texto para baixo */
-  display: block;
 }
+
+#tab-recursos li a > img,
+#tab-links li a > img {
+  flex-grow: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
 
 #tab-recursos li a::after,
 #tab-links li a::after {
