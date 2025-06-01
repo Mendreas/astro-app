@@ -266,14 +266,15 @@ footer {
   background-color: #000;
 }
 
-#tab-recursos img {
-  width: 100%;
-  height: 120px;
-  object-fit: contain; /* Mostra a imagem completa dentro da caixa */
-  background-color: #fff; /* Cor de fundo neutra para imagens com transparência */
-  padding: 0.5rem;
-  border-radius: 4px;
+
+#tab-recursos li img {
+  object-fit: contain;
+  background-color: #000;
+  flex-grow: 1;
+  padding: 1rem;
+  max-height: 150px;
 }
+
 
 /* === Filtro Vermelho Uniforme === */
 body.red-filter {
@@ -448,6 +449,12 @@ body.light textarea {
   text-align: center;
 }
 
+#tab-cielo {
+  background-color: #111;
+  color: white;
+  padding: 1rem;
+}
+
 #tab-cielo button {
   background-color: #222;
   color: white;
@@ -463,64 +470,4 @@ body.light textarea {
 
 #tab-cielo li {
   padding: 0.25rem 0;
-}
-
-#tab-recursos ul {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 1rem;
-  justify-content: center;
-  padding: 0;
-  list-style: none;
-}
-
-#tab-recursos li {
-  background-color: #111;
-  border-radius: 0.5rem;
-  padding: 0.5rem;
-  text-align: center;
-  width: 200px;  /* largura uniforme */
-  height: 240px; /* altura uniforme para o cartão */
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-start;
-  color: white;
-}
-
-#tab-recursos li img {
-  width: 100%;
-  height: auto;
-  max-height: 120px;
-  object-fit: contain;
-  margin-bottom: 0.5rem;
-  background-color: #000;
-  padding: 0.5rem;
-  border-radius: 0.25rem;
-}
-
-#skyQualityChart {
-  max-width: 100%;
-  background-color: #111;
-  border-radius: 8px;
-  padding: 1rem;
-}
-
-#tab-cielo {
-  background-color: #111;
-  color: white;
-  padding: 1rem;
-  height: 100%;
-  overflow-y: auto;
-  box-sizing: border-box;
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-}
-
-#skyChart {
-  width: 100%;
-  height: 250px !important;
-  background-color: #111;
-  border-radius: 8px;
-  padding: 1rem;
 }

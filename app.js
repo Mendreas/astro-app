@@ -304,6 +304,60 @@ document.getElementById('downloadBackup').addEventListener('click', () => {
   document.body.removeChild(a);
   URL.revokeObjectURL(url);
 });
+
+function renderCalendario() {
+  const container = document.getElementById('calendarContainer');
+  const title = document.getElementById('calendarMonthYear');
+  container.innerHTML = '';
+
+  const firstDay = new Date(calendarioAno, calendarioMes, 1).getDay();
+  const daysInMonth = new Date(calendarioAno, calendarioMes + 1, 0).getDate();
+
+  // Atualizar o título
+  const nomeMes = new Date(calendarioAno, calendarioMes).toLocaleString('pt-PT', { month: 'long' });
+
+  title.textContent = `${capitalize(nomeMes)} ${calendarioAno}`;
+
+  const diasComObservacoes = new Set(
+    observacoes.map(o => normalizarDataLocal(o.data))
+  );
+
+  for (let i = 0; i < firstDay; i++) {
+    container.appendChild(document.createElement('div'));
+  }
+
+  for (let d = 1; d <= daysInMonth; d++) {
+    const date = new Date(calendarioAno, calendarioMes, d);
+    const dateStr = normalizarDataLocal(date);
+
+    const div = document.createElement('div');
+    div.className = 'calendar-day';
+    div.textContent = d;
+
+    if (diasComObservacoes.has(dateStr)) {
+      div.classList.add('highlight');
+      div.addEventListener('click', () => mostrarObservacoesDoDia(dateStr));
+    }
+
+    container.appendChild(div);
+  }
+}
+
+
+function mostrarObservacoesDoDia(dataISO) {
+  const lista = observacoes.filter(o => o.data.startsWith(dataISO));
+  const container = document.getElementById('calendarResults');
+
+  if (!lista.length) {
+    container.innerHTML = `<p>Sem observações para ${dataISO}</p>`;
+    return;
+  }
+
+  container.innerHTML = `<h3>Observações em ${dataISO}:</h3><ul>` +
+    lista.map(o => `<li>${getIcon(o.tipo)} ${o.nome}</li>`).join('') +
+    `</ul>`;
+}
+
   
   if (file && file.name && file.size > 0) {
     const reader = new FileReader();
@@ -551,71 +605,6 @@ document.addEventListener('DOMContentLoaded', async () => {
   renderSkyTab(); // 👈 ADICIONA ISTO AQUI
 });
 
-// Nova função para obter localização e carregar o gráfico
-async function carregarGraficoCeuComLocalizacao() {
-  if (!navigator.geolocation) return;
-
-  navigator.geolocation.getCurrentPosition(async position => {
-    const lat = position.coords.latitude;
-    const lon = position.coords.longitude;
-
-    // Mostrar nome da localização
-    const locResp = await fetch(`https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lon}&format=json`);
-    const locData = await locResp.json();
-    const local = locData.address.city || locData.address.town || locData.address.village || "Localização";
-    document.getElementById("skyLocationName").textContent = `📍 ${local}`;
-
-    // Obter dados de qualidade do céu da API Open-Meteo
-    const endDate = new Date();
-    endDate.setDate(endDate.getDate() + 4);
-    const dateStr = endDate.toISOString().split("T")[0];
-
-    const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&daily=cloud_cover,seeing,transparency&timezone=auto&end_date=${dateStr}`;
-
-    const response = await fetch(url);
-    const data = await response.json();
-
-    const dias = data.daily.time;
-    const seeing = data.daily.seeing;
-    const transparency = data.daily.transparency;
-
-    const ctx = document.getElementById("skyChart").getContext("2d");
-    if (window.skyChartInstance) window.skyChartInstance.destroy(); // evitar duplicados
-
-    window.skyChartInstance = new Chart(ctx, {
-      type: 'line',
-      data: {
-        labels: dias,
-        datasets: [
-          {
-            label: 'Seeing',
-            data: seeing,
-            borderWidth: 2,
-          },
-          {
-            label: 'Transparência',
-            data: transparency,
-            borderWidth: 2,
-          }
-        ]
-      },
-      options: {
-        responsive: true,
-        scales: {
-          y: {
-            beginAtZero: true,
-            max: 5
-          }
-        }
-      }
-    });
-  });
-}
-
-// Chamar quando muda para a tab Céu
-document.querySelector('[data-tab="cielo"]').addEventListener("click", () => {
-  carregarGraficoCeuComLocalizacao();
-});
 
   // Alternar idioma
   const langBtn = document.getElementById('toggleLanguage');
@@ -838,47 +827,6 @@ document.getElementById('nextMonth').addEventListener('click', () => {
   }
   renderCalendario();
 });
-
-async function carregarGraficoCeu() {
-  const lat = 38.7169;  // Exemplo: Lisboa
-  const lon = -9.1399;
-
-  const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&hourly=cloudcover&timezone=auto`;
-
-  try {
-    const res = await fetch(url);
-    const data = await res.json();
-
-    const horas = data.hourly.time.slice(0, 24).map(t => t.split("T")[1].slice(0, 5)); // só hoje
-    const cobertura = data.hourly.cloudcover.slice(0, 24).map(v => 100 - v); // inverter: mais céu limpo = melhor
-
-    const ctx = document.getElementById("skyQualityChart").getContext("2d");
-
-    new Chart(ctx, {
-      type: "line",
-      data: {
-        labels: horas,
-        datasets: [{
-          label: "Qualidade do Céu (%)",
-          data: cobertura,
-          borderColor: "aqua",
-          backgroundColor: "rgba(0,255,255,0.1)",
-          tension: 0.3,
-          fill: true
-        }]
-      },
-      options: {
-        scales: {
-          y: { beginAtZero: true, max: 100 },
-          x: { title: { display: true, text: "Hora" } }
-        }
-      }
-    });
-
-  } catch (err) {
-    console.error("Erro ao carregar gráfico de céu:", err);
-  }
-}
 
 document.getElementById("getSkyData").addEventListener("click", () => {
   const skyInfo = document.getElementById("skyInfo");

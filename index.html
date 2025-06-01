@@ -6,16 +6,15 @@
   <title>AstroLog</title>
   <link rel="stylesheet" href="style.css" />
   <link rel="manifest" href="manifest.json" />
-  <script>
-    if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.register('service-worker.js')
-        .then(() => console.log("Service Worker registado com sucesso."))
-        .catch(err => console.error("Erro ao registar o Service Worker:", err));
-    }
-  </script>
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script defer src="app.js"></script>
 </head>
+<script>
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('service-worker.js')
+      .then(() => console.log("Service Worker registado com sucesso."))
+      .catch(err => console.error("Erro ao registar o Service Worker:", err));
+  }
+</script>
 <body>
   <header>
     <h1>AstroLog</h1>
@@ -31,9 +30,9 @@
       <button data-tab="objectos">Objectos</button>
       <button data-tab="adicionar">Adicionar</button>
       <button data-tab="recursos">Recursos</button>
-      <button data-tab="calendario">Calendário</button>
-      <button data-tab="cielo">🔭 Céu</button>
+	  <button data-tab="calendario"></button>
       <button data-tab="configuracoes">Configurações</button>
+	  <button data-tab="cielo">Céu</button>
     </nav>
 
     <div class="content">
@@ -51,6 +50,7 @@
         <form id="observationForm">
           <label>Nome do Objecto *</label>
           <input type="text" name="nome" required />
+
           <label>Tipo de Objecto *</label>
           <select name="tipo" required>
             <option>Estrela</option>
@@ -60,18 +60,23 @@
             <option>Sistema Solar</option>
             <option>Outro</option>
           </select>
+
           <label>Data da Observação *</label>
           <input type="datetime-local" name="data" required />
+
           <label>Localidade *</label>
           <input type="text" name="local" required />
+
           <label>Latitude</label>
           <input type="text" name="lat" />
           <label>Longitude</label>
           <input type="text" name="lon" />
+
           <label>Ascensão Reta (RA)</label>
           <input type="text" name="ra" />
           <label>Declinação (DEC)</label>
           <input type="text" name="dec" />
+
           <label>Distância</label>
           <input type="number" name="distancia" />
           <select name="unidadeDistancia">
@@ -79,24 +84,32 @@
             <option>AU</option>
             <option>Parsecs</option>
           </select>
+
           <label>Magnitude</label>
           <input type="text" name="magnitude" />
+
           <label>Elongação</label>
           <input type="text" name="elongacao" />
+
           <label>Descrição</label>
           <textarea name="descricao"></textarea>
+
           <label>Notas Pessoais</label>
           <textarea name="notas"></textarea>
+
           <label>Imagem</label>
           <input type="file" name="imagem" accept="image/*" />
+
           <label>Favorito</label>
           <input type="checkbox" name="favorito" />
+
           <div class="form-actions">
             <button type="reset">Cancelar</button>
             <button type="submit">Guardar</button>
           </div>
         </form>
       </section>
+
 <section id="tab-recursos" class="tab">
   <ul>
     <li>
@@ -185,6 +198,17 @@
     </li>
   </ul>
 </section>
+
+<section id="tab-cielo" class="tab">
+  <h2 id="skyTitle"></h2>
+  <button id="getLocation">📍 <span id="localizarBtn"></span></button>
+  <div id="skyInfo"></div>
+  <h3 id="unistellarLinkTitle"></h3>
+  <a href="https://science.unistellar.com/" target="_blank">
+    <img src="https://upload.wikimedia.org/wikipedia/commons/1/18/Unistellar_logo.png" alt="Unistellar" style="max-width: 200px; display: block; margin: 1rem auto;">
+  </a>
+</section>
+
 	  
 		<section id="tab-calendario" class="tab">
 		  <h2 id="calendarTitle">Calendário de Observações</h2>
@@ -208,35 +232,6 @@
 </section>
     </div>
   </main>
-
-<section id="tab-cielo" class="tab">
-  <h2 id="skyTitle">🔭 Céu Hoje</h2>
-  <p id="skySummary">
-    Sugestões do que observar esta noite, previsões para a próxima semana, e fenómenos visíveis.
-  </p>
-
-  <p id="skyLocation" style="text-align:center; font-weight:bold; margin-top: -0.5rem;"></p>
-  <canvas id="skyChart" width="100%" height="200"></canvas>
-
-  <button id="getSkyData">Obter eventos astronómicos</button>
-  <ul id="skyInfo" style="margin-top:1rem;"></ul>
-
-  <!-- Localização + Gráfico -->
-  <div id="sky-graph-container" style="margin-top: 2rem;">
-    <h3 id="skyLocationName"></h3>
-    <canvas id="skyQualityChart" style="max-width: 100%; height: 250px;"></canvas>
-  </div>
-
-  <!-- Unistellar -->
-  <div style="margin-top:2rem">
-    <h3>🌌 Citizen Science</h3>
-    <a href="https://science.unistellar.com/" target="_blank" style="display:inline-block;text-align:center">
-      <img src="https://upload.wikimedia.org/wikipedia/commons/d/d1/Evscope.png"
-           alt="Unistellar" style="max-width:150px; display:block; margin: 0 auto 0.5rem;">
-      Unistellar Citizen Science
-    </a>
-  </div>
-</section>
 
   <footer>
     <label>Filtro Vermelho</label>
