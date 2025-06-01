@@ -534,41 +534,40 @@ window.editObservation = function(id) {
 
 // ... (resto do código mantém-se)
 
-
 window.deleteObservation = async function(id) {
   if (confirm('Eliminar esta observação?')) {
     await deleteObservacao(id);
-    // Corrigido para evitar erro de 'await fora de função async'
-  observacoes = await getAllObservacoes();
-  renderObservacoes();
+    observacoes = await getAllObservacoes();
+    renderObservacoes();
   }
 };
 
 document.addEventListener('DOMContentLoaded', async () => {
-	
-	  const addBtn = document.getElementById('addObservationBtn');
+  // Carregar observações
+  observacoes = await getAllObservacoes();
+  renderObservacoes();
+  translateUI();
+  updateRedFilterClass();
+
+  // Botão + (abrir modal)
+  const addBtn = document.getElementById('addObservationBtn');
   if (addBtn) {
     addBtn.addEventListener('click', () => {
       document.getElementById('addObservationModal').style.display = 'block';
     });
   }
-	
-  // Corrigido para evitar erro de 'await fora de função async'
-  observacoes = await getAllObservacoes();
-  renderObservacoes();         // garantir que 'observacoes' está carregado
-  translateUI();
-  updateRedFilterClass();
-});
 
-
-  // Alternar idioma
+  // Botão de idioma
   const langBtn = document.getElementById('toggleLanguage');
-  langBtn.addEventListener('click', () => {
-    currentLang = currentLang === 'pt' ? 'en' : 'pt';
-    langBtn.textContent = currentLang === 'pt' ? 'EN' : 'PT';
-    translateUI();
-    renderObservacoes();
-  });
+  if (langBtn) {
+    langBtn.addEventListener('click', () => {
+      currentLang = currentLang === 'pt' ? 'en' : 'pt';
+      langBtn.textContent = currentLang === 'pt' ? 'EN' : 'PT';
+      translateUI();
+      renderObservacoes();
+    });
+  }
+});
 
   // Navegação entre tabs
   const tabs = document.querySelectorAll('nav button');
