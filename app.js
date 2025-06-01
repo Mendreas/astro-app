@@ -82,6 +82,270 @@ function openDB() {
   });
 }
 
+async function getAllObservacoes() {
+  const db = await openDB();
+  return new Promise((resolve, reject) => {
+    const tx = db.transaction(STORE_NAME, 'readonly');
+    const store = tx.objectStore(STORE_NAME);
+    const request = store.getAll();
+    request.onsuccess = () => resolve(request.result);
+    request.onerror = () => reject(request.error);
+  });
+}
+
+async function saveObservacao(obs) {
+  const db = await openDB();
+  return new Promise((resolve, reject) => {
+    const tx = db.transaction(STORE_NAME, 'readwrite');
+    const store = tx.objectStore(STORE_NAME);
+    store.put(obs);
+    tx.oncomplete = () => resolve();
+    tx.onerror = () => reject(tx.error);
+  });
+}
+
+async function deleteObservacao(id) {
+  const db = await openDB();
+  return new Promise((resolve, reject) => {
+    const tx = db.transaction(STORE_NAME, 'readwrite');
+    const store = tx.objectStore(STER_NAME);
+    store.delete(id);
+    tx.oncomplete = () => resolve();
+    tx.onerror = () => reject(tx.error);
+  });
+}
+
+// =========================
+// CARREGAR OBSERVAÇÕES AO INICIAR
+// =========================
+async function loadObservacoes() {
+  observacoes = await getAllObservacoes();
+  renderObservacoes();
+}
+
+loadObservacoes();
+
+// =========================
+// EVENTOS DE INTERFACE
+// =========================
+
+// Alternar idioma
+const langBtn = document.getElementById('toggleLanguage');
+if (langBtn) {
+  langBtn.addEventListener('click', () => {
+    currentLang = currentLang === 'pt' ? 'en' : 'pt';
+    langBtn.textContent = currentLang === 'pt' ? 'EN' : 'PT';
+    translateUI();
+    renderObservacoes();
+  });
+}
+
+// Navegação entre tabs
+const tabs = document.querySelectorAll('nav button');
+const tabSections = document.querySelectorAll('.tab');
+
+tabs.forEach(tab => {
+  tab.addEventListener('click', () => {
+    const target = tab.dataset.tab;
+    tabs.forEach(t => t.classList.remove('active'));
+    tab.classList.add('active');
+    tabSections.forEach(section => section.classList.remove('active'));
+    document.getElementById(`tab-${target}`).classList.add('active');
+    document.querySelector('footer').style.display = (target === 'configuracoes') ? 'flex' : 'none';
+    if (target === 'calendario') renderCalendario();
+  });
+});
+
+// Filtro por tipo
+const filterBtn = document.getElementById('filterByType');
+filterBtn.addEventListener('click', async () => {
+  if (!observacoes || observacoes.length === 0) observacoes = await getAllObservacoes();
+  if (!observacoes.length) {
+    alert("Sem observações para filtrar.");
+    return;
+  }
+  document.querySelectorAll('.dropdown-menu').forEach(m => m.remove());
+  const tipos = [...new Set(observacoes.map(o => o.tipo).filter(Boolean))];
+  const menu = document.createElement('div');
+  menu.className = 'dropdown-menu';
+  tipos.forEach(tipo => {
+    const item = document.createElement('div');
+    item.textContent = tipo;
+    item.addEventListener('click', () => {
+      currentFilter = 'tipo';
+      searchQuery = tipo.toLowerCase();
+      renderObservacoes();
+      menu.remove();
+    });
+    menu.appendChild(item);
+  });
+  const allItem = document.createElement('div');
+  allItem.textContent = i18n[currentLang].all;
+  allItem.addEventListener('click', () => {
+    currentFilter = 'todos';
+    searchQuery = '';
+    renderObservacoes();
+    menu.remove();
+  });
+  menu.appendChild(allItem);
+  const rect = filterBtn.getBoundingClientRect();
+  menu.style.position = 'absolute';
+  menu.style.top = `${rect.bottom + window.scrollY}px`;
+  menu.style.left = `${rect.left + window.scrollX}px`;
+  menu.style.zIndex = 1000;
+  document.body.appendChild(menu);
+});
+
+// Campo de pesquisa
+const searchInput = document.getElementById('searchInput');
+searchInput.addEventListener('input', () => {
+  searchQuery = searchInput.value.toLowerCase();
+  renderObservacoes();
+});
+
+// Filtros rápidos (recentes, favoritos, todos)
+const filterButtons = document.querySelectorAll('[data-filter]');
+filterButtons.forEach(btn => {
+  btn.addEventListener('click', () => {
+    currentFilter = btn.dataset.filter;
+    filterButtons.forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    renderObservacoes();
+  });
+});
+
+// Exportar e importar
+const exportBtn = document.getElementById('exportJson');
+exportBtn.addEventListener('click', async () => {
+  const data = await getAllObservacoes();
+  const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'astro-observacoes.json';
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+});
+
+const importInput = document.getElementById('importJson');
+importInput.addEventListener('change', async (event) => {
+  const file = event.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = async () => {
+    try {
+      const data = JSON.parse(reader.result);
+      if (!Array.isArray(data)) throw new Error("Formato inválido");
+      const db = await openDB();
+      const tx = db.transaction(STORE_NAME, 'readwrite');
+      const store = tx.objectStore(STORE_NAME);
+      for (const obs of data) {
+        if (obs.id && obs.nome) store.put(obs);
+      }
+      tx.oncomplete = async () => {
+        alert("Importação concluída!");
+        observacoes = await getAllObservacoes();
+        renderObservacoes();
+        event.target.value = '';
+      };
+    } catch (err) {
+      alert("Erro ao importar: " + err.message);
+    }
+  };
+  reader.readAsText(file);
+});
+
+
+
+
+// --- Código extraído do antigo ---
+
+// AstroLog - app.js consolidado
+
+// =========================
+// VARIÁVEIS GLOBAIS
+// =========================
+let observacoes = [];
+let currentLang = 'pt';
+let currentFilter = 'todos';
+let searchQuery = '';
+let editId = null;
+let calendarioMes = new Date().getMonth();
+let calendarioAno = new Date().getFullYear();
+
+// =========================
+// TRADUÇÕES
+// =========================
+const i18n = {
+  pt: {
+    searchPlaceholder: "Pesquisar observações...",
+    all: "Todos",
+    recent: "Recentes",
+    favorites: "Favoritos",
+    filterType: "Filtrar por tipo",
+    cancel: "Cancelar",
+    save: "Guardar",
+    redFilter: "Filtro Vermelho",
+    intensity: "Intensidade do Filtro",
+    edit: "Editar",
+    delete: "Eliminar",
+    close: "Fechar",
+	objectos: "Objectos",
+    adicionar: "Adicionar",
+	 calendario: "Calendário",
+  	calendarTitle: "Calendário de Observações",
+    recursos: "Recursos",
+    configuracoes: "Configurações",
+	links: "Links Úteis", // novo
+    ver: "Ver",
+  },
+  en: {
+    searchPlaceholder: "Search observations...",
+    all: "All",
+    recent: "Recent",
+    favorites: "Favorites",
+    filterType: "Filter by type",
+    cancel: "Cancel",
+    save: "Save",
+    redFilter: "Red Filter",
+    intensity: "Filter Intensity",
+    edit: "Edit",
+    delete: "Delete",
+    close: "Close",
+	objectos: "Objects",
+    adicionar: "Add",
+	calendario: "Calendar",
+  	calendarTitle: "Observation Calendar",
+    recursos: "Resources",
+    configuracoes: "Settings",
+	links: "Useful Links", // novo
+    ver: "View",
+  }
+};
+
+// =========================
+// INDEXEDDB
+// =========================
+const DB_NAME = 'AstroLogDB';
+const DB_VERSION = 1;
+const STORE_NAME = 'observacoes';
+
+function openDB() {
+  return new Promise((resolve, reject) => {
+    const request = indexedDB.open(DB_NAME, DB_VERSION);
+    request.onerror = () => reject(request.error);
+    request.onsuccess = () => resolve(request.result);
+    request.onupgradeneeded = () => {
+      const db = request.result;
+      if (!db.objectStoreNames.contains(STORE_NAME)) {
+        db.createObjectStore(STORE_NAME, { keyPath: 'id' });
+      }
+    };
+  });
+}
+
 
 async function getAllObservacoes() {
   const db = await openDB();
