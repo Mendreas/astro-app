@@ -1,5 +1,3 @@
-// AstroLog - app.js consolidado
-
 // =========================
 // VARIÁVEIS GLOBAIS
 // =========================
@@ -14,7 +12,7 @@ let calendarioAno = new Date().getFullYear();
 const obsList = document.getElementById('observationsList');
 
 // =========================
-// TRADUÇÕES
+// TRADUÇÕES (i18n)
 // =========================
 const i18n = {
   pt: {
@@ -30,13 +28,13 @@ const i18n = {
     edit: "Editar",
     delete: "Eliminar",
     close: "Fechar",
-	objectos: "Objectos",
+    objectos: "Objectos",
     adicionar: "Adicionar",
-	 calendario: "Calendário",
-  	calendarTitle: "Calendário de Observações",
+    calendario: "Calendário",
+    calendarTitle: "Calendário de Observações",
     recursos: "Recursos",
     configuracoes: "Configurações",
-	links: "Links Úteis", // novo
+    links: "Links Úteis",
     ver: "Ver",
   },
   en: {
@@ -52,19 +50,19 @@ const i18n = {
     edit: "Edit",
     delete: "Delete",
     close: "Close",
-	objectos: "Objects",
+    objectos: "Objects",
     adicionar: "Add",
-	calendario: "Calendar",
-  	calendarTitle: "Observation Calendar",
+    calendario: "Calendar",
+    calendarTitle: "Observation Calendar",
     recursos: "Resources",
     configuracoes: "Settings",
-	links: "Useful Links", // novo
+    links: "Useful Links",
     ver: "View",
   }
 };
 
 // =========================
-// INDEXEDDB
+// INDEXEDDB SETUP
 // =========================
 const DB_NAME = 'AstroLogDB';
 const DB_VERSION = 1;
@@ -131,21 +129,18 @@ loadObservacoes();
 // EVENTOS DE INTERFACE
 // =========================
 
-// Alternar idioma
+// Alternar idioma (PT ↔ EN)
 const langBtn = document.getElementById('toggleLanguage');
-if (langBtn) {
-  langBtn.addEventListener('click', () => {
-    currentLang = currentLang === 'pt' ? 'en' : 'pt';
-    langBtn.textContent = currentLang === 'pt' ? 'EN' : 'PT';
-    translateUI();
-    renderObservacoes();
-  });
-}
+langBtn.addEventListener('click', () => {
+  currentLang = currentLang === 'pt' ? 'en' : 'pt';
+  langBtn.textContent = currentLang === 'pt' ? 'EN' : 'PT';
+  translateUI();
+  renderObservacoes();
+});
 
 // Navegação entre tabs
 const tabs = document.querySelectorAll('nav button');
 const tabSections = document.querySelectorAll('.tab');
-
 tabs.forEach(tab => {
   tab.addEventListener('click', () => {
     const target = tab.dataset.tab;
@@ -153,12 +148,12 @@ tabs.forEach(tab => {
     tab.classList.add('active');
     tabSections.forEach(section => section.classList.remove('active'));
     document.getElementById(`tab-${target}`).classList.add('active');
-    document.querySelector('footer').style.display = (target === 'configuracoes') ? 'flex' : 'none';
+    document.querySelector('footer').style.display = target === 'configuracoes' ? 'flex' : 'none';
     if (target === 'calendario') renderCalendario();
   });
 });
 
-// Filtro por tipo
+// “Filtrar por tipo” dropdown
 const filterBtn = document.getElementById('filterByType');
 filterBtn.addEventListener('click', async () => {
   if (!observacoes || observacoes.length === 0) observacoes = await getAllObservacoes();
@@ -166,10 +161,12 @@ filterBtn.addEventListener('click', async () => {
     alert("Sem observações para filtrar.");
     return;
   }
+
   document.querySelectorAll('.dropdown-menu').forEach(m => m.remove());
   const tipos = [...new Set(observacoes.map(o => o.tipo).filter(Boolean))];
   const menu = document.createElement('div');
   menu.className = 'dropdown-menu';
+
   tipos.forEach(tipo => {
     const item = document.createElement('div');
     item.textContent = tipo;
@@ -181,6 +178,7 @@ filterBtn.addEventListener('click', async () => {
     });
     menu.appendChild(item);
   });
+
   const allItem = document.createElement('div');
   allItem.textContent = i18n[currentLang].all;
   allItem.addEventListener('click', () => {
@@ -190,11 +188,13 @@ filterBtn.addEventListener('click', async () => {
     menu.remove();
   });
   menu.appendChild(allItem);
+
   const rect = filterBtn.getBoundingClientRect();
   menu.style.position = 'absolute';
   menu.style.top = `${rect.bottom + window.scrollY}px`;
   menu.style.left = `${rect.left + window.scrollX}px`;
   menu.style.zIndex = 1000;
+
   document.body.appendChild(menu);
 });
 
@@ -205,7 +205,7 @@ searchInput.addEventListener('input', () => {
   renderObservacoes();
 });
 
-// Filtros rápidos (recentes, favoritos, todos)
+// Filtros rápidos (Todos, Recentes, Favoritos)
 const filterButtons = document.querySelectorAll('[data-filter]');
 filterButtons.forEach(btn => {
   btn.addEventListener('click', () => {
@@ -216,7 +216,7 @@ filterButtons.forEach(btn => {
   });
 });
 
-// Exportar e importar
+// Exportar Observações para JSON
 const exportBtn = document.getElementById('exportJson');
 exportBtn.addEventListener('click', async () => {
   const data = await getAllObservacoes();
@@ -231,26 +231,30 @@ exportBtn.addEventListener('click', async () => {
   URL.revokeObjectURL(url);
 });
 
+// Importar Observações de JSON
 const importInput = document.getElementById('importJson');
-importInput.addEventListener('change', async (event) => {
+importInput.addEventListener('change', async event => {
   const file = event.target.files[0];
   if (!file) return;
+
   const reader = new FileReader();
   reader.onload = async () => {
     try {
       const data = JSON.parse(reader.result);
       if (!Array.isArray(data)) throw new Error("Formato inválido");
+
       const db = await openDB();
       const tx = db.transaction(STORE_NAME, 'readwrite');
       const store = tx.objectStore(STORE_NAME);
-      for (const obs of data) {
+      data.forEach(obs => {
         if (obs.id && obs.nome) store.put(obs);
-      }
+      });
+
       tx.oncomplete = async () => {
         alert("Importação concluída!");
         observacoes = await getAllObservacoes();
         renderObservacoes();
-        event.target.value = '';
+        importInput.value = '';
       };
     } catch (err) {
       alert("Erro ao importar: " + err.message);
@@ -259,9 +263,65 @@ importInput.addEventListener('change', async (event) => {
   reader.readAsText(file);
 });
 
+// =========================
+// RED FILTER CONTROLS
+// =========================
+const redToggle = document.getElementById('redFilterToggle');
+const redSlider = document.getElementById('redFilterIntensity');
+const redButton = document.getElementById('toggleRedFilter');
+
+function applyRedFilter(active) {
+  if (active) {
+    document.body.classList.add('red-filter');
+    const intensity = parseInt(redSlider.value);
+    document.body.style.backgroundColor = `rgba(255, 0, 0, ${intensity / 100})`;
+  } else {
+    document.body.classList.remove('red-filter');
+    document.body.style.backgroundColor = '';
+  }
+}
+
+function updateRedFilterClass() {
+  document.body.classList.remove(
+    'intensity-20',
+    'intensity-40',
+    'intensity-60',
+    'intensity-80',
+    'intensity-100'
+  );
+  if (redToggle.checked) {
+    document.body.classList.add('red-filter');
+    const val = parseInt(redSlider.value);
+    if (val > 80) document.body.classList.add('intensity-100');
+    else if (val > 60) document.body.classList.add('intensity-80');
+    else if (val > 40) document.body.classList.add('intensity-60');
+    else if (val > 20) document.body.classList.add('intensity-40');
+    else document.body.classList.add('intensity-20');
+  } else {
+    document.body.classList.remove('red-filter');
+  }
+}
+
+// Click on top‐bar red button toggles the filter
+redButton.addEventListener('click', () => {
+  redToggle.checked = !redToggle.checked;
+  applyRedFilter(redToggle.checked);
+  updateRedFilterClass();
+});
+
+// Adjusting toggle or slider in settings
+redToggle.addEventListener('change', () => {
+  applyRedFilter(redToggle.checked);
+  updateRedFilterClass();
+});
+
+redSlider.addEventListener('input', () => {
+  if (redToggle.checked) applyRedFilter(true);
+  updateRedFilterClass();
+});
 
 // =========================
-// EVENTOS E INICIALIZAÇÃO
+// ADD OBSERVATION MODAL
 // =========================
 document.addEventListener('DOMContentLoaded', async () => {
   observacoes = await getAllObservacoes();
@@ -269,19 +329,14 @@ document.addEventListener('DOMContentLoaded', async () => {
   translateUI();
   updateRedFilterClass();
 
-  // Botão + abre modal
   const addBtn = document.getElementById('addObservationBtn');
-  if (addBtn) {
-    addBtn.addEventListener('click', () => {
-      document.getElementById('addObservationModal').style.display = 'block';
-    });
-  }
+  addBtn.addEventListener('click', () => {
+    document.getElementById('addObservationModal').style.display = 'block';
+  });
 
-  // Fecha modal
   document.getElementById('closeAddModal').onclick = closeAddForm;
   document.getElementById('cancelAdd').onclick = closeAddForm;
 
-  // Submissão do formulário
   document.getElementById('addObservationForm').onsubmit = async function (e) {
     e.preventDefault();
     const form = this;
@@ -328,147 +383,43 @@ function atualizarBackupJSON() {
   localStorage.setItem('backupAstroLog', json);
 }
 
-
 // =========================
-// FUNÇÕES AUXILIARES
+// UI TRANSLATION (i18n) & ICON HELPERS
 // =========================
 function translateUI() {
-  console.log("Traduzindo UI para:", currentLang);
-	
-	const t = i18n[currentLang];
+  const t = i18n[currentLang];
 
   document.getElementById('searchInput').placeholder = t.searchPlaceholder;
   document.querySelector('[data-filter="todos"]').textContent = t.all;
   document.querySelector('[data-filter="recentes"]').textContent = t.recent;
   document.querySelector('[data-filter="favoritos"]').textContent = t.favorites;
   document.getElementById('filterByType').textContent = t.filterType;
-  document.querySelector('button[type="reset"]').textContent = t.cancel;
+
   document.querySelector('button[type="submit"]').textContent = t.save;
+  document.querySelector('button[type="button"]#cancelAdd').textContent = t.cancel;
+
   document.querySelector('footer label:first-child').textContent = t.redFilter;
   document.querySelector('footer label:last-of-type').textContent = t.intensity;
 
-  // Traduzir nomes das tabs
-  document.querySelectorAll("nav button[data-tab]").forEach(btn => {
-    const key = btn.getAttribute("data-tab");
+  // Translate tab labels
+  document.querySelectorAll('nav button[data-tab]').forEach(btn => {
+    const key = btn.getAttribute('data-tab');
     if (t[key]) {
       btn.textContent = t[key];
     }
   });
 
-  // Traduzir botões "Ver" das observações
-  document.querySelectorAll(".observation-card button.view-btn").forEach(btn => {
+  // Translate “Ver” buttons in cards after they render
+  document.querySelectorAll('.observation-card button.view-btn').forEach(btn => {
     btn.textContent = `🔍 ${t.ver}`;
   });
 
-  // Atualizar título do calendário se estiver visível
-const calendarioVisivel = document.getElementById('tab-calendario').classList.contains('active');
-if (calendarioVisivel) {
-  document.querySelector('#tab-calendario h2').textContent = i18n[currentLang].calendarTitle;
-  renderCalendario(); // força atualização do mês no idioma correto
-	}
-}
-
-
-
-const redToggle = document.getElementById('redFilterToggle');
-const redSlider = document.getElementById('redFilterIntensity');
-const redButton = document.getElementById('toggleRedFilter');
-
-function applyRedFilter(active) {
-  if (active) {
-    document.body.classList.add('red-filter');
-    const intensity = parseInt(redSlider.value);
-    document.body.style.backgroundColor = `rgba(255, 0, 0, ${intensity / 100})`;
-  } else {
-    document.body.classList.remove('red-filter');
-    document.body.style.backgroundColor = '';
+  // If calendar tab is active, update its title
+  const calendarioVisivel = document.getElementById('tab-calendario').classList.contains('active');
+  if (calendarioVisivel) {
+    document.getElementById('calendarTitle').textContent = t.calendarTitle;
+    renderCalendario(); // re-render month name
   }
-}
-
-// Quando se clica no botão vermelho da barra superior
-redButton.addEventListener('click', () => {
-  redToggle.checked = !redToggle.checked;
-  applyRedFilter(redToggle.checked);
-});
-
-// Quando se muda o toggle ou intensidade nas configurações
-redToggle.addEventListener('change', () => {
-  applyRedFilter(redToggle.checked);
-});
-
-redSlider.addEventListener('input', () => {
-  if (redToggle.checked) applyRedFilter(true);
-});
-
-function updateRedFilterClass() {
-  document.body.classList.remove('intensity-20', 'intensity-40', 'intensity-60', 'intensity-80', 'intensity-100');
-  if (redToggle.checked) {
-    document.body.classList.add('red-filter');
-    const val = parseInt(redSlider.value);
-    if (val > 80) document.body.classList.add('intensity-100');
-    else if (val > 60) document.body.classList.add('intensity-80');
-    else if (val > 40) document.body.classList.add('intensity-60');
-    else if (val > 20) document.body.classList.add('intensity-40');
-    else document.body.classList.add('intensity-20');
-  } else {
-    document.body.classList.remove('red-filter');
-  }
-}
-
-redToggle.addEventListener('change', updateRedFilterClass);
-redSlider.addEventListener('input', updateRedFilterClass);
-
-function renderCalendario() {
-  const container = document.getElementById('calendarContainer');
-  const title = document.getElementById('calendarMonthYear');
-  container.innerHTML = '';
-
-  const firstDay = new Date(calendarioAno, calendarioMes, 1).getDay();
-  const daysInMonth = new Date(calendarioAno, calendarioMes + 1, 0).getDate();
-
-  // Atualizar o título
-  const nomeMes = new Date(calendarioAno, calendarioMes).toLocaleString('pt-PT', { month: 'long' });
-
-  title.textContent = `${capitalize(nomeMes)} ${calendarioAno}`;
-
-  const diasComObservacoes = new Set(
-    observacoes.map(o => normalizarDataLocal(o.data))
-  );
-
-  for (let i = 0; i < firstDay; i++) {
-    container.appendChild(document.createElement('div'));
-  }
-
-  for (let d = 1; d <= daysInMonth; d++) {
-    const date = new Date(calendarioAno, calendarioMes, d);
-    const dateStr = normalizarDataLocal(date);
-
-    const div = document.createElement('div');
-    div.className = 'calendar-day';
-    div.textContent = d;
-
-    if (diasComObservacoes.has(dateStr)) {
-      div.classList.add('highlight');
-      div.addEventListener('click', () => mostrarObservacoesDoDia(dateStr));
-    }
-
-    container.appendChild(div);
-  }
-}
-
-
-function mostrarObservacoesDoDia(dataISO) {
-  const lista = observacoes.filter(o => o.data.startsWith(dataISO));
-  const container = document.getElementById('calendarResults');
-
-  if (!lista.length) {
-    container.innerHTML = `<p>Sem observações para ${dataISO}</p>`;
-    return;
-  }
-
-  container.innerHTML = `<h3>Observações em ${dataISO}:</h3><ul>` +
-    lista.map(o => `<li>${getIcon(o.tipo)} ${o.nome}</li>`).join('') +
-    `</ul>`;
 }
 
 function getIcon(tipo) {
@@ -478,32 +429,19 @@ function getIcon(tipo) {
     'Aglomerado': '✨',
     'Nebulosa': '☁️',
     'Sistema Solar': '🪐',
+    'Planeta': '🪐',
+    'Cometa': '☄️',
     'Outro': '🔭'
   };
   return icons[tipo] || '❔';
 }
 
 // =========================
-// EXPORTAÇÃO E IMPORTAÇÃO
+// RENDER OBSERVAÇÕES (LIST & CARDS)
 // =========================
-
-searchInput.addEventListener('input', () => {
-  searchQuery = searchInput.value.toLowerCase();
-  renderObservacoes();
-});
-
-filterButtons.forEach(btn => {
-  btn.addEventListener('click', () => {
-    currentFilter = btn.dataset.filter;
-    filterButtons.forEach(b => b.classList.remove('active'));
-    btn.classList.add('active');
-    renderObservacoes();
-  });
-});
-
 function renderObservacoes() {
   obsList.innerHTML = '';
-  let list = observacoes;
+  let list = observacoes.slice(); // clone array
 
   if (currentFilter === 'favoritos') {
     list = list.filter(o => o.favorito);
@@ -512,10 +450,11 @@ function renderObservacoes() {
   }
 
   if (searchQuery) {
-    list = list.filter(o =>
-      o.nome.toLowerCase().includes(searchQuery) ||
-      o.tipo.toLowerCase().includes(searchQuery) ||
-      o.local.toLowerCase().includes(searchQuery)
+    list = list.filter(
+      o =>
+        o.nome.toLowerCase().includes(searchQuery) ||
+        o.tipo.toLowerCase().includes(searchQuery) ||
+        o.local.toLowerCase().includes(searchQuery)
     );
   }
 
@@ -524,10 +463,12 @@ function renderObservacoes() {
     card.className = 'observation-card';
 
     const icon = getIcon(obs.tipo);
-    const data = new Date(obs.data).toLocaleDateString();
+    const formattedDate = new Date(obs.data).toLocaleDateString(
+      currentLang === 'pt' ? 'pt-PT' : 'en-US'
+    );
 
     const imgHTML = obs.imagem
-      ? `<img src="${obs.imagem}" style="max-width: 100%; max-height: 100px; cursor: pointer;" onclick="window.open('${obs.imagem}', '_blank')" />`
+      ? `<img src="${obs.imagem}" style="max-width:100%; max-height:100px; cursor:pointer" onclick="window.open('${obs.imagem}', '_blank')" />`
       : '';
 
     const viewBtn = `<button class="view-btn" onclick="viewObservation(${obs.id})">🔍 ${i18n[currentLang].ver}</button>`;
@@ -537,9 +478,9 @@ function renderObservacoes() {
     card.innerHTML = `
       <div class="title">${icon} ${obs.nome} ${obs.favorito ? '⭐' : ''}</div>
       <div><small>${obs.tipo}</small></div>
-      <div><small>${data} - ${obs.local}</small></div>
+      <div><small>${formattedDate} - ${obs.local}</small></div>
       ${imgHTML}
-      <div style="margin-top: 0.5rem">
+      <div style="margin-top:0.5rem">
         ${viewBtn}
         ${editBtn}
         ${deleteBtn}
@@ -550,12 +491,13 @@ function renderObservacoes() {
   });
 }
 
-
-
-
-window.viewObservation = function(id) {
+// =========================
+// VIEW OBSERVATION (MODAL)
+// =========================
+window.viewObservation = function (id) {
   const obs = observacoes.find(o => o.id === id);
   if (!obs) return;
+
   const modal = document.createElement('div');
   modal.className = 'modal';
   modal.id = 'view-modal';
@@ -569,7 +511,6 @@ window.viewObservation = function(id) {
       <p><strong>DEC:</strong> ${obs.dec || ''}</p>
       <p><strong>Distância:</strong> ${obs.distancia || ''} ${obs.unidadeDistancia || ''}</p>
       <p><strong>Magnitude:</strong> ${obs.magnitude || ''}</p>
-      <p><strong>Elongação:</strong> ${obs.elongacao || ''}</p>
       <p><strong>Descrição:</strong> ${obs.descricao || ''}</p>
       ${obs.imagem ? `<img src="${obs.imagem}" style="max-width:100%; max-height:200px; margin-top:1rem; cursor:pointer" onclick="openImageModal('${obs.imagem}')" />` : ''}
       <button onclick="closeModal()">${i18n[currentLang].close}</button>
@@ -578,13 +519,13 @@ window.viewObservation = function(id) {
   document.body.appendChild(modal);
 };
 
-window.openImageModal = function(imgSrc) {
+window.openImageModal = function (imgSrc) {
   const modal = document.createElement('div');
   modal.className = 'modal';
   modal.id = 'image-modal';
   modal.innerHTML = `
     <div class="modal-content">
-      <img src="${imgSrc}" style="max-width:100%; max-height:80vh; display:block; margin: 0 auto 1rem;" />
+      <img src="${imgSrc}" style="max-width:100%; max-height:80vh; display:block; margin:0 auto 1rem;" />
       <div style="text-align:center">
         <button onclick="closeModalById('image-modal')">${i18n[currentLang].close}</button>
         <button onclick="closeModalById('image-modal'); closeModalById('view-modal')">${i18n[currentLang].close} tudo</button>
@@ -594,55 +535,88 @@ window.openImageModal = function(imgSrc) {
   document.body.appendChild(modal);
 };
 
-window.closeModalById = function(id) {
+window.closeModalById = function (id) {
   const modal = document.getElementById(id);
   if (modal) modal.remove();
 };
 
-window.closeModal = function() {
+window.closeModal = function () {
   const modal = document.querySelector('.modal');
   if (modal) modal.remove();
 };
 
-// ... (código anterior mantém-se inalterado)
-
-window.editObservation = function(id) {
+// =========================
+// EDIT OBSERVATION (MODAL)
+// =========================
+window.editObservation = function (id) {
   const obs = observacoes.find(o => o.id === id);
   if (!obs) return;
   editId = id;
+
   const modal = document.createElement('div');
   modal.className = 'modal';
   modal.innerHTML = `
     <div class="modal-content">
       <h3>${i18n[currentLang].edit}</h3>
       <form id="modalForm">
-        <input name="nome" value="${obs.nome}" required />
-
-        <select name="tipo" required>
-          <option${obs.tipo === 'Estrela' ? ' selected' : ''}>Estrela</option>
-          <option${obs.tipo === 'Galáxia' ? ' selected' : ''}>Galáxia</option>
-          <option${obs.tipo === 'Aglomerado' ? ' selected' : ''}>Aglomerado</option>
-          <option${obs.tipo === 'Nebulosa' ? ' selected' : ''}>Nebulosa</option>
-          <option${obs.tipo === 'Sistema Solar' ? ' selected' : ''}>Sistema Solar</option>
-          <option${obs.tipo === 'Outro' ? ' selected' : ''}>Outro</option>
-        </select>
-
-        <input name="data" type="datetime-local" value="${obs.data}" required />
-        <input name="local" value="${obs.local}" required />
-        <input name="ra" value="${obs.ra || ''}" placeholder="RA" />
-        <input name="dec" value="${obs.dec || ''}" placeholder="DEC" />
-        <input name="distancia" value="${obs.distancia || ''}" placeholder="Distância" />
-        <input name="magnitude" value="${obs.magnitude || ''}" placeholder="Magnitude" />
-        <textarea name="descricao">${obs.descricao || ''}</textarea>
-        <label><input type="checkbox" name="favorito" ${obs.favorito ? 'checked' : ''}/> Favorito</label>
-        <label>Imagem (opcional)</label>
-        <input type="file" name="imagem" accept="image/*" />
-        <button type="submit">${i18n[currentLang].save}</button>
-        <button type="button" onclick="closeModal()">${i18n[currentLang].cancel}</button>
+        <label>
+          Nome
+          <input name="nome" value="${obs.nome}" required />
+        </label>
+        <label>
+          Tipo
+          <select name="tipo" required>
+            <option${obs.tipo === 'Estrela' ? ' selected' : ''}>Estrela</option>
+            <option${obs.tipo === 'Galáxia' ? ' selected' : ''}>Galáxia</option>
+            <option${obs.tipo === 'Planeta' ? ' selected' : ''}>Planeta</option>
+            <option${obs.tipo === 'Cometa' ? ' selected' : ''}>Cometa</option>
+            <option${obs.tipo === 'Outro' ? ' selected' : ''}>Outro</option>
+          </select>
+        </label>
+        <label>
+          Data
+          <input name="data" type="datetime-local" value="${obs.data}" required />
+        </label>
+        <label>
+          Local
+          <input name="local" value="${obs.local}" required />
+        </label>
+        <label>
+          RA
+          <input name="ra" value="${obs.ra || ''}" placeholder="RA" />
+        </label>
+        <label>
+          DEC
+          <input name="dec" value="${obs.dec || ''}" placeholder="DEC" />
+        </label>
+        <label>
+          Distância
+          <input name="distancia" value="${obs.distancia || ''}" placeholder="Distância" />
+        </label>
+        <label>
+          Magnitude
+          <input name="magnitude" value="${obs.magnitude || ''}" placeholder="Magnitude" />
+        </label>
+        <label>
+          Descrição
+          <textarea name="descricao">${obs.descricao || ''}</textarea>
+        </label>
+        <label>
+          <input type="checkbox" name="favorito" ${obs.favorito ? 'checked' : ''} /> Favorito
+        </label>
+        <label>
+          Imagem (opcional)
+          <input type="file" name="imagem" accept="image/*" />
+        </label>
+        <div class="form-actions">
+          <button type="submit">${i18n[currentLang].save}</button>
+          <button type="button" onclick="closeModal()">${i18n[currentLang].cancel}</button>
+        </div>
       </form>
     </div>
   `;
   document.body.appendChild(modal);
+
   const modalForm = modal.querySelector('form');
   modalForm.addEventListener('submit', async e => {
     e.preventDefault();
@@ -656,9 +630,8 @@ window.editObservation = function(id) {
       const original = observacoes.find(o => o.id === id);
       if (original?.imagem && !newObs.imagem) newObs.imagem = original.imagem;
       await saveObservacao(newObs);
-      // Corrigido para evitar erro de 'await fora de função async'
-  observacoes = await getAllObservacoes();
-  renderObservacoes();
+      observacoes = await getAllObservacoes();
+      renderObservacoes();
       closeModal();
     };
 
@@ -679,9 +652,10 @@ window.editObservation = function(id) {
   });
 };
 
-// ... (resto do código mantém-se)
-
-window.deleteObservation = async function(id) {
+// =========================
+// DELETE OBSERVATION
+// =========================
+window.deleteObservation = async function (id) {
   if (confirm('Eliminar esta observação?')) {
     await deleteObservacao(id);
     observacoes = await getAllObservacoes();
@@ -689,10 +663,61 @@ window.deleteObservation = async function(id) {
   }
 };
 
+// =========================
+// CALENDAR FUNCTIONS
+// =========================
+function renderCalendario() {
+  const container = document.getElementById('calendarContainer');
+  const title = document.getElementById('calendarMonthYear');
+  container.innerHTML = '';
 
+  const firstDay = new Date(calendarioAno, calendarioMes, 1).getDay();
+  const daysInMonth = new Date(calendarioAno, calendarioMes + 1, 0).getDate();
+
+  // Month name in appropriate locale
+  const locale = currentLang === 'pt' ? 'pt-PT' : 'en-US';
+  const nomeMes = new Date(calendarioAno, calendarioMes).toLocaleString(locale, {
+    month: 'long'
+  });
+  title.textContent = `${capitalize(nomeMes)} ${calendarioAno}`;
+
+  const diasComObservacoes = new Set(
+    observacoes.map(o => normalizarDataLocal(o.data))
+  );
+
+  for (let i = 0; i < firstDay; i++) {
+    container.appendChild(document.createElement('div'));
+  }
+
+  for (let d = 1; d <= daysInMonth; d++) {
+    const date = new Date(calendarioAno, calendarioMes, d);
+    const dateStr = normalizarDataLocal(date);
+    const div = document.createElement('div');
+    div.className = 'calendar-day';
+    div.textContent = d;
+
+    if (diasComObservacoes.has(dateStr)) {
+      div.classList.add('highlight');
+      div.addEventListener('click', () => mostrarObservacoesDoDia(dateStr));
+    }
+    container.appendChild(div);
+  }
+}
+
+function mostrarObservacoesDoDia(dataISO) {
+  const lista = observacoes.filter(o => o.data.startsWith(dataISO));
+  const container = document.getElementById('calendarResults');
+  if (!lista.length) {
+    container.innerHTML = `<p>Sem observações para ${dataISO}</p>`;
+    return;
+  }
+  container.innerHTML = `<h3>Observações em ${dataISO}:</h3><ul>` +
+    lista.map(o => `<li>${getIcon(o.tipo)} ${o.nome}</li>`).join('') +
+    `</ul>`;
+}
 
 function normalizarDataLocal(data) {
-  return new Date(data).toLocaleDateString('sv-SE'); // YYYY-MM-DD
+  return new Date(data).toLocaleDateString('sv-SE'); // outputs YYYY-MM-DD
 }
 
 function capitalize(str) {
