@@ -1,3 +1,4 @@
+<!DOCTYPE html><!-- index.html -->
 <!DOCTYPE html>
 <html lang="pt">
 <head>
@@ -8,13 +9,6 @@
   <link rel="manifest" href="manifest.json" />
   <script defer src="app.js"></script>
 </head>
-<script>
-  if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.register('service-worker.js')
-      .then(() => console.log("Service Worker registado com sucesso."))
-      .catch(err => console.error("Erro ao registar o Service Worker:", err));
-  }
-</script>
 <body>
   <header>
     <h1>AstroLog</h1>
@@ -29,8 +23,8 @@
     <nav>
       <button data-tab="objectos">Objectos</button>
       <button data-tab="recursos">Recursos</button>
-	  <button data-tab="links">Links Úteis</button>
-	  <button data-tab="calendario"></button>
+      <button data-tab="links">Links Úteis</button>
+      <button data-tab="calendario">Calendário</button>
       <button data-tab="configuracoes">Configurações</button>
     </nav>
 
@@ -43,7 +37,7 @@
           <button id="filterByType">Filtrar por tipo</button>
         </div>
         <div id="observationsList"></div>
-      </section>
+      </section
 
 <section id="tab-recursos" class="tab">
   <ul>
@@ -141,6 +135,7 @@
 		  <div id="calendarContainer"></div>
 		  <div id="calendarResults" style="margin-top: 1rem;"></div>
 		</section>
+		
       <section id="tab-configuracoes" class="tab">
   <p>Ajustes e configurações da aplicação.</p>
   <div class="config-actions">
@@ -154,119 +149,50 @@
     </div>
   </main>
 
-  <footer>
+    <footer>
     <label>Filtro Vermelho</label>
     <input type="checkbox" id="redFilterToggle" />
     <label>Intensidade do Filtro</label>
     <input type="range" id="redFilterIntensity" min="0" max="100" value="50" />
   </footer>
-  
-  <!-- BOTÃO + NA BARRA SUPERIOR -->
-<div id="top-bar">
-  <!-- outros botões -->
-  <button id="addObservationBtn" title="Adicionar observação">＋</button>
-</div>
 
-<!-- MODAL PARA ADICIONAR OBSERVAÇÃO -->
-<div id="addObservationModal" class="modal">
-  <div class="modal-content dark-modal">
-    <span class="close" id="closeAddModal">&times;</span>
-    <h2>Adicionar Observação</h2>
-    <form id="addObservationForm">
-      <label>Nome do objeto<input type="text" id="objeto" required></label>
-      <label>Tipo<select id="tipo">
-        <option value="Estrela">Estrela</option>
-        <option value="Galáxia">Galáxia</option>
-        <option value="Planeta">Planeta</option>
-        <option value="Cometa">Cometa</option>
-        <option value="Outro">Outro</option>
-      </select></label>
-      <label>Data da observação<input type="date" id="data" required></label>
-      <label>Localização<input type="text" id="localizacao"></label>
-      <label>RA (Ascensão Reta)<input type="text" id="ra"></label>
-      <label>DEC (Declinação)<input type="text" id="dec"></label>
-      <label>Magnitude<input type="number" id="mag" step="0.1"></label>
-      <label>Distância <input type="text" id="distancia"> <select id="distancia-unidade">
-        <option value="ly">ly</option>
-        <option value="AU">AU</option>
-      </select></label>
-      <label>Descrição<textarea id="descricao"></textarea></label>
-      <label>Imagem<input type="file" id="imagem"></label>
-      <button type="submit">Guardar</button>
-      <button type="button" id="cancelAdd">Cancelar</button>
-    </form>
-    <p id="addSuccessMsg" class="success-msg" style="display:none;">✔️ Observação adicionada com sucesso</p>
+  <!-- BOTÃO + -->
+  <div id="top-bar">
+    <button id="addObservationBtn" title="Adicionar observação">＋</button>
   </div>
-</div>
 
-<!-- CSS A ADICIONAR AO style.css -->
-<style>
-#addObservationBtn {
-  font-size: 1.5rem;
-  margin-left: 1rem;
-  background: none;
-  border: none;
-  color: white;
-  cursor: pointer;
-}
-.modal {
-  display: none;
-  position: fixed;
-  z-index: 999;
-  left: 0; top: 0;
-  width: 100%; height: 100%;
-  background-color: rgba(0,0,0,0.6);
-}
-.modal-content {
-  background-color: #111;
-  color: #fff;
-  margin: 10% auto;
-  padding: 20px;
-  border-radius: 8px;
-  width: 90%; max-width: 500px;
-  position: relative;
-}
-.modal-content .close {
-  position: absolute;
-  top: 10px; right: 15px;
-  color: white;
-  font-size: 24px;
-  cursor: pointer;
-}
-.success-msg {
-  color: #4caf50;
-  margin-top: 1rem;
-  font-weight: bold;
-  text-align: center;
-}
-</style>
-
-<!-- JS A ADICIONAR AO app.js -->
-<script>
-document.getElementById('addObservationBtn').onclick = () => {
-  document.getElementById('addObservationModal').style.display = 'block';
-};
-
-document.getElementById('closeAddModal').onclick = closeAddForm;
-document.getElementById('cancelAdd').onclick = closeAddForm;
-
-function closeAddForm() {
-  document.getElementById('addObservationForm').reset();
-  document.getElementById('addObservationModal').style.display = 'none';
-  document.getElementById('addSuccessMsg').style.display = 'none';
-}
-
-document.getElementById('addObservationForm').onsubmit = function(e) {
-  e.preventDefault();
-  // Aqui chama a função de guardar observação
-  // Exemplo: saveObservation(...)
-  document.getElementById('addSuccessMsg').style.display = 'block';
-  setTimeout(() => {
-    closeAddForm();
-  }, 1500);
-};
-</script>
-
-  
+  <!-- MODAL -->
+  <div id="addObservationModal" class="modal">
+    <div class="modal-content dark-modal">
+      <span class="close" id="closeAddModal">&times;</span>
+      <h2>Adicionar Observação</h2>
+      <form id="addObservationForm">
+        <label>Nome do objeto<input type="text" name="nome" required></label>
+        <label>Tipo<select name="tipo">
+          <option value="Estrela">Estrela</option>
+          <option value="Galáxia">Galáxia</option>
+          <option value="Planeta">Planeta</option>
+          <option value="Cometa">Cometa</option>
+          <option value="Outro">Outro</option>
+        </select></label>
+        <label>Data da observação<input type="date" name="data" required></label>
+        <label>Localização<input type="text" name="local"></label>
+        <label>RA<input type="text" name="ra"></label>
+        <label>DEC<input type="text" name="dec"></label>
+        <label>Magnitude<input type="number" name="magnitude" step="0.1"></label>
+        <label>Distância <input type="text" name="distancia">
+          <select name="unidadeDistancia">
+            <option value="ly">ly</option>
+            <option value="AU">AU</option>
+          </select></label>
+        <label>Descrição<textarea name="descricao"></textarea></label>
+        <label><input type="checkbox" name="favorito"> Favorito</label>
+        <label>Imagem<input type="file" name="imagem"></label>
+        <button type="submit">Guardar</button>
+        <button type="button" id="cancelAdd">Cancelar</button>
+      </form>
+      <p id="addSuccessMsg" class="success-msg" style="display:none;">✔️ Observação adicionada com sucesso</p>
+    </div>
+  </div>
 </body>
 </html>

@@ -1,4 +1,8 @@
-// Idiomas suportados
+// AstroLog - app.js consolidado
+
+// =========================
+// VARIÁVEIS GLOBAIS
+// =========================
 let observacoes = [];
 let currentLang = 'pt';
 let currentFilter = 'todos';
@@ -7,6 +11,9 @@ let editId = null;
 let calendarioMes = new Date().getMonth();
 let calendarioAno = new Date().getFullYear();
 
+// =========================
+// TRADUÇÕES
+// =========================
 const i18n = {
   pt: {
     searchPlaceholder: "Pesquisar observações...",
@@ -54,11 +61,12 @@ const i18n = {
   }
 };
 
-// === IndexedDB SETUP ===
+// =========================
+// INDEXEDDB
+// =========================
 const DB_NAME = 'AstroLogDB';
 const DB_VERSION = 1;
 const STORE_NAME = 'observacoes';
-const obsList = document.getElementById('observationsList');
 
 function openDB() {
   return new Promise((resolve, reject) => {
@@ -73,6 +81,7 @@ function openDB() {
     };
   });
 }
+
 
 async function getAllObservacoes() {
   const db = await openDB();
@@ -107,14 +116,81 @@ async function deleteObservacao(id) {
   });
 }
 
-async function loadObservacoes() {
-  observacoes = await getAllObservacoes();
-  renderObservacoes();
-}
-
 // chamada inicial
 loadObservacoes();
 
+// =========================
+// EVENTOS E INICIALIZAÇÃO
+// =========================
+document.addEventListener('DOMContentLoaded', async () => {
+  observacoes = await getAllObservacoes();
+  renderObservacoes();
+  translateUI();
+  updateRedFilterClass();
+
+  // Botão + abre modal
+  const addBtn = document.getElementById('addObservationBtn');
+  if (addBtn) {
+    addBtn.addEventListener('click', () => {
+      document.getElementById('addObservationModal').style.display = 'block';
+    });
+  }
+
+  // Fecha modal
+  document.getElementById('closeAddModal').onclick = closeAddForm;
+  document.getElementById('cancelAdd').onclick = closeAddForm;
+
+  // Submissão do formulário
+  document.getElementById('addObservationForm').onsubmit = async function (e) {
+    e.preventDefault();
+    const form = this;
+    const data = new FormData(form);
+    const obs = Object.fromEntries(data.entries());
+    obs.favorito = !!data.get('favorito');
+    obs.id = Date.now();
+
+    const file = data.get('imagem');
+    const saveObs = async () => {
+      await saveObservacao(obs);
+      observacoes = await getAllObservacoes();
+      renderObservacoes();
+      atualizarBackupJSON();
+      document.getElementById('addSuccessMsg').style.display = 'block';
+      setTimeout(closeAddForm, 1500);
+    };
+
+    if (file && file.name && file.size > 0) {
+      const reader = new FileReader();
+      reader.onload = async () => {
+        obs.imagem = reader.result;
+        await saveObs();
+      };
+      reader.onerror = async () => {
+        alert("Erro ao carregar imagem.");
+        await saveObs();
+      };
+      reader.readAsDataURL(file);
+    } else {
+      await saveObs();
+    }
+  };
+});
+
+function closeAddForm() {
+  document.getElementById('addObservationForm').reset();
+  document.getElementById('addObservationModal').style.display = 'none';
+  document.getElementById('addSuccessMsg').style.display = 'none';
+}
+
+function atualizarBackupJSON() {
+  const json = JSON.stringify(observacoes, null, 2);
+  localStorage.setItem('backupAstroLog', json);
+}
+
+
+// =========================
+// FUNÇÕES AUXILIARES
+// =========================
 function translateUI() {
   console.log("Traduzindo UI para:", currentLang);
 	
@@ -260,6 +336,63 @@ function mostrarObservacoesDoDia(dataISO) {
     `</ul>`;
 }
 
+function getIcon(tipo) {
+  const icons = {
+    'Estrela': '⭐',
+    'Galáxia': '🌌',
+    'Aglomerado': '✨',
+    'Nebulosa': '☁️',
+    'Sistema Solar': '🪐',
+    'Outro': '🔭'
+  };
+  return icons[tipo] || '❔';
+}
+
+// =========================
+// EXPORTAÇÃO E IMPORTAÇÃO
+// =========================
+document.getElementById('exportJson').addEventListener('click', async () => {
+  const data = await getAllObservacoes();
+  const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'astro-observacoes.json';
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+});
+
+document.getElementById('importJson').addEventListener('change', async (event) => {
+  const file = event.target.files[0];
+  if (!file) return;
+
+  const reader = new FileReader();
+  reader.onload = async () => {
+    try {
+      const data = JSON.parse(reader.result);
+      if (!Array.isArray(data)) throw new Error("Formato inválido");
+      const db = await openDB();
+      const tx = db.transaction(STORE_NAME, 'readwrite');
+      const store = tx.objectStore(STORE_NAME);
+      for (const obs of data) {
+        if (obs.id && obs.nome) store.put(obs);
+      }
+      tx.oncomplete = async () => {
+        alert("Importação concluída!");
+        observacoes = await getAllObservacoes();
+        renderObservacoes();
+        event.target.value = '';
+      };
+    } catch (err) {
+      alert("Erro ao importar: " + err.message);
+    }
+  };
+  reader.readAsText(file);
+});
+
+
 const file = obs.imagem;
   
 if (file && file.name && file.size > 0) {
@@ -347,17 +480,7 @@ function renderObservacoes() {
 }
 
 
-function getIcon(tipo) {
-  const icons = {
-    'Estrela': '⭐',
-    'Galáxia': '🌌',
-    'Aglomerado': '✨',
-    'Nebulosa': '☁️',
-    'Sistema Solar': '🪐',
-    'Outro': '🔭'
-  };
-  return icons[tipo] || '❔';
-}
+
 
 window.viewObservation = function(id) {
   const obs = observacoes.find(o => o.id === id);
@@ -500,20 +623,6 @@ window.deleteObservation = async function(id) {
   }
 };
 
-document.addEventListener('DOMContentLoaded', async () => {
-  // Carregar observações
-  observacoes = await getAllObservacoes();
-  renderObservacoes();
-  translateUI();
-  updateRedFilterClass();
-
-  // Botão + (abrir modal)
-  const addBtn = document.getElementById('addObservationBtn');
-  if (addBtn) {
-    addBtn.addEventListener('click', () => {
-      document.getElementById('addObservationModal').style.display = 'block';
-    });
-  }
 
   // Botão de idioma
   const langBtn = document.getElementById('toggleLanguage');
