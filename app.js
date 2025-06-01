@@ -817,3 +817,7 @@ document.getElementById('addObservationForm').onsubmit = async function(e) {
     await saveObs();
   }
 };
+
+document.getElementById('addObservationBtn')?.addEventListener('click', () => {
+  document.getElementById('addObservationModal').style.display = 'block';
+});
