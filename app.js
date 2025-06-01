@@ -821,8 +821,6 @@ document.getElementById('addObservationForm').onsubmit = async function(e) {
     };
     reader.readAsDataURL(file);
   } else {
-    await saveObs();
+        await saveObs();
   }
 };
-
-
