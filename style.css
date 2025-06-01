@@ -448,34 +448,18 @@ body.light textarea {
   position: relative;
 }
 
-#tab-recursos li img,
-#tab-links li img {
-  display: block;
-  margin: 0 auto;
-  max-height: 100px;
-  max-width: 100%;
-  object-fit: contain;
-}
-
-#tab-recursos li a > img,
-#tab-links li a > img {
-  flex-grow: 1;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-
 #tab-recursos li a::after,
 #tab-links li a::after {
   content: attr(title);
   position: absolute;
-  bottom: 10px;
-  left: 8px;
-  right: 8px;
+  bottom: 0;
+  left: 0;
+  right: 0;
   font-size: 0.85rem;
   text-align: center;
   color: #fff;
+  background: rgba(0, 0, 0, 0.6);
+  padding: 0.4rem;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -489,10 +473,11 @@ body.light textarea {
   width: 100%;
   overflow: hidden;
   padding: 0.5rem;
+  max-height: 130px;
 }
 
 .card-img img {
-  max-height: 100px;
+  max-height: 100%;
   max-width: 100%;
   object-fit: contain;
 }
