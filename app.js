@@ -11,6 +11,8 @@ let editId = null;
 let calendarioMes = new Date().getMonth();
 let calendarioAno = new Date().getFullYear();
 
+const obsList = document.getElementById('observationsList');
+
 // =========================
 // TRADUÇÕES
 // =========================
@@ -484,11 +486,6 @@ function getIcon(tipo) {
 // =========================
 // EXPORTAÇÃO E IMPORTAÇÃO
 // =========================
-
-
-
-
-const file = obs.imagem;
   
 if (file && file.name && file.size > 0) {
   const reader = new FileReader();
