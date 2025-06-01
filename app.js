@@ -150,8 +150,8 @@ function translateUI() {
   document.querySelector('footer label:last-of-type').textContent = t.intensity;
   document.querySelector('[data-tab="cielo"]').textContent = t.cielo;
   document.getElementById('skyTitle').textContent = t.skyTitle;
-  document.getElementById('skySummary').textContent = t.skySummary;
   document.getElementById('getSkyData').textContent = t.getSkyData;
+  document.getElementById('skySummary').textContent = t.skySummary;
 
 
   // Traduzir nomes das tabs
@@ -257,6 +257,11 @@ const form = document.getElementById('observationForm');
 const obsList = document.getElementById('observationsList');
 const searchInput = document.getElementById('searchInput');
 const filterButtons = document.querySelectorAll('[data-filter]');
+
+async function loadObservacoes() {
+  observacoes = await getAllObservacoes();
+  renderObservacoes();
+}
 
 form.addEventListener('submit', async e => {
   e.preventDefault();
