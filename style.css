@@ -229,98 +229,6 @@ footer {
   color: white;
 }
 
-/* Recursos cards */
-#tab-recursos ul {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 1rem;
-  justify-content: center;
-  list-style: none;
-  padding: 0;
-  margin: 0;
-}
-
-#tab-recursos li {
-  background-color: #000;
-  border-radius: 0.5rem;
-  overflow: hidden;
-  padding: 0;
-}
-
-#tab-recursos li:hover {
-  transform: scale(1.03);
-}
-
-#tab-recursos a {
-  display: block;
-  text-decoration: none;
-  color: inherit;
-}
-
-#tab-recursos li a {
-  display: flex;
-  flex-direction: column;
-  height: 100%;
-  text-decoration: none;
-  color: #fff;
-  background-color: #000;
-}
-
-
-#tab-recursos li img {
-  object-fit: contain;
-  background-color: #000;
-  flex-grow: 1;
-  padding: 1rem;
-  max-height: 150px;
-}
-
-/* Aplicar os mesmos estilos aos links úteis */
-#tab-links ul {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 1rem;
-  justify-content: center;
-  list-style: none;
-  padding: 0;
-  margin: 0;
-}
-
-#tab-links li {
-  background-color: #000;
-  border-radius: 0.5rem;
-  overflow: hidden;
-  padding: 0;
-}
-
-#tab-links li:hover {
-  transform: scale(1.03);
-}
-
-#tab-links a {
-  display: block;
-  text-decoration: none;
-  color: inherit;
-}
-
-#tab-links li a {
-  display: flex;
-  flex-direction: column;
-  height: 100%;
-  text-decoration: none;
-  color: #fff;
-  background-color: #000;
-}
-
-#tab-links li img {
-  object-fit: contain;
-  background-color: #000;
-  flex-grow: 1;
-  padding: 1rem;
-  max-height: 150px;
-}
-
-
 /* === Filtro Vermelho Uniforme === */
 body.red-filter {
   background-color: #360700 !important;
@@ -492,4 +400,57 @@ body.light textarea {
   font-weight: bold;
   min-width: 140px;
   text-align: center;
+}
+
+/* Estilos partilhados entre Recursos e Links Úteis */
+#tab-recursos ul,
+#tab-links ul {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  justify-content: center;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+#tab-recursos li,
+#tab-links li {
+  background-color: #000;
+  border-radius: 0.5rem;
+  overflow: hidden;
+  width: 200px;
+  height: 240px;
+  box-shadow: 0 0 5px rgba(255, 255, 255, 0.1);
+  display: flex;
+  flex-direction: column;
+  transition: transform 0.2s;
+}
+
+#tab-recursos li:hover,
+#tab-links li:hover {
+  transform: scale(1.03);
+}
+
+#tab-recursos li a,
+#tab-links li a {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  text-decoration: none;
+  color: #fff;
+  background-color: #000;
+  align-items: center;
+  justify-content: flex-start;
+  text-align: center;
+  padding: 0.5rem;
+  gap: 0.5rem;
+}
+
+#tab-recursos li img,
+#tab-links li img {
+  max-height: 120px;
+  max-width: 100%;
+  object-fit: contain;
+  margin-top: 0.5rem;
 }
