@@ -771,7 +771,6 @@ document.getElementById('nextMonth').addEventListener('click', () => {
   renderCalendario();
 });
 
-
 document.getElementById('closeAddModal').onclick = closeAddForm;
 document.getElementById('cancelAdd').onclick = closeAddForm;
 
