@@ -416,12 +416,6 @@ function updateRedFilterClass() {
 redToggle.addEventListener('change', updateRedFilterClass);
 redSlider.addEventListener('input', updateRedFilterClass);
 
-async function loadObservacoes() {
-  observacoes = await getAllObservacoes();
-  renderObservacoes();
-}
-
-
 function renderCalendario() {
   const container = document.getElementById('calendarContainer');
   const title = document.getElementById('calendarMonthYear');
@@ -720,98 +714,7 @@ window.deleteObservation = async function(id) {
 };
 
 
-  // Botão de idioma
-  const langBtn = document.getElementById('toggleLanguage');
-  if (langBtn) {
-    langBtn.addEventListener('click', () => {
-      currentLang = currentLang === 'pt' ? 'en' : 'pt';
-      langBtn.textContent = currentLang === 'pt' ? 'EN' : 'PT';
-      translateUI();
-      renderObservacoes();
-    });
-  }
-});
 
-  // Navegação entre tabs
-  const tabs = document.querySelectorAll('nav button');
-const tabSections = document.querySelectorAll('.tab');
-
-tabs.forEach(tab => {
-  tab.addEventListener('click', () => {
-    const target = tab.dataset.tab;
-
-    tabs.forEach(t => t.classList.remove('active'));
-    tab.classList.add('active');
-
-    tabSections.forEach(section => section.classList.remove('active'));
-	  if (target === 'adicionar') {
-  editId = null;
-} else if (target === 'calendario') {
-  renderCalendario();
-}
-    document.getElementById(`tab-${target}`).classList.add('active');
-
-    document.querySelector('footer').style.display = (target === 'configuracoes') ? 'flex' : 'none';
-
-      // Remover dropdown visível, se existir
-      document.querySelectorAll('.dropdown-menu').forEach(m => m.remove());
-
- if (target === 'adicionar') {
-      editId = null;
-      
-    } else if (target === 'calendario') {
-      renderCalendario();
-    }
-  });
-});
-
-  // Filtro por tipo
-  const filterBtn = document.getElementById('filterByType');
-  filterBtn.addEventListener('click', async () => {
-    if (!observacoes || observacoes.length === 0) observacoes = await getAllObservacoes();
-    if (!observacoes.length) {
-      alert("Sem observações para filtrar.");
-      return;
-    }
-
-    // Remover menus existentes
-    document.querySelectorAll('.dropdown-menu').forEach(m => m.remove());
-
-    const tipos = [...new Set(observacoes.map(o => o.tipo).filter(Boolean))];
-    const menu = document.createElement('div');
-    menu.className = 'dropdown-menu';
-
-    tipos.forEach(tipo => {
-      const item = document.createElement('div');
-      item.textContent = tipo;
-      item.addEventListener('click', () => {
-        currentFilter = 'tipo';
-        searchQuery = tipo.toLowerCase();
-        renderObservacoes();
-        menu.remove();
-      });
-      menu.appendChild(item);
-    });
-
-    const allItem = document.createElement('div');
-    allItem.textContent = i18n[currentLang].all;
-    allItem.addEventListener('click', () => {
-      currentFilter = 'todos';
-      searchQuery = '';
-      renderObservacoes();
-      menu.remove();
-    });
-    menu.appendChild(allItem);
-
-    const rect = filterBtn.getBoundingClientRect();
-    menu.style.position = 'absolute';
-    menu.style.top = `${rect.bottom + window.scrollY}px`;
-    menu.style.left = `${rect.left + window.scrollX}px`;
-    menu.style.zIndex = 1000;
-
-    document.body.appendChild(menu);
-  });
-	
 function normalizarDataLocal(data) {
   return new Date(data).toLocaleDateString('sv-SE'); // YYYY-MM-DD
 }
@@ -837,7 +740,3 @@ document.getElementById('nextMonth').addEventListener('click', () => {
   }
   renderCalendario();
 });
-
-document.getElementById('closeAddModal').onclick = closeAddForm;
-document.getElementById('cancelAdd').onclick = closeAddForm;
-
