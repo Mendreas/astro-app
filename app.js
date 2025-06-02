@@ -1,4 +1,6 @@
-// AstroLog - app.js consolidado (com modal de “Adicionar Observação” integrado)
+// ======================================================
+// AstroLog - app.js (versão revisada com modal e sem erros)
+// ======================================================
 
 // =========================
 // VARIÁVEIS GLOBAIS
@@ -124,7 +126,6 @@ async function loadObservacoes() {
   observacoes = await getAllObservacoes();
   renderObservacoes();
 }
-
 loadObservacoes();
 
 // =========================
@@ -143,17 +144,30 @@ if (langBtn) {
 }
 
 // Navegação entre tabs
-const tabs = document.querySelectorAll('nav button');
+const tabs = document.querySelectorAll('nav button[data-tab]');
 const tabSections = document.querySelectorAll('.tab');
 
 tabs.forEach(tab => {
   tab.addEventListener('click', () => {
-    const target = tab.dataset.tab;
+    const target = tab.dataset.tab; 
+    // “target” = sufixo que vamos anexar a “tab-”
     tabs.forEach(t => t.classList.remove('active'));
     tab.classList.add('active');
-    tabSections.forEach(section => section.classList.remove('active'));
-    document.getElementById(`tab-${target}`).classList.add('active');
-    document.querySelector('footer').style.display = (target === 'configuracoes') ? 'flex' : 'none';
+    tabSections.forEach(sec => sec.classList.remove('active'));
+
+    const sectionId = `tab-${target}`; 
+    const seçãoAlvo = document.getElementById(sectionId);
+    if (seçãoAlvo) {
+      seçãoAlvo.classList.add('active');
+    }
+
+    // Se a aba “configuracoes” abrir, mostra o footer; senão, esconde
+    const footer = document.querySelector('footer');
+    if (footer) {
+      footer.style.display = (target === 'configuracoes') ? 'flex' : 'none';
+    }
+
+    // Se a aba for “calendario”, renderiza o calendário
     if (target === 'calendario') renderCalendario();
   });
 });
@@ -162,7 +176,9 @@ tabs.forEach(tab => {
 const filterBtn = document.getElementById('filterByType');
 if (filterBtn) {
   filterBtn.addEventListener('click', async () => {
-    if (!observacoes || observacoes.length === 0) observacoes = await getAllObservacoes();
+    if (!observacoes || observacoes.length === 0) {
+      observacoes = await getAllObservacoes();
+    }
     if (!observacoes.length) {
       alert("Sem observações para filtrar.");
       return;
@@ -171,6 +187,7 @@ if (filterBtn) {
     const tipos = [...new Set(observacoes.map(o => o.tipo).filter(Boolean))];
     const menu = document.createElement('div');
     menu.className = 'dropdown-menu';
+
     tipos.forEach(tipo => {
       const item = document.createElement('div');
       item.textContent = tipo;
@@ -182,6 +199,8 @@ if (filterBtn) {
       });
       menu.appendChild(item);
     });
+
+    // Adiciona opção “Todos”
     const allItem = document.createElement('div');
     allItem.textContent = i18n[currentLang].all;
     allItem.addEventListener('click', () => {
@@ -191,6 +210,7 @@ if (filterBtn) {
       menu.remove();
     });
     menu.appendChild(allItem);
+
     const rect = filterBtn.getBoundingClientRect();
     menu.style.position = 'absolute';
     menu.style.top = `${rect.bottom + window.scrollY}px`;
@@ -220,7 +240,7 @@ filterButtons.forEach(btn => {
   });
 });
 
-// Exportar e importar
+// Exportar JSON
 const exportBtn = document.getElementById('exportJson');
 if (exportBtn) {
   exportBtn.addEventListener('click', async () => {
@@ -237,6 +257,7 @@ if (exportBtn) {
   });
 }
 
+// Importar JSON
 const importInput = document.getElementById('importJson');
 if (importInput) {
   importInput.addEventListener('change', async (event) => {
@@ -277,8 +298,6 @@ document.addEventListener('DOMContentLoaded', async () => {
   updateRedFilterClass();
 
   // ======== MODAL DE ADICIONAR OBSERVAÇÃO ========
-
-  // Pega referências dos elementos do modal
   const addBtn = document.getElementById('addObservationBtn');
   const modal = document.getElementById('addObservationModal');
   const closeModalBtn = document.getElementById('closeAddModal');
@@ -289,7 +308,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   // Função para abrir o modal
   function openModal() {
     if (modal) {
-      modal.style.display = 'flex'; // mostra o modal (e usa flex para centralizar)
+      modal.style.display = 'flex'; // exibe como flex para centrar
     }
   }
 
@@ -334,7 +353,6 @@ document.addEventListener('DOMContentLoaded', async () => {
       obs.id = Date.now();
 
       const file = formData.get('imagem');
-      // Lógica para salvar post-imagem
       const saveObs = async () => {
         await saveObservacao(obs);
         observacoes = await getAllObservacoes();
@@ -360,7 +378,6 @@ document.addEventListener('DOMContentLoaded', async () => {
       }
     });
   }
-
   // ======== FIM DO MODAL DE ADICIONAR OBSERVAÇÃO ========
 
   // Botão de download de backup
@@ -385,7 +402,8 @@ document.addEventListener('DOMContentLoaded', async () => {
   }
 });
 
-// Função que fecha o modal de adicionar observação (fora do DOMContentLoaded)
+// =========================
+// FUNÇÃO PARA FECHAR O MODAL (fora do DOMContentLoaded)
 function closeAddForm() {
   const form = document.getElementById('addObservationForm');
   const modal = document.getElementById('addObservationModal');
@@ -395,17 +413,17 @@ function closeAddForm() {
   if (successMsg) successMsg.style.display = 'none';
 }
 
-// Atualiza backup no localStorage
+// =========================
+// FUNÇÃO PARA ATUALIZAR BACKUP NO localStorage
 function atualizarBackupJSON() {
   const json = JSON.stringify(observacoes, null, 2);
   localStorage.setItem('backupAstroLog', json);
 }
 
 // =========================
-// TRADUZIR UI
+// FUNÇÃO DE TRADUÇÃO DE UI
 // =========================
 function translateUI() {
-  console.log("Traduzindo UI para:", currentLang);
   const t = i18n[currentLang];
 
   const searchInputElem = document.getElementById('searchInput');
@@ -418,8 +436,8 @@ function translateUI() {
   const btnFavoritos = document.querySelector('[data-filter="favoritos"]');
   if (btnFavoritos) btnFavoritos.textContent = t.favorites;
 
-  const filterBtn = document.getElementById('filterByType');
-  if (filterBtn) filterBtn.textContent = t.filterType;
+  const filterBtnElem = document.getElementById('filterByType');
+  if (filterBtnElem) filterBtnElem.textContent = t.filterType;
 
   const cancelBtn = document.querySelector('button[type="reset"]');
   if (cancelBtn) cancelBtn.textContent = t.cancel;
@@ -447,7 +465,8 @@ function translateUI() {
   // Atualizar título do calendário se estiver visível
   const calendarioVisivel = document.getElementById('tab-calendario')?.classList.contains('active');
   if (calendarioVisivel) {
-    document.querySelector('#tab-calendario h2').textContent = i18n[currentLang].calendarTitle;
+    const tituloCalendario = document.querySelector('#tab-calendario h2');
+    if (tituloCalendario) tituloCalendario.textContent = t.calendarTitle;
     renderCalendario();
   }
 }
@@ -514,7 +533,7 @@ function renderCalendario() {
   const firstDay = new Date(calendarioAno, calendarioMes, 1).getDay();
   const daysInMonth = new Date(calendarioAno, calendarioMes + 1, 0).getDate();
 
-  // Atualizar o título do calendário
+  // Atualizar título do calendário
   const nomeMes = new Date(calendarioAno, calendarioMes).toLocaleString('pt-PT', { month: 'long' });
   title.textContent = `${capitalize(nomeMes)} ${calendarioAno}`;
 
@@ -625,6 +644,7 @@ function renderObservacoes() {
 
 // =========================
 // VISUALIZAR OBSERVAÇÃO (modal)
+// =========================
 window.viewObservation = function(id) {
   const obs = observacoes.find(o => o.id === id);
   if (!obs) return;
@@ -658,6 +678,7 @@ window.viewObservation = function(id) {
 
 // =========================
 // VISUALIZAR IMAGEM EM MODAL
+// =========================
 window.openImageModal = function(imgSrc) {
   const modal = document.createElement('div');
   modal.className = 'modal';
@@ -683,19 +704,22 @@ window.openImageModal = function(imgSrc) {
 
 // =========================
 // FECHAR MODAL POR ID
+// =========================
 window.closeModalById = function(id) {
   const modal = document.getElementById(id);
   if (modal) modal.remove();
 };
 
 // =========================
-// FECHAR MODAL QUALQUER (para viewObservation)
+// FECHAR MODAL QUALQUER
+// =========================
 window.closeModal = function() {
   document.querySelectorAll('.modal').forEach(m => m.remove());
 };
 
 // =========================
 // EDITAR OBSERVAÇÃO (modal)
+// =========================
 window.editObservation = function(id) {
   const obs = observacoes.find(o => o.id === id);
   if (!obs) return;
@@ -786,7 +810,6 @@ window.editObservation = function(id) {
     newObs.favorito = !!data.get('favorito');
 
     const file = data.get('imagem');
-    // Lógica para salvar a edição
     const saveEdit = async () => {
       const original = observacoes.find(o => o.id === id);
       if (original?.imagem && !newObs.imagem) {
