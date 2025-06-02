@@ -199,7 +199,6 @@ function translateUI() {
 
   const importLabel   = document.querySelector('.import-label');
   if (importLabel) {
-    // O próprio texto dentro da label (testa primeiro childNode)
     importLabel.childNodes[0].nodeValue = t.importObservacoes;
   }
 
@@ -208,7 +207,7 @@ function translateUI() {
 
   // “Recursos”, “Links Úteis”, “Calendário” e “Configurações” (nav)
   document.querySelectorAll('nav button[data-tab]').forEach(btn => {
-    const key = btn.getAttribute('data-tab'); // “objetos”, “recursos”, “links”, “calendario”, “configuracoes”
+    const key = btn.getAttribute('data-tab');
     if (t[key]) {
       btn.textContent = t[key];
     }
