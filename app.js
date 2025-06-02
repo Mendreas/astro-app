@@ -37,9 +37,9 @@ const i18n = {
     configuracoes:     "Configurações",
     links:             "Links Úteis",
     ver:               "Ver",
-    exportJson:        "📤 Exportar Observações",
-    importJson:        "📥 Importar Observações",
-    downloadBackup:    "💾 Descarregar Backup"
+    exportJson:        "Exportar Observações",
+    importJson:        "Importar Observações",
+    downloadBackup:    "Descarregar Backup"
   },
   en: {
     searchPlaceholder: "Search observations...",
@@ -62,9 +62,9 @@ const i18n = {
     configuracoes:     "Settings",
     links:             "Useful Links",
     ver:               "View",
-    exportJson:        "📤 Export Observations",
-    importJson:        "📥 Import Observations",
-    downloadBackup:    "💾 Download Backup"
+    exportJson:        "Export Observations",
+    importJson:        "Import Observations",
+    downloadBackup:    "Download Backup"
   }
 };
 
