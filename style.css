@@ -453,8 +453,8 @@ body.light textarea {
   border-radius: 0.5rem;
   overflow: hidden;
 
-  width: 450px;  /* largura fixa */
-  height: 450px; /* altura fixa */
+  width: 250px;  /* largura fixa */
+  height: 250px; /* altura fixa */
 
   box-shadow: 0 0 5px rgba(255, 255, 255, 0.1);
   transition: transform 0.2s;
