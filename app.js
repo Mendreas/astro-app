@@ -141,6 +141,11 @@ loadObservacoes();
 // =========================
 document.addEventListener('DOMContentLoaded', async () => {
   // 1 – Carrega e renderiza as observações
+   const addModal = document.getElementById('addObservationModal');
+  if (addModal) {
+    addModal.style.display = 'none';
+  }
+	
   observacoes = await getAllObservacoes();
   renderObservacoes();
   translateUI();
