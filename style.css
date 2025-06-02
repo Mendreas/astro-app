@@ -279,7 +279,7 @@ nav button.active {
   margin-top: 1rem;
 
   /* Limita a largura total a 7 células de ~60px + 6 gaps de 0.5rem (~8px cada) */
-  max-width: calc(7 * 60px + 6 * 0.5rem);
+  max-width: calc(7 * 10px + 6 * 0.5rem);
   margin-left: auto;   /* centraliza horizontalmente */
   margin-right: auto;
 }
