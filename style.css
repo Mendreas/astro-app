@@ -13,6 +13,9 @@ body {
   overflow: hidden;
 }
 
+/* ----------------------------------------------
+   CABEÇALHO
+   ---------------------------------------------- */
 header {
   display: flex;
   justify-content: space-between;
@@ -68,12 +71,18 @@ header {
   background: #3a3a3a;
 }
 
+/* ----------------------------------------------
+   LAYOUT PRINCIPAL
+   ---------------------------------------------- */
 main {
   display: flex;
   flex: 1;
   overflow: hidden;
 }
 
+/* ----------------------------------------------
+   NAV (abas)
+   ---------------------------------------------- */
 nav {
   display: flex;
   flex-direction: column;
@@ -102,6 +111,9 @@ nav button.active {
   color: #a463ff;
 }
 
+/* ----------------------------------------------
+   CONTEÚDO
+   ---------------------------------------------- */
 .content {
   flex: 1;
   overflow-y: auto;
@@ -301,7 +313,7 @@ nav button.active {
   display: flex;
   align-items: center;
   justify-content: center;
-  /* força aspecto 1:1 para cada célula */
+  /* garante aspecto 1:1 para cada célula */
   aspect-ratio: 1 / 1;
 }
 
@@ -365,7 +377,7 @@ nav button.active {
 
 /* ==============================================
    O footer (com o “Filtro Vermelho” e o slider)
-   Fica ESCONDIDO exceto quando a aba Configurações estiver ativa
+   Fica ESCONDIDO, exceto quando a aba Configurações estiver ativa
    ============================================== */
 footer {
   margin-top: 2rem;

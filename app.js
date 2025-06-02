@@ -13,7 +13,7 @@ let editId            = null;
 let calendarioMes     = new Date().getMonth();
 let calendarioAno     = new Date().getFullYear();
 
-// Elemento onde ficarão as cards de observação
+// Elemento onde as cards de observação serão renderizadas
 const obsList = document.getElementById('observationsList');
 
 // =========================
@@ -157,12 +157,12 @@ function normalizarDataLocal(data) {
 // =========================
 function getIcon(tipo) {
   const icons = {
-    'Estrela':     '⭐',
-    'Galáxia':     '🌌',
-    'Aglomerado':  '✨',
-    'Nebulosa':    '☁️',
+    'Estrela':      '⭐',
+    'Galáxia':      '🌌',
+    'Aglomerado':   '✨',
+    'Nebulosa':     '☁️',
     'Sistema Solar':'🪐',
-    'Outro':       '🔭'
+    'Outro':        '🔭'
   };
   return icons[tipo] || '❔';
 }
@@ -199,13 +199,14 @@ function translateUI() {
 
   const importLabel   = document.querySelector('.import-label');
   if (importLabel) {
+    // O primeiro nó é o texto “📥 Importar Observações”
     importLabel.childNodes[0].nodeValue = t.importObservacoes;
   }
 
   const backupBtn     = document.getElementById('downloadBackup');
   if (backupBtn) backupBtn.innerHTML = t.downloadBackup;
 
-  // “Recursos”, “Links Úteis”, “Calendário” e “Configurações” (nav)
+  // Nomes das abas na nav
   document.querySelectorAll('nav button[data-tab]').forEach(btn => {
     const key = btn.getAttribute('data-tab');
     if (t[key]) {
@@ -508,7 +509,7 @@ function renderCalendario() {
   if (!container || !title) return;
 
   container.innerHTML = '';
-  // Primeiro dia da semana (0=Domingo, 1=Segunda, …)
+  // Primeiro dia da semana (0=Domingo, 1=Segunda, etc.)
   const firstDay    = new Date(calendarioAno, calendarioMes, 1).getDay();
   const daysInMonth = new Date(calendarioAno, calendarioMes + 1, 0).getDate();
 
@@ -517,12 +518,12 @@ function renderCalendario() {
   const nomeMes    = new Date(calendarioAno, calendarioMes).toLocaleString(localeCode, { month: 'long' });
   title.textContent = `${nomeMes.charAt(0).toUpperCase() + nomeMes.slice(1)} ${calendarioAno}`;
 
-  // Descobrir quais dias têm observações para destacar
+  // Destacar dias que têm observações
   const diasComObservacoes = new Set(
     observacoes.map(o => normalizarDataLocal(o.data))
   );
 
-  // Espaço em branco até o primeiro dia do mês
+  // Espaço em branco até o primeiro dia
   for (let i = 0; i < firstDay; i++) {
     container.appendChild(document.createElement('div'));
   }
@@ -565,7 +566,7 @@ function mostrarObservacoesDoDia(dataISO) {
 // EVENTOS DE DOMContentLoaded
 // =========================
 document.addEventListener('DOMContentLoaded', async () => {
-  // 1) Carregar observações do IndexedDB e renderizar
+  // 1) Carregar observações e renderizar
   observacoes = await getAllObservacoes();
   renderObservacoes();
   translateUI();
@@ -659,7 +660,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   const tabSections = document.querySelectorAll('.tab');
   navButtons.forEach(btn => {
     btn.addEventListener('click', () => {
-      const alvo = btn.dataset.tab; 
+      const alvo = btn.dataset.tab;
       navButtons.forEach(b => b.classList.remove('active'));
       btn.classList.add('active');
       tabSections.forEach(sec => sec.classList.remove('active'));
@@ -683,7 +684,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     });
   });
 
-  // Esconder footer logo no início (porque a aba inicial é “Objectos”)
+  // Esconder footer logo no início (aba inicial é “Objectos”)
   const footerInicial = document.querySelector('footer');
   if (footerInicial) {
     footerInicial.classList.remove('active');
