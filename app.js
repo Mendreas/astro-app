@@ -1,5 +1,5 @@
 // ======================================================
-// AstroLog – app.js (versão completa com correções)
+// AstroLog – app.js (versão completa com correções finais)
 // ======================================================
 
 let observacoes    = [];
@@ -78,8 +78,8 @@ const STORE_NAME = 'observacoes';
 function openDB() {
   return new Promise((resolve, reject) => {
     const request = indexedDB.open(DB_NAME, DB_VERSION);
-    request.onerror = () => reject(request.error);
-    request.onsuccess = () => resolve(request.result);
+    request.onerror    = () => reject(request.error);
+    request.onsuccess  = () => resolve(request.result);
     request.onupgradeneeded = () => {
       const db = request.result;
       if (!db.objectStoreNames.contains(STORE_NAME)) {
@@ -132,26 +132,25 @@ async function loadObservacoes() {
 loadObservacoes();
 
 // =========================
-// DOCUMENT READY / DOMContentLoaded
+// document.addEventListener('DOMContentLoaded', …)
 // =========================
 document.addEventListener('DOMContentLoaded', async () => {
   // 1) Carregar e exibir observações
   observacoes = await getAllObservacoes();
   renderObservacoes();
 
-  // 2) Traduzir toda a interface de acordo com currentLang (pt/en)
+  // 2) Traduzir interface e aplicar filtro vermelho
   translateUI();
   updateRedFilterClass();
 
-  // 3) Botão de troca de idioma (EN/PT)
+  // 3) Botão trocar idioma (EN / PT)
   const langBtn = document.getElementById('toggleLanguage');
   if (langBtn) {
     langBtn.addEventListener('click', () => {
       currentLang = (currentLang === 'pt') ? 'en' : 'pt';
       langBtn.textContent = (currentLang === 'pt') ? 'EN' : 'PT';
       translateUI();
-
-      // Se estivermos na aba “Objectos” (tab-objectos) recarrega a lista
+      // Se estiver na aba “Objectos”, recarrega a lista
       if (document.getElementById('tab-objectos').classList.contains('active')) {
         renderObservacoes();
       }
@@ -163,24 +162,26 @@ document.addEventListener('DOMContentLoaded', async () => {
   const tabSections = document.querySelectorAll('.tab');
   navButtons.forEach(btn => {
     btn.addEventListener('click', () => {
-      const alvo = btn.dataset.tab; // e.g. "recursos", "links", "calendario", etc.
+      const alvo = btn.dataset.tab; // ex: "recursos", "links", "calendario", "configuracoes", etc.
 
-      // a) Marca o botão ativo
+      // Marcar botão ativo
       navButtons.forEach(b => b.classList.remove('active'));
       btn.classList.add('active');
 
-      // b) Mostra apenas a seção ativa
+      // Mostrar apenas a seção correspondente
       tabSections.forEach(sec => sec.classList.remove('active'));
       const sectionAlvo = document.getElementById(`tab-${alvo}`);
-      if (sectionAlvo) sectionAlvo.classList.add('active');
+      if (sectionAlvo) {
+        sectionAlvo.classList.add('active');
+      }
 
-      // c) Footer só aparece se for aba “configuracoes”
+      // Mostrar ou esconder <footer> se for aba “configuracoes”
       const footer = document.querySelector('footer');
       if (footer) {
         footer.style.display = (alvo === 'configuracoes') ? 'flex' : 'none';
       }
 
-      // d) Se for aba “calendario”, renderiza o calendário
+      // Se for aba “calendario”, renderiza o calendário (com mês traduzido)
       if (alvo === 'calendario') {
         renderCalendario();
       }
@@ -190,7 +191,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   // 5) Inicializar o modal “Adicionar Observação”
   setupModalAdicionarObservacao();
 
-  // 6) Filtros rápidos (Todos, Recentes, Favoritos)
+  // 6) Filtros rápidos (Todos / Recentes / Favoritos)
   const filterButtons = document.querySelectorAll('[data-filter]');
   filterButtons.forEach(btn => {
     btn.addEventListener('click', () => {
@@ -223,12 +224,12 @@ document.addEventListener('DOMContentLoaded', async () => {
       }
       document.querySelectorAll('.dropdown-menu').forEach(m => m.remove());
 
-      // Extrair lista de tipos únicos
+      // Extrair tipos únicos
       const tipos = [...new Set(observacoes.map(o => o.tipo).filter(Boolean))];
       const menu  = document.createElement('div');
       menu.className = 'dropdown-menu';
 
-      // Itens para cada tipo
+      // Iterar tipos e adicionar ao dropdown
       tipos.forEach(tipo => {
         const item = document.createElement('div');
         item.textContent = tipo;
@@ -252,7 +253,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       });
       menu.appendChild(allItem);
 
-      // Posiciona o dropdown logo abaixo do botão
+      // Posicionar o dropdown sob o botão
       const rect = filterBtn.getBoundingClientRect();
       menu.style.position = 'absolute';
       menu.style.top      = `${rect.bottom + window.scrollY}px`;
@@ -340,14 +341,14 @@ function renderObservacoes() {
   obsList.innerHTML = '';
   let lista = [...observacoes];
 
-  // 1) filtro “favoritos” ou “recentes”:
+  // Filtrar “favoritos” ou “recentes”
   if (currentFilter === 'favoritos') {
     lista = lista.filter(o => o.favorito);
   } else if (currentFilter === 'recentes') {
     lista = lista.sort((a, b) => new Date(b.data) - new Date(a.data));
   }
 
-  // 2) filtro de busca:
+  // Filtro de busca (searchQuery)
   if (searchQuery) {
     lista = lista.filter(o =>
       o.nome.toLowerCase().includes(searchQuery) ||
@@ -356,22 +357,21 @@ function renderObservacoes() {
     );
   }
 
-  // 3) construir e inserir cada card:
+  // Construir cada card
   lista.forEach(obs => {
     const card = document.createElement('div');
     card.className = 'observation-card';
 
     const icon = getIcon(obs.tipo);
-    const data = new Date(obs.data)
-                   .toLocaleDateString(
-                     currentLang === 'pt' ? 'pt-PT' : 'en-US'
-                   );
+    const data = new Date(obs.data).toLocaleDateString(
+      currentLang === 'pt' ? 'pt-PT' : 'en-US'
+    );
 
     const imgHTML = obs.imagem
-      ? `<img
-           src="${obs.imagem}"
-           style="max-width:100%; max-height:100px; cursor:pointer"
-           onclick="window.open('${obs.imagem}','_blank')"
+      ? `<img 
+           src="${obs.imagem}" 
+           style="max-width:100%; max-height:100px; cursor:pointer" 
+           onclick="window.open('${obs.imagem}','_blank')" 
          />`
       : '';
 
@@ -400,27 +400,27 @@ function renderObservacoes() {
 
 function getIcon(tipo) {
   const icons = {
-    'Estrela':      '⭐',
-    'Galáxia':      '🌌',
-    'Aglomerado':   '✨',
-    'Nebulosa':     '☁️',
+    'Estrela':       '⭐',
+    'Galáxia':       '🌌',
+    'Aglomerado':    '✨',
+    'Nebulosa':      '☁️',
     'Sistema Solar': '🪐',
-    'Outro':        '🔭'
+    'Outro':         '🔭'
   };
   return icons[tipo] || '❔';
 }
 
 // =========================
-// TRADUÇÃO DE UI (função central)
+// TRADUÇÃO DE UI
 // =========================
 function translateUI() {
   const t = i18n[currentLang];
 
-  // 1) Placeholder do campo de pesquisa
+  // 1) Placeholder de pesquisa
   const searchInputElem = document.getElementById('searchInput');
   if (searchInputElem) searchInputElem.placeholder = t.searchPlaceholder;
 
-  // 2) Botões de filtro rápido (Todos, Recentes, Favoritos)
+  // 2) Botões rápidos (Todos / Recentes / Favoritos)
   const btnTodos     = document.querySelector('[data-filter="todos"]');
   const btnRecentes  = document.querySelector('[data-filter="recentes"]');
   const btnFavoritos = document.querySelector('[data-filter="favoritos"]');
@@ -432,18 +432,18 @@ function translateUI() {
   const filterBtnElem = document.getElementById('filterByType');
   if (filterBtnElem) filterBtnElem.textContent = t.filterType;
 
-  // 4) Botões “Ver” em cada card de observação
+  // 4) Botões “Ver” em cada card
   document.querySelectorAll(".observation-card button.view-btn").forEach(btn => {
     btn.textContent = `🔍 ${t.ver}`;
   });
 
-  // 5) Títulos das abas de navegação (nav button[data-tab])
+  // 5) Títulos das abas de navegação (data-tab)
   document.querySelectorAll("nav button[data-tab]").forEach(btn => {
     const key = btn.getAttribute("data-tab");
     if (t[key]) btn.textContent = t[key];
   });
 
-  // 6) Botões da aba “Configurações”
+  // 6) Itens “Configurações” → Botões export/import/backup
   const btnExport = document.getElementById('exportJson');
   if (btnExport) btnExport.textContent = t.exportJson;
 
@@ -453,7 +453,15 @@ function translateUI() {
   const btnBackup = document.getElementById('downloadBackup');
   if (btnBackup) btnBackup.textContent = t.downloadBackup;
 
-  // 7) Se a aba “Calendário” estiver ativa, atualiza título e re-renderiza
+  // 7) Traduzir rodapé (footer) – “Filtro Vermelho” e “Intensidade do Filtro”
+  //    Selecionamos diretamente pela ordem dos <label> dentro de <footer>
+  const footerLabels = document.querySelectorAll('footer label');
+  if (footerLabels.length >= 2) {
+    footerLabels[0].textContent = t.redFilter;    // primeiro <label>
+    footerLabels[1].textContent = t.intensity;    // segundo <label>
+  }
+
+  // 8) Se a aba “Calendário” estiver ativa, atualiza título e re-renderiza
   const calendarioVisivel = document.getElementById('tab-calendario')?.classList.contains('active');
   if (calendarioVisivel) {
     const tituloCalendario = document.querySelector('#tab-calendario h2');
@@ -475,23 +483,23 @@ function renderCalendario() {
   const firstDay    = new Date(calendarioAno, calendarioMes, 1).getDay();
   const daysInMonth = new Date(calendarioAno, calendarioMes + 1, 0).getDate();
 
-  // Escolhe locale com base em currentLang
+  // Escolhe locale para nome do mês
   const locale  = (currentLang === 'pt') ? 'pt-PT' : 'en-US';
   const nomeMes = new Date(calendarioAno, calendarioMes)
                     .toLocaleString(locale, { month: 'long' });
   title.textContent = `${capitalize(nomeMes)} ${calendarioAno}`;
 
-  // Destaca dias que possuem observações
+  // Mapear dias que têm observações
   const diasComObservacoes = new Set(
     observacoes.map(o => normalizarDataLocal(o.data))
   );
 
-  // Divs vazias até o primeiro dia
+  // Espaços vazios até o primeiro dia da semana
   for (let i = 0; i < firstDay; i++) {
     container.appendChild(document.createElement('div'));
   }
 
-  // Preenche cada dia do mês
+  // Preencher cada dia
   for (let d = 1; d <= daysInMonth; d++) {
     const date    = new Date(calendarioAno, calendarioMes, d);
     const dateStr = normalizarDataLocal(date);
@@ -616,6 +624,7 @@ function atualizarBackupJSON() {
 // =========================
 // VISUALIZAR / EDITAR / EXCLUIR OBSERVAÇÃO (modais)
 // =========================
+
 window.viewObservation = function(id) {
   const obs = observacoes.find(o => o.id === id);
   if (!obs) return;
@@ -705,12 +714,12 @@ window.editObservation = function(id) {
         <label>
           Tipo:
           <select name="tipo" required>
-            <option${obs.tipo === 'Estrela'      ? ' selected' : ''}>Estrela</option>
-            <option${obs.tipo === 'Galáxia'      ? ' selected' : ''}>Galáxia</option>
-            <option${obs.tipo === 'Aglomerado'   ? ' selected' : ''}>Aglomerado</option>
-            <option${obs.tipo === 'Nebulosa'     ? ' selected' : ''}>Nebulosa</option>
-            <option${obs.tipo === 'Sistema Solar'? ' selected' : ''}>Sistema Solar</option>
-            <option${obs.tipo === 'Outro'        ? ' selected' : ''}>Outro</option>
+            <option${obs.tipo === 'Estrela'       ? ' selected' : ''}>Estrela</option>
+            <option${obs.tipo === 'Galáxia'       ? ' selected' : ''}>Galáxia</option>
+            <option${obs.tipo === 'Aglomerado'    ? ' selected' : ''}>Aglomerado</option>
+            <option${obs.tipo === 'Nebulosa'      ? ' selected' : ''}>Nebulosa</option>
+            <option${obs.tipo === 'Sistema Solar' ? ' selected' : ''}>Sistema Solar</option>
+            <option${obs.tipo === 'Outro'         ? ' selected' : ''}>Outro</option>
           </select>
         </label>
         <label>
@@ -733,8 +742,8 @@ window.editObservation = function(id) {
           Distância:
           <input name="distancia" value="${obs.distancia || ''}" placeholder="Distância" />
           <select name="unidadeDistancia">
-            <option${obs.unidadeDistancia === 'ly'? ' selected' : ''}>ly</option>
-            <option${obs.unidadeDistancia === 'AU'? ' selected' : ''}>AU</option>
+            <option${obs.unidadeDistancia === 'ly'  ? ' selected' : ''}>ly</option>
+            <option${obs.unidadeDistancia === 'AU'  ? ' selected' : ''}>AU</option>
           </select>
         </label>
         <label>
@@ -772,8 +781,8 @@ window.editObservation = function(id) {
   const modalForm = modal.querySelector('#modalForm');
   modalForm.addEventListener('submit', async e => {
     e.preventDefault();
-    const data     = new FormData(modalForm);
-    const newObs   = Object.fromEntries(data.entries());
+    const data = new FormData(modalForm);
+    const newObs = Object.fromEntries(data.entries());
     newObs.id      = id;
     newObs.favorito = !!data.get('favorito');
 
@@ -818,8 +827,7 @@ window.deleteObservacao = async function(id) {
 // UTILITÁRIOS
 // =========================
 function normalizarDataLocal(data) {
-  // Garante string “YYYY-MM-DD” (para comparar rapidamente)
-  return new Date(data).toLocaleDateString('sv-SE');
+  return new Date(data).toLocaleDateString('sv-SE'); // formata “YYYY-MM-DD”
 }
 
 function capitalize(str) {
@@ -827,7 +835,7 @@ function capitalize(str) {
 }
 
 // =========================
-// FILTRO VERMELHO (funções auxiliares)
+// FILTRO VERMELHO (auxiliares)
 // =========================
 const redToggle = document.getElementById('redFilterToggle');
 const redSlider = document.getElementById('redFilterIntensity');
@@ -860,16 +868,16 @@ redSlider?.addEventListener('input', () => {
 
 function updateRedFilterClass() {
   document.body.classList.remove(
-    'intensity-20', 'intensity-40', 'intensity-60', 'intensity-80', 'intensity-100'
+    'intensity-20','intensity-40','intensity-60','intensity-80','intensity-100'
   );
   if (redToggle?.checked) {
     document.body.classList.add('red-filter');
     const val = parseInt(redSlider.value, 10);
-    if (val > 80)       document.body.classList.add('intensity-100');
-    else if (val > 60)  document.body.classList.add('intensity-80');
-    else if (val > 40)  document.body.classList.add('intensity-60');
-    else if (val > 20)  document.body.classList.add('intensity-40');
-    else                document.body.classList.add('intensity-20');
+    if (val > 80)      document.body.classList.add('intensity-100');
+    else if (val > 60) document.body.classList.add('intensity-80');
+    else if (val > 40) document.body.classList.add('intensity-60');
+    else if (val > 20) document.body.classList.add('intensity-40');
+    else               document.body.classList.add('intensity-20');
   } else {
     document.body.classList.remove('red-filter');
   }
