@@ -432,12 +432,12 @@ footer input[type="range"] {
   color: #fff;
   width: 90%;
   max-width: 500px;
-  max-height: 90vh;
+  max-height: 90vh;        /* Limita altura para permitir scroll interno */
   border-radius: 8px;
   padding: 20px;
   position: relative;
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
-  overflow-y: auto;
+  overflow-y: auto;        /* Permite rolagem interna se o conteúdo exceder */
 }
 
 .modal-content .close {
@@ -449,6 +449,7 @@ footer input[type="range"] {
   cursor: pointer;
 }
 
+/* Layout interno do formulário do modal */
 .modal-content form {
   display: flex;
   flex-direction: column;
@@ -487,6 +488,7 @@ footer input[type="range"] {
   min-height: 60px;
 }
 
+/* Botões “Guardar” e “Cancelar” dentro do modal */
 .modal-buttons {
   display: flex;
   justify-content: flex-end;
@@ -507,7 +509,6 @@ footer input[type="range"] {
   background: #7b2cbf;
   color: white;
 }
-
 .modal-content button[type="submit"]:hover {
   background: #9d4edd;
 }
@@ -516,17 +517,18 @@ footer input[type="range"] {
   background: #333;
   color: #fff;
 }
-
 .modal-content button#cancelAdd:hover {
   background: #444;
 }
 
+/* Mensagem de sucesso dentro do modal */
 .success-msg {
   color: #4caf50;
   margin-top: 1rem;
   font-weight: bold;
   text-align: center;
 }
+
 
 /* ==============================================
    Filtro Vermelho (modo noturno vermelho)
