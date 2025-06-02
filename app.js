@@ -1,5 +1,5 @@
 // ======================================================
-// app.js (versão revisada)
+// AstroLog - app.js (complete, cleaned up)
 // ======================================================
 
 // =========================
@@ -13,11 +13,11 @@ let editId = null;
 let calendarioMes = new Date().getMonth();
 let calendarioAno = new Date().getFullYear();
 
-// Atenção: obsList será definido dentro de DOMContentLoaded
-let obsList = null;
+// Vamos pegar o container onde as "observation-card" serão inseridas:
+const obsList = document.getElementById('observationsList');
 
 // =========================
-// TRADUÇÕES (i18n)
+// TRADUÇÕES
 // =========================
 const i18n = {
   pt: {
@@ -40,7 +40,7 @@ const i18n = {
     recursos: "Recursos",
     configuracoes: "Configurações",
     links: "Links Úteis",
-    ver: "Ver",
+    ver: "Ver"
   },
   en: {
     searchPlaceholder: "Search observations...",
@@ -62,12 +62,12 @@ const i18n = {
     recursos: "Resources",
     configuracoes: "Settings",
     links: "Useful Links",
-    ver: "View",
+    ver: "View"
   }
 };
 
 // =========================
-// INDEXEDDB
+// INDEXEDDB (CRUD)
 // =========================
 const DB_NAME = 'AstroLogDB';
 const DB_VERSION = 1;
@@ -92,9 +92,9 @@ async function getAllObservacoes() {
   return new Promise((resolve, reject) => {
     const tx = db.transaction(STORE_NAME, 'readonly');
     const store = tx.objectStore(STORE_NAME);
-    const request = store.getAll();
-    request.onsuccess = () => resolve(request.result);
-    request.onerror = () => reject(request.error);
+    const req = store.getAll();
+    req.onsuccess = () => resolve(req.result);
+    req.onerror = () => reject(req.error);
   });
 }
 
@@ -121,17 +121,72 @@ async function deleteObservacao(id) {
 }
 
 // =========================
-// FUNÇÕES AUXILIARES
+// RENDER DE OBSERVAÇÕES
 // =========================
-function normalizarDataLocal(data) {
-  // Retorna “YYYY-MM-DD” (formato usado no calendário)
-  return new Date(data).toLocaleDateString('sv-SE');
+function renderObservacoes() {
+  if (!obsList) return;
+  obsList.innerHTML = '';
+
+  let list = [...observacoes];
+
+  if (currentFilter === 'favoritos') {
+    list = list.filter(o => o.favorito);
+  } else if (currentFilter === 'recentes') {
+    // Ordenar por data mais recente primeiro
+    list = list.sort((a, b) => new Date(b.data) - new Date(a.data));
+  }
+
+  if (searchQuery) {
+    list = list.filter(o =>
+      o.nome.toLowerCase().includes(searchQuery) ||
+      o.tipo.toLowerCase().includes(searchQuery) ||
+      (o.local || '').toLowerCase().includes(searchQuery)
+    );
+  }
+
+  list.forEach(obs => {
+    const card = document.createElement('div');
+    card.className = 'observation-card';
+
+    const icon = getIcon(obs.tipo);
+    const dataBr = new Date(obs.data).toLocaleDateString();
+
+    // Montando o HTML interno de cada cartão
+    const imgHTML = obs.imagem
+      ? `<img src="${obs.imagem}"
+              style="max-width:100%; max-height:100px; cursor:pointer;"
+              onclick="window.open('${obs.imagem}', '_blank')" />`
+      : '';
+
+    const viewBtn = `<button class="view-btn" onclick="viewObservation(${obs.id})">
+                       🔍 ${i18n[currentLang].ver}
+                     </button>`;
+    const editBtn = `<button onclick="editObservation(${obs.id})">
+                       ✏️ ${i18n[currentLang].edit}
+                     </button>`;
+    const deleteBtn = `<button onclick="deleteObservation(${obs.id})">
+                         🗑️ ${i18n[currentLang].delete}
+                       </button>`;
+
+    card.innerHTML = `
+      <div class="title">${icon} ${obs.nome} ${obs.favorito ? '⭐' : ''}</div>
+      <div><small>${obs.tipo}</small></div>
+      <div><small>${dataBr} - ${obs.local || ''}</small></div>
+      ${imgHTML}
+      <div style="margin-top:0.5rem;">
+        ${viewBtn}
+        ${editBtn}
+        ${deleteBtn}
+      </div>
+    `;
+
+    obsList.appendChild(card);
+  });
 }
 
-function capitalize(str) {
-  return str.charAt(0).toUpperCase() + str.slice(1);
-}
-
+// =========================
+// ÍCONES POR TIPO
+// =========================
 function getIcon(tipo) {
   const icons = {
     'Estrela': '⭐',
@@ -145,75 +200,87 @@ function getIcon(tipo) {
 }
 
 // =========================
-// RENDERIZAR OBSERVAÇÕES
+// FUNÇÃO PARA NORMALIZAR DATA COMO "YYYY-MM-DD"
 // =========================
-function renderObservacoes() {
-  if (!obsList) return; // Se obsList for null, interrompe
-  obsList.innerHTML = '';
+function normalizarDataLocal(data) {
+  // Podemos usar toLocaleDateString('sv-SE') para obter formato YYYY-MM-DD
+  return new Date(data).toLocaleDateString('sv-SE');
+}
 
-  let list = [...observacoes];
-
-  // Aplica filtro “Favoritos”
-  if (currentFilter === 'favoritos') {
-    list = list.filter(o => o.favorito);
-  }
-  // Aplica filtro “Recentes” (ordena por data decrescente)
-  else if (currentFilter === 'recentes') {
-    list = list.sort((a, b) => new Date(b.data) - new Date(a.data));
-  }
-
-  // Aplica pesquisa de texto
-  if (searchQuery) {
-    list = list.filter(o =>
-      o.nome.toLowerCase().includes(searchQuery) ||
-      o.tipo.toLowerCase().includes(searchQuery) ||
-      o.local.toLowerCase().includes(searchQuery)
-    );
-  }
-
-  // Renderiza cada observação como “card”
-  list.forEach(obs => {
-    const card = document.createElement('div');
-    card.className = 'observation-card';
-
-    const icon = getIcon(obs.tipo);
-    const dataFormatada = new Date(obs.data).toLocaleDateString();
-
-    // Se houver imagem, cria <img> clicável
-    const imgHTML = obs.imagem
-      ? `<img 
-           src="${obs.imagem}"
-           style="max-width: 100%; max-height: 100px; cursor: pointer;"
-           onclick="window.open('${obs.imagem}', '_blank')" />`
-      : '';
-
-    const viewBtn   = `<button class="view-btn" onclick="viewObservation(${obs.id})">🔍 ${i18n[currentLang].ver}</button>`;
-    const editBtn   = `<button onclick="editObservation(${obs.id})">✏️ ${i18n[currentLang].edit}</button>`;
-    const deleteBtn = `<button onclick="deleteObservacao(${obs.id})">🗑️ ${i18n[currentLang].delete}</button>`;
-
-    card.innerHTML = `
-      <div class="title">${icon} ${obs.nome} ${obs.favorito ? '⭐' : ''}</div>
-      <div><small>${obs.tipo}</small></div>
-      <div><small>${dataFormatada} - ${obs.local}</small></div>
-      ${imgHTML}
-      <div style="margin-top: 0.5rem">
-        ${viewBtn}
-        ${editBtn}
-        ${deleteBtn}
-      </div>
-    `;
-
-    obsList.appendChild(card);
-  });
+function capitalize(str) {
+  return str.charAt(0).toUpperCase() + str.slice(1);
 }
 
 // =========================
-// MODAL: VISUALIZAR OBSERVAÇÃO
+// RENDER DO CALENDÁRIO
+// =========================
+function renderCalendario() {
+  const container = document.getElementById('calendarContainer');
+  const title = document.getElementById('calendarMonthYear');
+  if (!container || !title) return;
+
+  container.innerHTML = '';
+
+  // Primeiro dia da semana do mês atual
+  const firstDayOfWeek = new Date(calendarioAno, calendarioMes, 1).getDay();
+  const daysInMonth = new Date(calendarioAno, calendarioMes + 1, 0).getDate();
+
+  // Atualizar título do calendário (ex.: "Maio 2025" ou "May 2025")
+  const nomeMes = new Date(calendarioAno, calendarioMes).toLocaleString('pt-PT', { month: 'long' });
+  title.textContent = `${capitalize(nomeMes)} ${calendarioAno}`;
+
+  // Conjunto de datas que possuem observações
+  const diasComObs = new Set(
+    observacoes.map(o => normalizarDataLocal(o.data))
+  );
+
+  // Preencher células vazias até o primeiro dia
+  for (let i = 0; i < firstDayOfWeek; i++) {
+    const emptyDiv = document.createElement('div');
+    container.appendChild(emptyDiv);
+  }
+
+  // Agora preencher dias do mês
+  for (let dia = 1; dia <= daysInMonth; dia++) {
+    const dataObj = new Date(calendarioAno, calendarioMes, dia);
+    const dataStr = normalizarDataLocal(dataObj);
+
+    const dayDiv = document.createElement('div');
+    dayDiv.className = 'calendar-day';
+    dayDiv.textContent = dia;
+
+    if (diasComObs.has(dataStr)) {
+      dayDiv.classList.add('highlight');
+      dayDiv.addEventListener('click', () => mostrarObservacoesDoDia(dataStr));
+    }
+
+    container.appendChild(dayDiv);
+  }
+}
+
+function mostrarObservacoesDoDia(dataISO) {
+  const listaDia = observacoes.filter(o => o.data.startsWith(dataISO));
+  const container = document.getElementById('calendarResults');
+  if (!container) return;
+
+  if (!listaDia.length) {
+    container.innerHTML = `<p>Sem observações para ${dataISO}</p>`;
+    return;
+  }
+
+  container.innerHTML = `<h3>Observações em ${dataISO}:</h3><ul>` +
+    listaDia.map(o => `<li>${getIcon(o.tipo)} ${o.nome}</li>`).join('') +
+    `</ul>`;
+}
+
+// =========================
+// FUNÇÕES DE MODAL “VIEW OBSERVATION”
 // =========================
 window.viewObservation = function(id) {
   const obs = observacoes.find(o => o.id === id);
   if (!obs) return;
 
+  // Criar modal para visualizar
   const modal = document.createElement('div');
   modal.className = 'modal';
   modal.id = 'view-modal';
@@ -222,24 +289,23 @@ window.viewObservation = function(id) {
       <h3>${obs.nome}</h3>
       <p><strong>Tipo:</strong> ${obs.tipo}</p>
       <p><strong>Data:</strong> ${new Date(obs.data).toLocaleString()}</p>
-      <p><strong>Local:</strong> ${obs.local}</p>
+      <p><strong>Local:</strong> ${obs.local || ''}</p>
       <p><strong>RA:</strong> ${obs.ra || ''}</p>
       <p><strong>DEC:</strong> ${obs.dec || ''}</p>
       <p><strong>Distância:</strong> ${obs.distancia || ''} ${obs.unidadeDistancia || ''}</p>
       <p><strong>Magnitude:</strong> ${obs.magnitude || ''}</p>
       <p><strong>Descrição:</strong> ${obs.descricao || ''}</p>
       ${obs.imagem
-        ? `<img 
-             src="${obs.imagem}" 
-             style="max-width:100%; max-height:200px; margin-top:1rem; cursor:pointer"
-             onclick="openImageModal('${obs.imagem}')" />`
+        ? `<img src="${obs.imagem}"
+               style="max-width:100%; max-height:200px; margin-top:1rem; cursor:pointer;"
+               onclick="openImageModal('${obs.imagem}')" />`
         : ''}
       <button onclick="closeModal()">${i18n[currentLang].close}</button>
     </div>
   `;
   document.body.appendChild(modal);
 
-  // Fecha se clicar fora do conteúdo
+  // Fechar ao clicar fora do conteúdo
   modal.addEventListener('click', e => {
     if (e.target === modal) {
       closeModalById('view-modal');
@@ -247,21 +313,18 @@ window.viewObservation = function(id) {
   });
 };
 
-// =========================
-// MODAL: VISUALIZAR IMAGEM EM TELA CHEIA
-// =========================
 window.openImageModal = function(imgSrc) {
   const modal = document.createElement('div');
   modal.className = 'modal';
   modal.id = 'image-modal';
   modal.innerHTML = `
     <div class="modal-content">
-      <img 
-        src="${imgSrc}" 
-        style="max-width:100%; max-height:80vh; display:block; margin: 0 auto 1rem;"
-      />
-      <div style="text-align:center">
-        <button onclick="closeModalById('image-modal')">${i18n[currentLang].close}</button>
+      <img src="${imgSrc}"
+           style="max-width:100%; max-height:80vh; display:block; margin: 0 auto 1rem;" />
+      <div style="text-align:center;">
+        <button onclick="closeModalById('image-modal')">
+          ${i18n[currentLang].close}
+        </button>
         <button onclick="closeModalById('image-modal'); closeModalById('view-modal')">
           ${i18n[currentLang].close} tudo
         </button>
@@ -270,6 +333,7 @@ window.openImageModal = function(imgSrc) {
   `;
   document.body.appendChild(modal);
 
+  // Fechar ao clicar fora do conteúdo
   modal.addEventListener('click', e => {
     if (e.target === modal) {
       closeModalById('image-modal');
@@ -277,29 +341,24 @@ window.openImageModal = function(imgSrc) {
   });
 };
 
-// =========================
-// FECHAR MODAL POR ID
-// =========================
 window.closeModalById = function(id) {
   const modal = document.getElementById(id);
   if (modal) modal.remove();
 };
 
-// =========================
-// FECHAR QUALQUER MODAL
-// =========================
 window.closeModal = function() {
   document.querySelectorAll('.modal').forEach(m => m.remove());
 };
 
 // =========================
-// MODAL: EDITAR OBSERVAÇÃO
+// EDITAR OBSERVAÇÃO
 // =========================
 window.editObservation = function(id) {
   const obs = observacoes.find(o => o.id === id);
   if (!obs) return;
   editId = id;
 
+  // Montar o modal de edição
   const modal = document.createElement('div');
   modal.className = 'modal';
   modal.innerHTML = `
@@ -313,12 +372,12 @@ window.editObservation = function(id) {
         <label>
           Tipo:
           <select name="tipo" required>
-            <option${obs.tipo === 'Estrela'      ? ' selected' : ''}>Estrela</option>
-            <option${obs.tipo === 'Galáxia'      ? ' selected' : ''}>Galáxia</option>
-            <option${obs.tipo === 'Aglomerado'   ? ' selected' : ''}>Aglomerado</option>
-            <option${obs.tipo === 'Nebulosa'     ? ' selected' : ''}>Nebulosa</option>
-            <option${obs.tipo === 'Sistema Solar'? ' selected' : ''}>Sistema Solar</option>
-            <option${obs.tipo === 'Outro'        ? ' selected' : ''}>Outro</option>
+            <option${obs.tipo === 'Estrela' ? ' selected' : ''}>Estrela</option>
+            <option${obs.tipo === 'Galáxia' ? ' selected' : ''}>Galáxia</option>
+            <option${obs.tipo === 'Aglomerado' ? ' selected' : ''}>Aglomerado</option>
+            <option${obs.tipo === 'Nebulosa' ? ' selected' : ''}>Nebulosa</option>
+            <option${obs.tipo === 'Sistema Solar' ? ' selected' : ''}>Sistema Solar</option>
+            <option${obs.tipo === 'Outro' ? ' selected' : ''}>Outro</option>
           </select>
         </label>
         <label>
@@ -327,7 +386,7 @@ window.editObservation = function(id) {
         </label>
         <label>
           Local:
-          <input name="local" value="${obs.local}" required />
+          <input name="local" value="${obs.local || ''}" />
         </label>
         <label>
           RA:
@@ -354,13 +413,13 @@ window.editObservation = function(id) {
           <textarea name="descricao">${obs.descricao || ''}</textarea>
         </label>
         <label>
-          <input type="checkbox" name="favorito" ${obs.favorito ? 'checked' : ''}/> Favorito
+          <input type="checkbox" name="favorito" ${obs.favorito ? 'checked' : ''} />
+          Favorito
         </label>
-        <label>
-          Imagem (opcional):
+        <label>Imagem (opcional):
           <input type="file" name="imagem" accept="image/*" />
         </label>
-        <div style="margin-top: 1rem; display: flex; justify-content: flex-end; gap: 0.5rem;">
+        <div style="margin-top:1rem; display:flex; justify-content:flex-end; gap:0.5rem;">
           <button type="submit">${i18n[currentLang].save}</button>
           <button type="button" onclick="closeModal()">${i18n[currentLang].cancel}</button>
         </div>
@@ -369,28 +428,27 @@ window.editObservation = function(id) {
   `;
   document.body.appendChild(modal);
 
-  // Fecha se clicar fora do conteúdo
+  // Fecha ao clicar fora do conteúdo
   modal.addEventListener('click', e => {
     if (e.target === modal) {
       modal.remove();
     }
   });
 
-  // Submissão do formulário de edição
+  // Quando o formulário de edição for enviado...
   const modalForm = modal.querySelector('#modalForm');
-  modalForm.addEventListener('submit', async e => {
-    e.preventDefault();
-    const dataForm = new FormData(modalForm);
-    const newObs   = Object.fromEntries(dataForm.entries());
-    newObs.id      = id;
-    newObs.favorito= !!dataForm.get('favorito');
+  modalForm.addEventListener('submit', async evt => {
+    evt.preventDefault();
+    const data = new FormData(modalForm);
+    const newObs = Object.fromEntries(data.entries());
+    newObs.id = id;
+    newObs.favorito = !!data.get('favorito');
 
-    const file = dataForm.get('imagem');
-    async function saveEdit() {
-      // Se não carregou nova imagem, preserva a antiga
-      const original = observacoes.find(o => o.id === id);
-      if (original?.imagem && !newObs.imagem) {
-        newObs.imagem = original.imagem;
+    const arquivoImagem = data.get('imagem');
+    async function salvarEdicao() {
+      const orig = observacoes.find(o => o.id === id);
+      if (orig?.imagem && !newObs.imagem) {
+        newObs.imagem = orig.imagem;
       }
       await saveObservacao(newObs);
       observacoes = await getAllObservacoes();
@@ -398,19 +456,19 @@ window.editObservation = function(id) {
       closeModal();
     }
 
-    if (file && file.size > 0) {
-      const reader = new FileReader();
-      reader.onload = async () => {
-        newObs.imagem = reader.result;
-        await saveEdit();
+    if (arquivoImagem && arquivoImagem.size > 0) {
+      const readerImg = new FileReader();
+      readerImg.onload = async () => {
+        newObs.imagem = readerImg.result;
+        await salvarEdicao();
       };
-      reader.onerror = async () => {
+      readerImg.onerror = async () => {
         alert("Erro ao carregar imagem. A observação será guardada sem imagem nova.");
-        await saveEdit();
+        await salvarEdicao();
       };
-      reader.readAsDataURL(file);
+      readerImg.readAsDataURL(arquivoImagem);
     } else {
-      await saveEdit();
+      await salvarEdicao();
     }
   });
 };
@@ -427,225 +485,274 @@ window.deleteObservacao = async function(id) {
 };
 
 // =========================
-// RENDERIZAR CALENDÁRIO
-// =========================
-function renderCalendario() {
-  const container = document.getElementById('calendarContainer');
-  const title     = document.getElementById('calendarMonthYear');
-  if (!container || !title) return;
-
-  container.innerHTML = '';
-  const firstDay    = new Date(calendarioAno, calendarioMes, 1).getDay();
-  const daysInMonth = new Date(calendarioAno, calendarioMes + 1, 0).getDate();
-
-  // Atualiza o título (“Maio 2025”, etc.)
-  const nomeMes = new Date(calendarioAno, calendarioMes)
-                    .toLocaleString('pt-PT', { month: 'long' });
-  title.textContent = `${capitalize(nomeMes)} ${calendarioAno}`;
-
-  // Coleta datas (YYYY-MM-DD) que contêm observações
-  const diasComObservacoes = new Set(
-    observacoes.map(o => normalizarDataLocal(o.data))
-  );
-
-  // Adiciona “células vazias” até o primeiro dia da semana
-  for (let i = 0; i < firstDay; i++) {
-    container.appendChild(document.createElement('div'));
-  }
-
-  // Preenche cada dia do mês
-  for (let d = 1; d <= daysInMonth; d++) {
-    const date    = new Date(calendarioAno, calendarioMes, d);
-    const dateStr = normalizarDataLocal(date);
-
-    const divDay = document.createElement('div');
-    divDay.className = 'calendar-day';
-    divDay.textContent = d;
-
-    if (diasComObservacoes.has(dateStr)) {
-      divDay.classList.add('highlight');
-      divDay.addEventListener('click', () => mostrarObservacoesDoDia(dateStr));
-    }
-
-    container.appendChild(divDay);
-  }
-}
-
-function mostrarObservacoesDoDia(dataISO) {
-  const lista     = observacoes.filter(o => o.data.startsWith(dataISO));
-  const container = document.getElementById('calendarResults');
-  if (!container) return;
-
-  if (!lista.length) {
-    container.innerHTML = `<p>Sem observações para ${dataISO}</p>`;
-    return;
-  }
-
-  container.innerHTML = `<h3>Observações em ${dataISO}:</h3><ul>` +
-    lista.map(o => `<li>${getIcon(o.tipo)} ${o.nome}</li>`).join('') +
-    `</ul>`;
-}
-
-// =========================
-// TRADUZIR UI (botões, placeholders, etc.)
+// FUNÇÕES AUXILIARES
 // =========================
 function translateUI() {
   const t = i18n[currentLang];
 
-  // Placeholder da pesquisa
+  // Atualizar placeholder do input de busca
   const searchInputElem = document.getElementById('searchInput');
   if (searchInputElem) searchInputElem.placeholder = t.searchPlaceholder;
 
-  // Botões rápidos “Todos”, “Recentes”, “Favoritos”
-  const btnTodos     = document.querySelector('[data-filter="todos"]');
-  const btnRecentes  = document.querySelector('[data-filter="recentes"]');
+  // Atualizar texto dos botões de filtro direto
+  const btnTodos = document.querySelector('[data-filter="todos"]');
+  if (btnTodos) btnTodos.textContent = t.all;
+  const btnRecentes = document.querySelector('[data-filter="recentes"]');
+  if (btnRecentes) btnRecentes.textContent = t.recent;
   const btnFavoritos = document.querySelector('[data-filter="favoritos"]');
-  if (btnTodos)     btnTodos.textContent    = t.all;
-  if (btnRecentes)  btnRecentes.textContent = t.recent;
-  if (btnFavoritos) btnFavoritos.textContent= t.favorites;
+  if (btnFavoritos) btnFavoritos.textContent = t.favorites;
 
   // Botão “Filtrar por tipo”
   const filterBtnElem = document.getElementById('filterByType');
   if (filterBtnElem) filterBtnElem.textContent = t.filterType;
 
-  // Botões “Cancelar” e “Guardar” nos formulários
-  const cancelBtn = document.querySelector('button[type="reset"]');
-  const saveBtn   = document.querySelector('button[type="submit"]');
-  if (cancelBtn) cancelBtn.textContent = t.cancel;
-  if (saveBtn)   saveBtn.textContent   = t.save;
+  // Botões do formulário modal (reset/save)
+  const cancelBtnInside = document.querySelector('button[type="button"]#cancelAdd');
+  if (cancelBtnInside) cancelBtnInside.textContent = t.cancel;
+  const saveBtnInside = document.querySelector('button[type="submit"]');
+  if (saveBtnInside) saveBtnInside.textContent = t.save;
 
-  // Labels do footer (Filtro Vermelho / Intensidade)
-  const redFilterLabel = document.querySelector('footer label:first-child');
-  const intensityLabel = document.querySelector('footer label:last-of-type');
+  // Footer – labels
+  const redFilterLabel = document.querySelector('footer label:nth-of-type(1)');
   if (redFilterLabel) redFilterLabel.textContent = t.redFilter;
+  const intensityLabel = document.querySelector('footer label:nth-of-type(2)');
   if (intensityLabel) intensityLabel.textContent = t.intensity;
 
-  // Traduz nomes das abas (nav buttons data-tab="...")
-  document.querySelectorAll('nav button[data-tab]').forEach(btn => {
-    const key = btn.getAttribute('data-tab');
-    if (t[key]) {
-      btn.textContent = t[key];
+  // Traduzir nomes das tabs
+  document.querySelectorAll("nav button[data-tab]").forEach(btn => {
+    const chave = btn.getAttribute("data-tab");
+    if (t[chave]) {
+      btn.textContent = t[chave];
     }
   });
 
-  // Traduz botões “🔍 Ver” nos cartões de observação (caso já existam no DOM)
-  document.querySelectorAll('.observation-card button.view-btn').forEach(btn => {
+  // Traduzir botões "Ver" dentro de cada cartão (re‐renderiza se necessário)
+  document.querySelectorAll(".observation-card button.view-btn").forEach(btn => {
     btn.textContent = `🔍 ${t.ver}`;
   });
 
-  // Se o calendário estiver visível, atualiza o título
-  const calendarioVisivel = document.getElementById('tab-calendario')
-                              ?.classList.contains('active');
+  // Se estivermos em "Calendário", atualiza o título
+  const calendarioVisivel = document.getElementById('tab-calendario')?.classList.contains('active');
   if (calendarioVisivel) {
-    const tituloCalendario = document.querySelector('#tab-calendario h2');
-    if (tituloCalendario) tituloCalendario.textContent = t.calendarTitle;
+    const titolo = document.querySelector('#tab-calendario h2');
+    if (titolo) titolo.textContent = t.calendarTitle;
     renderCalendario();
   }
 }
 
 // =========================
-// FILTRO VERMELHO / INTENSIDADE
+// FILTRO VERMELHO (MODO NOTURNO)
 // =========================
+const redToggle = document.getElementById('redFilterToggle');
+const redSlider = document.getElementById('redFilterIntensity');
+const redButton = document.getElementById('toggleRedFilter');
+
 function applyRedFilter(active) {
   if (active) {
     document.body.classList.add('red-filter');
-    const intensity = parseInt(redSlider.value);
-    document.body.style.backgroundColor = `rgba(255, 0, 0, ${intensity / 100})`;
+    const intensidade = parseInt(redSlider.value);
+    document.body.style.backgroundColor = `rgba(255, 0, 0, ${intensidade / 100})`;
   } else {
     document.body.classList.remove('red-filter');
     document.body.style.backgroundColor = '';
   }
 }
 
-function updateRedFilterClass() {
-  document.body.classList.remove(
-    'intensity-20', 'intensity-40', 'intensity-60', 'intensity-80', 'intensity-100'
-  );
-  if (redToggle?.checked) {
-    document.body.classList.add('red-filter');
-    const val = parseInt(redSlider.value);
-    if (val > 80)       document.body.classList.add('intensity-100');
-    else if (val > 60)  document.body.classList.add('intensity-80');
-    else if (val > 40)  document.body.classList.add('intensity-60');
-    else if (val > 20)  document.body.classList.add('intensity-40');
-    else                document.body.classList.add('intensity-20');
-  } else {
-    document.body.classList.remove('red-filter');
-  }
-}
-
-// Guardamos referências aqui, mas só funcionam de verdade depois do DOMContentLoaded
-let redToggle = null;
-let redSlider = null;
-let redButton = null;
-
-// =========================
-// INICIALIZAÇÃO: DOMContentLoaded
-// =========================
-document.addEventListener('DOMContentLoaded', async () => {
-  // Agora que o DOM carregou, podemos obter o elemento observationsList
-  obsList = document.getElementById('observationsList');
-
-  // Carrega observações do IndexedDB e renderiza
-  observacoes = await getAllObservacoes();
-  renderObservacoes();
-
-  // Traduzir a interface para o idioma atual (pt/e n)
-  translateUI();
-
-  // Configurar controle do Filtro Vermelho
-  redToggle = document.getElementById('redFilterToggle');
-  redSlider = document.getElementById('redFilterIntensity');
-  redButton = document.getElementById('toggleRedFilter');
-
-  redButton?.addEventListener('click', () => {
+if (redButton) {
+  redButton.addEventListener('click', () => {
     if (!redToggle) return;
     redToggle.checked = !redToggle.checked;
     applyRedFilter(redToggle.checked);
     updateRedFilterClass();
   });
-  redToggle?.addEventListener('change', () => {
+}
+if (redToggle) {
+  redToggle.addEventListener('change', () => {
     applyRedFilter(redToggle.checked);
     updateRedFilterClass();
   });
-  redSlider?.addEventListener('input', () => {
+}
+if (redSlider) {
+  redSlider.addEventListener('input', () => {
     if (redToggle.checked) {
       applyRedFilter(true);
       updateRedFilterClass();
     }
   });
+}
 
-  // ========== MODAL DE ADICIONAR OBSERVAÇÃO ==========
-  const addBtn       = document.getElementById('addObservationBtn');
-  const modal        = document.getElementById('addObservationModal');
-  const closeModalBtn= document.getElementById('closeAddModal');
-  const cancelBtn    = document.getElementById('cancelAdd');
-  const form         = document.getElementById('addObservationForm');
-  const successMsg   = document.getElementById('addSuccessMsg');
+function updateRedFilterClass() {
+  document.body.classList.remove('intensity-20', 'intensity-40', 'intensity-60', 'intensity-80', 'intensity-100');
+  if (redToggle?.checked) {
+    document.body.classList.add('red-filter');
+    const val = parseInt(redSlider.value);
+    if (val > 80) document.body.classList.add('intensity-100');
+    else if (val > 60) document.body.classList.add('intensity-80');
+    else if (val > 40) document.body.classList.add('intensity-60');
+    else if (val > 20) document.body.classList.add('intensity-40');
+    else document.body.classList.add('intensity-20');
+  } else {
+    document.body.classList.remove('red-filter');
+  }
+}
+
+// =========================
+// BACKUP NO LOCALSTORAGE
+// =========================
+function atualizarBackupJSON() {
+  const json = JSON.stringify(observacoes, null, 2);
+  localStorage.setItem('backupAstroLog', json);
+}
+
+// =========================
+// TAB NAVIGATION + INICIALIZAÇÃO GLOBAL
+// =========================
+document.addEventListener('DOMContentLoaded', async () => {
+  // 1) Carregar todas as observações do IndexedDB
+  observacoes = await getAllObservacoes();
+  renderObservacoes();
+  translateUI();
+  updateRedFilterClass();
+
+  // 2) LÓGICA DE NAVEGAÇÃO ENTRE TABS
+  const navButtons = document.querySelectorAll('nav button[data-tab]');
+  const tabSections = document.querySelectorAll('.tab');
+  const footerElem = document.querySelector('footer');
+
+  navButtons.forEach(btn => {
+    btn.addEventListener('click', () => {
+      const alvo = btn.dataset.tab; // ex.: "recursos", "links", "calendario"...
+
+      // Remover a classe 'active' de todos os botões
+      navButtons.forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+
+      // Remover 'active' de todas as seções
+      tabSections.forEach(sec => sec.classList.remove('active'));
+
+      // Ativar a seção alvo
+      const sectionAlvo = document.getElementById(`tab-${alvo}`);
+      if (sectionAlvo) {
+        sectionAlvo.classList.add('active');
+      }
+
+      // Mostrar footer somente se target for 'configuracoes'
+      if (footerElem) {
+        footerElem.style.display = (alvo === 'configuracoes') ? 'flex' : 'none';
+      }
+
+      // Se for "calendario", renderiza calendário
+      if (alvo === 'calendario') {
+        renderCalendario();
+      }
+
+      // Se for "objectos", re‐renderiza as observações
+      if (alvo === 'objetos') {
+        renderObservacoes();
+      }
+    });
+  });
+
+  // 3) BOTÕES DE FILTROS RÁPIDOS (todos / recentes / favoritos)
+  const filterButtons = document.querySelectorAll('[data-filter]');
+  filterButtons.forEach(b => {
+    b.addEventListener('click', () => {
+      currentFilter = b.dataset.filter;
+      filterButtons.forEach(x => x.classList.remove('active'));
+      b.classList.add('active');
+      renderObservacoes();
+    });
+  });
+
+  // 4) BOTÃO "Filtrar por tipo" (dropdown custom)
+  const filterTypeBtn = document.getElementById('filterByType');
+  if (filterTypeBtn) {
+    filterTypeBtn.addEventListener('click', async () => {
+      if (!observacoes.length) {
+        observacoes = await getAllObservacoes();
+      }
+      if (!observacoes.length) {
+        alert("Sem observações para filtrar.");
+        return;
+      }
+      document.querySelectorAll('.dropdown-menu').forEach(m => m.remove());
+      const tiposUnicos = [...new Set(observacoes.map(o => o.tipo).filter(Boolean))];
+      const menu = document.createElement('div');
+      menu.className = 'dropdown-menu';
+
+      tiposUnicos.forEach(tipo => {
+        const item = document.createElement('div');
+        item.textContent = tipo;
+        item.addEventListener('click', () => {
+          currentFilter = 'tipo';
+          searchQuery = tipo.toLowerCase();
+          renderObservacoes();
+          menu.remove();
+        });
+        menu.appendChild(item);
+      });
+
+      // Opção “Todos”
+      const allItem = document.createElement('div');
+      allItem.textContent = i18n[currentLang].all;
+      allItem.addEventListener('click', () => {
+        currentFilter = 'todos';
+        searchQuery = '';
+        renderObservacoes();
+        menu.remove();
+      });
+      menu.appendChild(allItem);
+
+      // Posicionar dropdown abaixo do botão
+      const rect = filterTypeBtn.getBoundingClientRect();
+      menu.style.position = 'absolute';
+      menu.style.top = `${rect.bottom + window.scrollY}px`;
+      menu.style.left = `${rect.left + window.scrollX}px`;
+      menu.style.zIndex = 1000;
+      document.body.appendChild(menu);
+    });
+  }
+
+  // 5) CAMPO DE PESQUISA
+  const searchInput = document.getElementById('searchInput');
+  if (searchInput) {
+    searchInput.addEventListener('input', () => {
+      searchQuery = searchInput.value.toLowerCase();
+      renderObservacoes();
+    });
+  }
+
+  // 6) BOTÃO + PARA ABRIR O MODAL DE “ADICIONAR”
+  const addBtn = document.getElementById('addObservationBtn');
+  const modal = document.getElementById('addObservationModal');
+  const closeModalBtn = document.getElementById('closeAddModal');
+  const cancelBtn = document.getElementById('cancelAdd');
+  const form = document.getElementById('addObservationForm');
+  const successMsg = document.getElementById('addSuccessMsg');
 
   function openModal() {
-    if (modal) modal.style.display = 'flex'; // exibe como flex (centra vertical/horizontal)
+    if (modal) {
+      // adicionamos a classe .open (código CSS já define .modal.open { display:flex; })
+      modal.classList.add('open');
+    }
   }
   function closeAddForm() {
     if (form) form.reset();
-    if (modal) modal.style.display = 'none';
+    if (modal) modal.classList.remove('open');
     if (successMsg) successMsg.style.display = 'none';
   }
 
-  // Abrir modal ao clicar em “＋”
   if (addBtn) {
     addBtn.addEventListener('click', openModal);
   }
-  // Fechar ao clicar no “×”
   if (closeModalBtn) {
     closeModalBtn.addEventListener('click', closeAddForm);
   }
-  // Fechar ao clicar em “Cancelar”
   if (cancelBtn) {
     cancelBtn.addEventListener('click', closeAddForm);
   }
-  // Fechar se clicar fora da .modal-content
   if (modal) {
+    // fechar se clicar fora do conteúdo
     modal.addEventListener('click', e => {
       if (e.target === modal) {
         closeAddForm();
@@ -653,18 +760,18 @@ document.addEventListener('DOMContentLoaded', async () => {
     });
   }
 
-  // Submissão do formulário de adicionar observação
+  // 7) SUBMISSÃO DO FORMULÁRIO DE ADICIONAR
   if (form) {
-    form.addEventListener('submit', async function(e) {
+    form.addEventListener('submit', async (e) => {
       e.preventDefault();
       const formData = new FormData(form);
-      const obs = Object.fromEntries(formData.entries());
-      obs.favorito = !!formData.get('favorito');
-      obs.id = Date.now();
+      const novaObs = Object.fromEntries(formData.entries());
+      novaObs.favorito = !!formData.get('favorito');
+      novaObs.id = Date.now();
 
-      const file = formData.get('imagem');
-      async function saveObs() {
-        await saveObservacao(obs);
+      const arquivo = formData.get('imagem');
+      async function salvarObservacaoComImagem() {
+        await saveObservacao(novaObs);
         observacoes = await getAllObservacoes();
         renderObservacoes();
         atualizarBackupJSON();
@@ -672,25 +779,24 @@ document.addEventListener('DOMContentLoaded', async () => {
         setTimeout(closeAddForm, 1500);
       }
 
-      if (file && file.name && file.size > 0) {
-        const reader = new FileReader();
-        reader.onload = async () => {
-          obs.imagem = reader.result;
-          await saveObs();
+      if (arquivo && arquivo.size > 0) {
+        const readerImg = new FileReader();
+        readerImg.onload = async () => {
+          novaObs.imagem = readerImg.result;
+          await salvarObservacaoComImagem();
         };
-        reader.onerror = async () => {
+        readerImg.onerror = async () => {
           alert("Erro ao carregar imagem.");
-          await saveObs();
+          await salvarObservacaoComImagem();
         };
-        reader.readAsDataURL(file);
+        readerImg.readAsDataURL(arquivo);
       } else {
-        await saveObs();
+        await salvarObservacaoComImagem();
       }
     });
   }
-  // ======== FIM DO MODAL DE ADICIONAR OBSERVAÇÃO ========
 
-  // Botão de download de backup
+  // 8) BOTÃO DE DOWNLOAD DE BACKUP
   const backupBtn = document.getElementById('downloadBackup');
   if (backupBtn) {
     backupBtn.addEventListener('click', () => {
@@ -711,164 +817,11 @@ document.addEventListener('DOMContentLoaded', async () => {
     });
   }
 
-  // ========== FILTRO POR TIPO (dropdown) ==========
-  const filterBtn = document.getElementById('filterByType');
-  if (filterBtn) {
-    filterBtn.addEventListener('click', async () => {
-      if (!observacoes || observacoes.length === 0) {
-        observacoes = await getAllObservacoes();
-      }
-      if (!observacoes.length) {
-        alert("Sem observações para filtrar.");
-        return;
-      }
-      document.querySelectorAll('.dropdown-menu').forEach(m => m.remove());
-      const tipos = [...new Set(observacoes.map(o => o.tipo).filter(Boolean))];
-      const menu = document.createElement('div');
-      menu.className = 'dropdown-menu';
-
-      tipos.forEach(tipo => {
-        const item = document.createElement('div');
-        item.textContent = tipo;
-        item.addEventListener('click', () => {
-          currentFilter = 'tipo';
-          searchQuery = tipo.toLowerCase();
-          renderObservacoes();
-          menu.remove();
-        });
-        menu.appendChild(item);
-      });
-
-      // “Todos”
-      const allItem = document.createElement('div');
-      allItem.textContent = i18n[currentLang].all;
-      allItem.addEventListener('click', () => {
-        currentFilter = 'todos';
-        searchQuery = '';
-        renderObservacoes();
-        menu.remove();
-      });
-      menu.appendChild(allItem);
-
-      const rect = filterBtn.getBoundingClientRect();
-      menu.style.position = 'absolute';
-      menu.style.top = `${rect.bottom + window.scrollY}px`;
-      menu.style.left = `${rect.left + window.scrollX}px`;
-      menu.style.zIndex = 1000;
-      document.body.appendChild(menu);
-    });
-  }
-
-  // ========== CAMPO DE PESQUISA ==========
-  const searchInput = document.getElementById('searchInput');
-  if (searchInput) {
-    searchInput.addEventListener('input', () => {
-      searchQuery = searchInput.value.toLowerCase();
-      renderObservacoes();
-    });
-  }
-
-  // ========== FILTROS RÁPIDOS (Todos, Recentes, Favoritos) ==========
-  const filterButtons = document.querySelectorAll('[data-filter]');
-  filterButtons.forEach(btn => {
-    btn.addEventListener('click', () => {
-      currentFilter = btn.dataset.filter;
-      filterButtons.forEach(b => b.classList.remove('active'));
-      btn.classList.add('active');
-      renderObservacoes();
-    });
-  });
-
-  // ========== EXPORTAR JSON ==========
-  const exportBtn = document.getElementById('exportJson');
-  if (exportBtn) {
-    exportBtn.addEventListener('click', async () => {
-      const data = await getAllObservacoes();
-      const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = 'astro-observacoes.json';
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-      URL.revokeObjectURL(url);
-    });
-  }
-
-  // ========== IMPORTAR JSON ==========
-  const importInput = document.getElementById('importJson');
-  if (importInput) {
-    importInput.addEventListener('change', async (event) => {
-      const file = event.target.files[0];
-      if (!file) return;
-      const reader = new FileReader();
-      reader.onload = async () => {
-        try {
-          const data = JSON.parse(reader.result);
-          if (!Array.isArray(data)) throw new Error("Formato inválido");
-          const db = await openDB();
-          const tx = db.transaction(STORE_NAME, 'readwrite');
-          const store = tx.objectStore(STORE_NAME);
-          for (const obs of data) {
-            if (obs.id && obs.nome) store.put(obs);
-          }
-          tx.oncomplete = async () => {
-            alert("Importação concluída!");
-            observacoes = await getAllObservacoes();
-            renderObservacoes();
-            event.target.value = '';
-          };
-        } catch (err) {
-          alert("Erro ao importar: " + err.message);
-        }
-      };
-      reader.readAsText(file);
-    });
-  }
-
-  // ========== NAVEGAÇÃO ENTRE ABAS ==========
-  const navButtons  = document.querySelectorAll('nav button[data-tab]');
-  const tabSections = document.querySelectorAll('.tab');
-  const footer      = document.querySelector('footer');
-
-  navButtons.forEach(btn => {
-    btn.addEventListener('click', () => {
-      const alvo = btn.dataset.tab; // “objectos”, “recursos”, “links”, “calendario”, “configuracoes”
-
-      // 1) Atualiza classe “active” nos botões
-      navButtons.forEach(b => b.classList.remove('active'));
-      btn.classList.add('active');
-
-      // 2) Mostra apenas a <section> cujo id seja “tab-” + alvo
-      tabSections.forEach(sec => sec.classList.remove('active'));
-      const sectionAlvo = document.getElementById(`tab-${alvo}`);
-      if (sectionAlvo) {
-        sectionAlvo.classList.add('active');
-      }
-
-      // 3) Se for aba “configuracoes”, mostra o footer; senão, esconde
-      if (footer) {
-        footer.style.display = (alvo === 'configuracoes') ? 'flex' : 'none';
-      }
-
-      // 4) Se voltar para “objectos”, renderiza as observações de novo
-      if (alvo === 'objectos') {
-        renderObservacoes();
-      }
-
-      // 5) Se for aba “calendario”, renderiza o calendário
-      if (alvo === 'calendario') {
-        renderCalendario();
-      }
-    });
-  });
-
-  // ========== CONTROLES DO CALENDÁRIO ==========
-  const prevBtn = document.getElementById('prevMonth');
-  const nextBtn = document.getElementById('nextMonth');
-  if (prevBtn) {
-    prevBtn.addEventListener('click', () => {
+  // 9) EVENTOS DO CALENDÁRIO (botões prev/next)
+  const prevMonthBtn = document.getElementById('prevMonth');
+  const nextMonthBtn = document.getElementById('nextMonth');
+  if (prevMonthBtn) {
+    prevMonthBtn.addEventListener('click', () => {
       calendarioMes--;
       if (calendarioMes < 0) {
         calendarioMes = 11;
@@ -877,8 +830,8 @@ document.addEventListener('DOMContentLoaded', async () => {
       renderCalendario();
     });
   }
-  if (nextBtn) {
-    nextBtn.addEventListener('click', () => {
+  if (nextMonthBtn) {
+    nextMonthBtn.addEventListener('click', () => {
       calendarioMes++;
       if (calendarioMes > 11) {
         calendarioMes = 0;
@@ -887,12 +840,5 @@ document.addEventListener('DOMContentLoaded', async () => {
       renderCalendario();
     });
   }
-}); // fim DOMContentLoaded
+}); // fim do DOMContentLoaded
 
-// =========================
-// ATUALIZA BACKUP NO localStorage
-// =========================
-function atualizarBackupJSON() {
-  const json = JSON.stringify(observacoes, null, 2);
-  localStorage.setItem('backupAstroLog', json);
-}
