@@ -5,15 +5,15 @@
 // =========================
 // VARIÁVEIS GLOBAIS
 // =========================
-let observacoes = [];
-let currentLang = 'pt';
-let currentFilter = 'todos';
-let searchQuery = '';
-let editId = null;
-let calendarioMes = new Date().getMonth();
-let calendarioAno = new Date().getFullYear();
+let observacoes       = [];
+let currentLang       = 'pt';
+let currentFilter     = 'todos';
+let searchQuery       = '';
+let editId            = null;
+let calendarioMes     = new Date().getMonth();
+let calendarioAno     = new Date().getFullYear();
 
-// É o elemento que conterá as cards de observações
+// Elemento onde ficarão as cards de observação
 const obsList = document.getElementById('observationsList');
 
 // =========================
@@ -21,63 +21,63 @@ const obsList = document.getElementById('observationsList');
 // =========================
 const i18n = {
   pt: {
-    searchPlaceholder: "Pesquisar observações...",
-    all: "Todos",
-    recent: "Recentes",
-    favorites: "Favoritos",
-    filterType: "Filtrar por tipo",
-    cancel: "Cancelar",
-    save: "Guardar",
-    redFilter: "Filtro Vermelho",
-    intensity: "Intensidade do Filtro",
-    edit: "Editar",
-    delete: "Eliminar",
-    close: "Fechar",
-    objectos: "Objectos",
-    adicionar: "Adicionar",
-    calendario: "Calendário",
-    calendarTitle: "Calendário de Observações",
-    recursos: "Recursos",
-    configuracoes: "Configurações",
-    links: "Links Úteis",
-    ver: "Ver",
-    settingsDesc: "Ajustes e configurações da aplicação.",
-    exportObservacoes: "📤 Exportar Observações",
-    importObservacoes: "📥 Importar Observações",
-    downloadBackup:    "💾 Descarregar Backup"
+    searchPlaceholder:   "Pesquisar observações...",
+    all:                 "Todos",
+    recent:              "Recentes",
+    favorites:           "Favoritos",
+    filterType:          "Filtrar por tipo",
+    cancel:              "Cancelar",
+    save:                "Guardar",
+    redFilter:           "Filtro Vermelho",
+    intensity:           "Intensidade do Filtro",
+    edit:                "Editar",
+    delete:              "Eliminar",
+    close:               "Fechar",
+    objectos:            "Objectos",
+    adicionar:           "Adicionar",
+    calendario:          "Calendário",
+    calendarTitle:       "Calendário de Observações",
+    recursos:            "Recursos",
+    configuracoes:       "Configurações",
+    links:               "Links Úteis",
+    ver:                 "Ver",
+    settingsDesc:        "Ajustes e configurações da aplicação.",
+    exportObservacoes:   "📤 Exportar Observações",
+    importObservacoes:   "📥 Importar Observações",
+    downloadBackup:      "💾 Descarregar Backup"
   },
   en: {
-    searchPlaceholder: "Search observations...",
-    all: "All",
-    recent: "Recent",
-    favorites: "Favorites",
-    filterType: "Filter by type",
-    cancel: "Cancel",
-    save: "Save",
-    redFilter: "Red Filter",
-    intensity: "Filter Intensity",
-    edit: "Edit",
-    delete: "Delete",
-    close: "Close",
-    objectos: "Objects",
-    adicionar: "Add",
-    calendario: "Calendar",
-    calendarTitle: "Observation Calendar",
-    recursos: "Resources",
-    configuracoes: "Settings",
-    links: "Useful Links",
-    ver: "View",
-    settingsDesc: "Application settings and configurations.",
-    exportObservacoes: "📤 Export Observations",
-    importObservacoes: "📥 Import Observations",
-    downloadBackup:    "💾 Download Backup"
+    searchPlaceholder:   "Search observations...",
+    all:                 "All",
+    recent:              "Recent",
+    favorites:           "Favorites",
+    filterType:          "Filter by type",
+    cancel:              "Cancel",
+    save:                "Save",
+    redFilter:           "Red Filter",
+    intensity:           "Filter Intensity",
+    edit:                "Edit",
+    delete:              "Delete",
+    close:               "Close",
+    objectos:            "Objects",
+    adicionar:           "Add",
+    calendario:          "Calendar",
+    calendarTitle:       "Observation Calendar",
+    recursos:            "Resources",
+    configuracoes:       "Settings",
+    links:               "Useful Links",
+    ver:                 "View",
+    settingsDesc:        "Application settings and configurations.",
+    exportObservacoes:   "📤 Export Observations",
+    importObservacoes:   "📥 Import Observations",
+    downloadBackup:      "💾 Download Backup"
   }
 };
 
 // =========================
 // INDEXEDDB (persistência local)
 // =========================
-const DB_NAME = 'AstroLogDB';
+const DB_NAME    = 'AstroLogDB';
 const DB_VERSION = 1;
 const STORE_NAME = 'observacoes';
 
@@ -98,33 +98,33 @@ function openDB() {
 async function getAllObservacoes() {
   const db = await openDB();
   return new Promise((resolve, reject) => {
-    const tx = db.transaction(STORE_NAME, 'readonly');
-    const store = tx.objectStore(STORE_NAME);
+    const tx      = db.transaction(STORE_NAME, 'readonly');
+    const store   = tx.objectStore(STORE_NAME);
     const request = store.getAll();
     request.onsuccess = () => resolve(request.result);
-    request.onerror = () => reject(request.error);
+    request.onerror   = () => reject(request.error);
   });
 }
 
 async function saveObservacao(obs) {
   const db = await openDB();
   return new Promise((resolve, reject) => {
-    const tx = db.transaction(STORE_NAME, 'readwrite');
+    const tx    = db.transaction(STORE_NAME, 'readwrite');
     const store = tx.objectStore(STORE_NAME);
     store.put(obs);
     tx.oncomplete = () => resolve();
-    tx.onerror = () => reject(tx.error);
+    tx.onerror    = () => reject(tx.error);
   });
 }
 
 async function deleteObservacao(id) {
   const db = await openDB();
   return new Promise((resolve, reject) => {
-    const tx = db.transaction(STORE_NAME, 'readwrite');
+    const tx    = db.transaction(STORE_NAME, 'readwrite');
     const store = tx.objectStore(STORE_NAME);
     store.delete(id);
     tx.oncomplete = () => resolve();
-    tx.onerror = () => reject(tx.error);
+    tx.onerror    = () => reject(tx.error);
   });
 }
 
@@ -138,7 +138,7 @@ async function loadObservacoes() {
 loadObservacoes();
 
 // =========================
-// FUNÇÃO PARA ATUALIZAR BACKUP NO localStorage
+// ATUALIZAR BACKUP NO localStorage
 // =========================
 function atualizarBackupJSON() {
   const json = JSON.stringify(observacoes, null, 2);
@@ -146,7 +146,7 @@ function atualizarBackupJSON() {
 }
 
 // =========================
-// FUNÇÃO PARA NORMALIZAR DATA (AAAA-MM-DD)
+// NORMALIZAR DATA (YYYY-MM-DD)
 // =========================
 function normalizarDataLocal(data) {
   return new Date(data).toLocaleDateString('sv-SE');
@@ -157,29 +157,27 @@ function normalizarDataLocal(data) {
 // =========================
 function getIcon(tipo) {
   const icons = {
-    'Estrela': '⭐',
-    'Galáxia': '🌌',
-    'Aglomerado': '✨',
-    'Nebulosa': '☁️',
-    'Sistema Solar': '🪐',
-    'Outro': '🔭'
+    'Estrela':     '⭐',
+    'Galáxia':     '🌌',
+    'Aglomerado':  '✨',
+    'Nebulosa':    '☁️',
+    'Sistema Solar':'🪐',
+    'Outro':       '🔭'
   };
   return icons[tipo] || '❔';
 }
 
 // =========================
-// TRADUZIR UI DINÂMICA
+// TRADUZIR INTERFACE DINÂMICA
 // =========================
 function translateUI() {
   const t = i18n[currentLang];
 
-  // Placeholder da pesquisa
+  // Placeholder de busca
   const searchInputElem = document.getElementById('searchInput');
-  if (searchInputElem) {
-    searchInputElem.placeholder = t.searchPlaceholder;
-  }
+  if (searchInputElem) searchInputElem.placeholder = t.searchPlaceholder;
 
-  // Botões de filtro rápidos (Todos, Recentes, Favoritos)
+  // Botões “Todos”, “Recentes” e “Favoritos”
   const btnTodos     = document.querySelector('[data-filter="todos"]');
   const btnRecentes  = document.querySelector('[data-filter="recentes"]');
   const btnFavoritos = document.querySelector('[data-filter="favoritos"]');
@@ -191,32 +189,32 @@ function translateUI() {
   const filterBtnElem = document.getElementById('filterByType');
   if (filterBtnElem) filterBtnElem.textContent = t.filterType;
 
-  // Strings dentro da aba “Configurações”
+  // Texto “Ajustes e configurações da aplicação.”
   const settingsTextP = document.querySelector('#tab-configuracoes p');
   if (settingsTextP) settingsTextP.textContent = t.settingsDesc;
 
-  const exportBtn = document.getElementById('exportJson');
+  // Botões de export/import/backup
+  const exportBtn     = document.getElementById('exportJson');
   if (exportBtn) exportBtn.innerHTML = t.exportObservacoes;
 
-  const importLabel = document.querySelector('.import-label');
-  if (importLabel) importLabel.childNodes[0].nodeValue = t.importObservacoes;
+  const importLabel   = document.querySelector('.import-label');
+  if (importLabel) {
+    // O próprio texto dentro da label (testa primeiro childNode)
+    importLabel.childNodes[0].nodeValue = t.importObservacoes;
+  }
 
-  const backupBtn = document.getElementById('downloadBackup');
+  const backupBtn     = document.getElementById('downloadBackup');
   if (backupBtn) backupBtn.innerHTML = t.downloadBackup;
 
-  // Botões “Filtrar por tipo” (dropdown)
-  const filterByTypeBtn = document.getElementById('filterByType');
-  if (filterByTypeBtn) filterByTypeBtn.textContent = t.filterType;
-
-  // Traduzir nomes de cada aba (nav buttons)
+  // “Recursos”, “Links Úteis”, “Calendário” e “Configurações” (nav)
   document.querySelectorAll('nav button[data-tab]').forEach(btn => {
-    const key = btn.getAttribute('data-tab');
+    const key = btn.getAttribute('data-tab'); // “objetos”, “recursos”, “links”, “calendario”, “configuracoes”
     if (t[key]) {
       btn.textContent = t[key];
     }
   });
 
-  // Botões “Ver”, “Editar”, “Eliminar” nas cards
+  // Botões “🔍 Ver”, “✏️ Editar”, “🗑️ Eliminar” nas cards
   document.querySelectorAll('.observation-card button.view-btn').forEach(btn => {
     btn.textContent = `🔍 ${t.ver}`;
   });
@@ -227,12 +225,12 @@ function translateUI() {
     btn.textContent = `🗑️ ${t.delete}`;
   });
 
-  // Se a aba “Calendário” estiver visível, traduzir seu título
+  // Se a aba “Calendário” estiver ativa, atualizar título do calendário também
   const calendarioVisivel = document.getElementById('tab-calendario')?.classList.contains('active');
   if (calendarioVisivel) {
     const tituloCalendario = document.querySelector('#tab-calendario h2');
     if (tituloCalendario) tituloCalendario.textContent = t.calendarTitle;
-    renderCalendario(); // Re-renderiza o calendário no idioma atual
+    renderCalendario();
   }
 }
 
@@ -244,14 +242,14 @@ function renderObservacoes() {
   obsList.innerHTML = '';
   let list = [...observacoes];
 
-  // Aplicar filtro rápido
+  // Filtro rápido “favoritos” / “recentes”
   if (currentFilter === 'favoritos') {
     list = list.filter(o => o.favorito);
   } else if (currentFilter === 'recentes') {
     list = list.sort((a, b) => new Date(b.data) - new Date(a.data));
   }
 
-  // Aplicar busca textual
+  // Filtro de busca textual
   if (searchQuery) {
     list = list.filter(o =>
       o.nome.toLowerCase().includes(searchQuery) ||
@@ -260,7 +258,7 @@ function renderObservacoes() {
     );
   }
 
-  // Construir cards
+  // Montar cada card
   list.forEach(obs => {
     const card = document.createElement('div');
     card.className = 'observation-card';
@@ -306,8 +304,8 @@ window.viewObservation = function(id) {
     <div class="modal-content">
       <span class="close" onclick="closeModalById('view-modal')">&times;</span>
       <h3>${obs.nome}</h3>
-      <p><strong>${i18n[currentLang].edit.replace('✏️ ', '')} ⚡</strong> ${obs.tipo}</p>
-      <p><strong>${i18n[currentLang].calendarTitle.replace('⚡ ', '')}:</strong> ${new Date(obs.data).toLocaleString(
+      <p><strong>Tipo:</strong> ${obs.tipo}</p>
+      <p><strong>Data:</strong> ${new Date(obs.data).toLocaleString(
         currentLang === 'pt' ? 'pt-PT' : 'en-US'
       )}</p>
       <p><strong>Local:</strong> ${obs.local}</p>
@@ -340,7 +338,7 @@ window.openImageModal = function(imgSrc) {
   modal.innerHTML = `
     <div class="modal-content">
       <span class="close" onclick="closeModalById('image-modal')">&times;</span>
-      <img src="${imgSrc}" style="max-width:100%; max-height:80vh; display: block; margin: 0 auto 1rem;" />
+      <img src="${imgSrc}" style="max-width:100%; max-height:80vh; display:block; margin: 0 auto 1rem;" />
     </div>
   `;
   document.body.appendChild(modal);
@@ -511,26 +509,26 @@ function renderCalendario() {
   if (!container || !title) return;
 
   container.innerHTML = '';
-  // Primeiro dia da semana (0-Domingo, 1-Segunda, …)
+  // Primeiro dia da semana (0=Domingo, 1=Segunda, …)
   const firstDay    = new Date(calendarioAno, calendarioMes, 1).getDay();
   const daysInMonth = new Date(calendarioAno, calendarioMes + 1, 0).getDate();
 
-  // Traduzir nome do mês de acordo com idioma
+  // Traduzir nome do mês conforme idioma
   const localeCode = currentLang === 'pt' ? 'pt-PT' : 'en-US';
   const nomeMes    = new Date(calendarioAno, calendarioMes).toLocaleString(localeCode, { month: 'long' });
   title.textContent = `${nomeMes.charAt(0).toUpperCase() + nomeMes.slice(1)} ${calendarioAno}`;
 
-  // Determinar quais dias têm observações
+  // Descobrir quais dias têm observações para destacar
   const diasComObservacoes = new Set(
     observacoes.map(o => normalizarDataLocal(o.data))
   );
 
-  // Espaços vazios até o primeiro dia do mês
+  // Espaço em branco até o primeiro dia do mês
   for (let i = 0; i < firstDay; i++) {
     container.appendChild(document.createElement('div'));
   }
 
-  // Criar divs para cada dia
+  // Criar cada “dia” do mês
   for (let d = 1; d <= daysInMonth; d++) {
     const date    = new Date(calendarioAno, calendarioMes, d);
     const dateStr = normalizarDataLocal(date);
@@ -539,7 +537,6 @@ function renderCalendario() {
     div.className = 'calendar-day';
     div.textContent = d;
 
-    // Se houver observação naquele dia, destacar
     if (diasComObservacoes.has(dateStr)) {
       div.classList.add('highlight');
       div.addEventListener('click', () => mostrarObservacoesDoDia(dateStr));
@@ -549,7 +546,7 @@ function renderCalendario() {
 }
 
 // =========================
-// LISTAR OBSERVAÇÕES DO DIA CLICADO NO CALENDÁRIO
+// EXIBIR OBSERVAÇÕES DO DIA CLICADO
 // =========================
 function mostrarObservacoesDoDia(dataISO) {
   const lista     = observacoes.filter(o => o.data.startsWith(dataISO));
@@ -566,16 +563,16 @@ function mostrarObservacoesDoDia(dataISO) {
 }
 
 // =========================
-// DOMContentLoaded: configurações iniciais & eventos
+// EVENTOS DE DOMContentLoaded
 // =========================
 document.addEventListener('DOMContentLoaded', async () => {
-  // 1) Carrega observações
+  // 1) Carregar observações do IndexedDB e renderizar
   observacoes = await getAllObservacoes();
   renderObservacoes();
   translateUI();
   updateRedFilterClass();
 
-  // 2) BOTÃO "+" (abre modal de nova observação)
+  // 2) MODAL DE “Adicionar Observação”
   const addBtn        = document.getElementById('addObservationBtn');
   const modal         = document.getElementById('addObservationModal');
   const closeModalBtn = document.getElementById('closeAddModal');
@@ -583,31 +580,17 @@ document.addEventListener('DOMContentLoaded', async () => {
   const form          = document.getElementById('addObservationForm');
   const successMsg    = document.getElementById('addSuccessMsg');
 
-  // Função para abrir o modal
   function openModal() {
-    if (modal) {
-      modal.classList.add('open');
-    }
+    if (modal) modal.classList.add('open');
   }
-
-  // Função para fechar o modal e resetar o form
   function closeAddForm() {
     if (form) form.reset();
     if (modal) modal.classList.remove('open');
     if (successMsg) successMsg.style.display = 'none';
   }
-
-  if (addBtn) {
-    addBtn.addEventListener('click', openModal);
-  }
-  if (closeModalBtn) {
-    closeModalBtn.addEventListener('click', closeAddForm);
-  }
-  if (cancelBtn) {
-    cancelBtn.addEventListener('click', closeAddForm);
-  }
-
-  // Fecha o modal se clicar fora da .modal-content
+  if (addBtn) addBtn.addEventListener('click', openModal);
+  if (closeModalBtn) closeModalBtn.addEventListener('click', closeAddForm);
+  if (cancelBtn) cancelBtn.addEventListener('click', closeAddForm);
   if (modal) {
     modal.addEventListener('click', (e) => {
       if (e.target === modal) {
@@ -616,9 +599,8 @@ document.addEventListener('DOMContentLoaded', async () => {
     });
   }
 
-  // Submissão do formulário de adicionar observação
   if (form) {
-    form.addEventListener('submit', async function (e) {
+    form.addEventListener('submit', async function(e) {
       e.preventDefault();
       const formData = new FormData(form);
       const obs = Object.fromEntries(formData.entries());
@@ -652,7 +634,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     });
   }
 
-  // 3) BOTÃO DE BACKUP (Configurações)
+  // 3) BOTÃO DE BACKUP na aba Configurações
   const backupBtn = document.getElementById('downloadBackup');
   if (backupBtn) {
     backupBtn.addEventListener('click', () => {
@@ -662,9 +644,9 @@ document.addEventListener('DOMContentLoaded', async () => {
         return;
       }
       const blob = new Blob([backupStr], { type: 'application/json' });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
+      const url  = URL.createObjectURL(blob);
+      const a    = document.createElement('a');
+      a.href     = url;
       a.download = 'astro-observacoes-backup.json';
       document.body.appendChild(a);
       a.click();
@@ -673,31 +655,25 @@ document.addEventListener('DOMContentLoaded', async () => {
     });
   }
 
-  // 4) NAVEGAÇÃO ENTRE TABS
+  // 4) NAVEGAÇÃO ENTRE “TABS”
   const navButtons = document.querySelectorAll('nav button[data-tab]');
   const tabSections = document.querySelectorAll('.tab');
   navButtons.forEach(btn => {
     btn.addEventListener('click', () => {
-      const alvo = btn.dataset.tab; // ex: "objetos", "recursos", "links", "calendario", "configuracoes"
-
-      // Atualiza botão ativo
+      const alvo = btn.dataset.tab; 
       navButtons.forEach(b => b.classList.remove('active'));
       btn.classList.add('active');
-
-      // Mostra seção correta
       tabSections.forEach(sec => sec.classList.remove('active'));
       const sectionAlvo = document.getElementById(`tab-${alvo}`);
       if (sectionAlvo) {
         sectionAlvo.classList.add('active');
       }
-
-      // Mostrar/ocultar footer conforme aba
+      // Mostrar/ocultar footer
       const footer = document.querySelector('footer');
       if (footer) {
         footer.style.display = (alvo === 'configuracoes') ? 'flex' : 'none';
       }
-
-      // Se for calendário, renderiza mês correto
+      // Se for “calendário”, renderiza
       if (alvo === 'calendario') {
         renderCalendario();
       }
@@ -717,7 +693,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       }
       document.querySelectorAll('.dropdown-menu').forEach(m => m.remove());
       const tipos = [...new Set(observacoes.map(o => o.tipo).filter(Boolean))];
-      const menu = document.createElement('div');
+      const menu  = document.createElement('div');
       menu.className = 'dropdown-menu';
 
       tipos.forEach(tipo => {
@@ -732,12 +708,12 @@ document.addEventListener('DOMContentLoaded', async () => {
         menu.appendChild(item);
       });
 
-      // Adiciona opção “Todos”
+      // Adicionar “Todos”
       const allItem = document.createElement('div');
       allItem.textContent = i18n[currentLang].all;
       allItem.addEventListener('click', () => {
         currentFilter = 'todos';
-        searchQuery = '';
+        searchQuery   = '';
         renderObservacoes();
         menu.remove();
       });
@@ -750,7 +726,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     });
   }
 
-  // 6) BUSCA INTERATIVA (input)
+  // 6) BUSCA INTERATIVA
   const searchInput = document.getElementById('searchInput');
   if (searchInput) {
     searchInput.addEventListener('input', () => {
@@ -759,7 +735,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     });
   }
 
-  // 7) FILTROS RÁPIDOS (Todos, Recentes, Favoritos)
+  // 7) FILTROS RÁPIDOS
   const filterButtonsFast = document.querySelectorAll('[data-filter]');
   filterButtonsFast.forEach(btn => {
     btn.addEventListener('click', () => {
@@ -776,9 +752,9 @@ document.addEventListener('DOMContentLoaded', async () => {
     exportBtn2.addEventListener('click', async () => {
       const data = await getAllObservacoes();
       const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
+      const url  = URL.createObjectURL(blob);
+      const a    = document.createElement('a');
+      a.href     = url;
       a.download = 'astro-observacoes.json';
       document.body.appendChild(a);
       a.click();
@@ -817,36 +793,38 @@ document.addEventListener('DOMContentLoaded', async () => {
       reader.readAsText(file);
     });
   }
-
-  // 10) SETA “←” para mudar mês anterior
-  const prevMonthBtn = document.getElementById('prevMonth');
-  if (prevMonthBtn) {
-    prevMonthBtn.addEventListener('click', () => {
-      calendarioMes--;
-      if (calendarioMes < 0) {
-        calendarioMes = 11;
-        calendarioAno--;
-      }
-      renderCalendario();
-    });
-  }
-
-  // 11) SETA “→” para mudar mês seguinte
-  const nextMonthBtn = document.getElementById('nextMonth');
-  if (nextMonthBtn) {
-    nextMonthBtn.addEventListener('click', () => {
-      calendarioMes++;
-      if (calendarioMes > 11) {
-        calendarioMes = 0;
-        calendarioAno++;
-      }
-      renderCalendario();
-    });
-  }
 });
 
 // =========================
-// TRADUZIR A INTERFACE QUANDO MUDAR DE IDIOMA
+// SETAS “←” e “→” DO CALENDÁRIO
+// =========================
+const prevMonthBtn = document.getElementById('prevMonth');
+const nextMonthBtn = document.getElementById('nextMonth');
+
+if (prevMonthBtn) {
+  prevMonthBtn.addEventListener('click', () => {
+    calendarioMes--;
+    if (calendarioMes < 0) {
+      calendarioMes = 11;
+      calendarioAno--;
+    }
+    renderCalendario();
+  });
+}
+
+if (nextMonthBtn) {
+  nextMonthBtn.addEventListener('click', () => {
+    calendarioMes++;
+    if (calendarioMes > 11) {
+      calendarioMes = 0;
+      calendarioAno++;
+    }
+    renderCalendario();
+  });
+}
+
+// =========================
+// BOTÃO EN/PT (alternar idioma)
 // =========================
 const langBtn = document.getElementById('toggleLanguage');
 if (langBtn) {
