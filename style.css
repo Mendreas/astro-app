@@ -270,23 +270,26 @@ nav button.active {
 }
 
 /* ==============================================
-   CSS DO CALENDÁRIO (dias em quadrados pequenos)
+   CSS DO CALENDÁRIO (quase 60×60px por dia)
    ============================================== */
 #calendarContainer {
   display: grid;
   grid-template-columns: repeat(7, 1fr);
   gap: 0.5rem;
   margin-top: 1rem;
-  /* Se quiser limitar a largura do calendário, ajuste aqui, 
-     por exemplo: max-width: 350px; ou deixe em 100% para ocupar todo o espaço disponível */
-  /* max-width: 350px; */
+
+  /* Limita a largura total a 7 células de ~60px + 6 gaps de 0.5rem (~8px cada) */
+  max-width: calc(7 * 60px + 6 * 0.5rem);
+  margin-left: auto;   /* centraliza horizontalmente */
+  margin-right: auto;
 }
 
 .calendar-day {
-  /* Força a proporção 1:1 (quadrado) */
-  aspect-ratio: 1 / 1;
+  /* Força dimensões fixas (aprox. 60×60px) */
+  width: 60px;
+  height: 60px;
 
-  /* Estilização básica */
+  /* Estilo básico */
   background: #1a1a1a;
   color: #fff;
   text-align: center;
@@ -294,26 +297,25 @@ nav button.active {
   cursor: pointer;
   border: 1px solid #333;
 
-  /* Centraliza vertical e horizontalmente o número dentro do quadrado */
+  /* Centraliza o número dentro do quadrado */
   display: flex;
   align-items: center;
   justify-content: center;
 
-  /* Tamanho de fonte um pouco menor para caber no quadrado pequeno */
   font-size: 0.9rem;
   font-weight: 400;
   user-select: none;
   transition: background 0.2s, color 0.2s;
 }
 
-/* Quando houver observação no dia, destaca com outra cor */
+/* Destaca dias com observações */
 .calendar-day.highlight {
   background: #7b2cbf;
   color: #fff;
   font-weight: bold;
 }
 
-/* Ao passar o mouse, dá um leve efeito */
+/* Hover para deixar levemente mais claro */
 .calendar-day:hover {
   background: #2a2a2a;
   color: #fff;
@@ -350,6 +352,7 @@ nav button.active {
   min-width: 140px;
   text-align: center;
 }
+
 
 
 /* ==============================================
