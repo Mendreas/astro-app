@@ -1,5 +1,5 @@
 // ======================================================
-// AstroLog – app.js (versão completa com as duas correções)
+// AstroLog – app.js (com correção para traduzir a frase “Ajustes e configurações da aplicação.”)
 // ======================================================
 
 let observacoes    = [];
@@ -458,11 +458,12 @@ function translateUI() {
   // 7) Traduzir rodapé (footer) – “Filtro Vermelho” e “Intensidade do Filtro”
   const footerLabels = document.querySelectorAll('footer label');
   if (footerLabels.length >= 2) {
-    footerLabels[0].textContent = t.redFilter;   // primeiro <label>
-    footerLabels[1].textContent = t.intensity;   // segundo <label>
+    footerLabels[0].textContent = t.redFilter;   // primeiro <label> do footer
+    footerLabels[1].textContent = t.intensity;   // segundo <label> do footer
   }
 
   // 8) Traduzir o parágrafo em “Configurações”
+  // Aqui garantimos que a <p> dentro de #tab-configuracoes seja atualizada
   const configPara = document.querySelector('#tab-configuracoes p');
   if (configPara) {
     configPara.textContent = t.configDescription;
