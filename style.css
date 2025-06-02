@@ -230,7 +230,8 @@ footer {
    MODAL (ABRIR/CLOSE)
    ============================================== */
 .modal {
-  display: none;          /* escondido por padrão */
+  /* escondido por padrão; JavaScript vai fazer display: flex inline */
+  display: none;
   position: fixed;
   z-index: 999;
   left: 0;
@@ -239,16 +240,11 @@ footer {
   height: 100%;
   background-color: rgba(0,0,0,0.6);
 
-  /* Configura como flex-container para centralizar conteúdo */
-  display: flex;
+  display: flex;           /* para centralizar conteúdo */
   justify-content: center;
   align-items: center;
-  padding: 1rem;          /* garante folga ao redor do modal-content */
+  padding: 1rem;           /* garante folga ao redor */
   box-sizing: border-box;
-}
-
-.modal.open {
-  display: flex;
 }
 
 .modal-content {
@@ -261,12 +257,12 @@ footer {
   position: relative;
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
 
-  /* Limita altura a 90% da viewport e permite scroll interno */
+  /* permite rolagem interna caso ultrapasse 90vh */
   max-height: 90vh;
   overflow-y: auto;
 }
 
-/* Customização sutil da scrollbar no Chrome/Edge/Safari */
+/* Customização sutil da scrollbar */
 .modal-content::-webkit-scrollbar {
   width: 8px;
 }
@@ -372,7 +368,8 @@ footer {
 
 /* ==============================================
    FILTRO VERMELHO UNIFORME
-   ============================================== */
+   ==============================================
+*/
 body.red-filter {
   background-color: #360700 !important;
   color: #ff5555 !important;
@@ -499,7 +496,8 @@ body.light textarea {
 
 /* ==============================================
    CALENDÁRIO (aba “Calendário”)
-   ============================================== */
+   ==============================================
+*/
 #calendarContainer {
   display: grid;
   grid-template-columns: repeat(7, 1fr);
@@ -549,7 +547,8 @@ body.light textarea {
 
 /* ==============================================
    RECURSOS E LINKS ÚTEIS (abas “Recursos” e “Links Úteis”)
-   ============================================== */
+   ==============================================
+*/
 /* Remove bullets e organiza o <ul> como flex-wrap */
 #tab-recursos ul.cards-list,
 #tab-links ul.cards-list {
@@ -596,7 +595,7 @@ body.light textarea {
   position: relative;
 }
 
-/* Remove qualquer ::after que exibisse o “title” */
+/* Remove qualquer ::after que puxasse o “title” */
 #tab-recursos ul.cards-list li a::after,
 #tab-links ul.cards-list li a::after {
   content: none !important;
@@ -637,7 +636,8 @@ body.light textarea {
 
 /* ==============================================
    BOTÃO “＋” ESPECÍFICO NO HEADER
-   ============================================== */
+   ==============================================
+*/
 #addObservationBtn {
   background: #2a2a2a;
   border: none;
