@@ -41,6 +41,9 @@ const i18n = {
     configuracoes: "Configurações",
     links: "Links Úteis",
     ver: "Ver"
+	exportJson:   "📤 Exportar Observações",
+    importJson:   "📥 Importar Observações",
+    downloadBackup: "💾 Descarregar Backup",
   },
   en: {
     searchPlaceholder: "Search observations...",
@@ -63,6 +66,9 @@ const i18n = {
     configuracoes: "Settings",
     links: "Useful Links",
     ver: "View"
+	exportJson:   "📤 Export Observations",
+    importJson:   "📥 Import Observations",
+    downloadBackup: "💾 Download Backup",
   }
 };
 
@@ -225,8 +231,9 @@ function renderCalendario() {
   const daysInMonth = new Date(calendarioAno, calendarioMes + 1, 0).getDate();
 
   // Ex.: “Maio 2025”, etc.
-  const nomeMes = new Date(calendarioAno, calendarioMes).toLocaleString('pt-PT', { month: 'long' });
-  titleElem.textContent = `${capitalize(nomeMes)} ${calendarioAno}`;
+	const locale = (currentLang === 'pt' ? 'pt-PT' : 'en-US');
+	const nomeMes = new Date(calendarioAno, calendarioMes).toLocaleString(locale, { month: 'long' });
+	title.textContent = `${capitalize(nomeMes)} ${calendarioAno}`;
 
   // Quais dias têm observações?
   const diasComObs = new Set(
@@ -510,6 +517,16 @@ function translateUI() {
   if (redFilterLabel) redFilterLabel.textContent = t.redFilter;
   const intensityLabel = document.querySelector('footer label:nth-of-type(2)');
   if (intensityLabel) intensityLabel.textContent = t.intensity;
+  
+    // (2) traduz botões da aba “Configurações”
+  const btnExport = document.getElementById('exportJson');
+  if (btnExport) btnExport.textContent = t.exportJson;
+
+  const lblImport = document.querySelector('label.import-label');
+  if (lblImport) lblImport.textContent = t.importJson;
+
+  const btnBackup = document.getElementById('downloadBackup');
+  if (btnBackup) btnBackup.textContent = t.downloadBackup;
 
   // 6) Traduzir texto dos botões de navegação “nav button[data-tab]”
   document.querySelectorAll("nav button[data-tab]").forEach(btn => {
