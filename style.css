@@ -270,13 +270,58 @@ nav button.active {
 }
 
 /* ==============================================
-   ABA “Calendário”
+   CSS DO CALENDÁRIO (dias em quadrados pequenos)
    ============================================== */
-#tab-calendario h2 {
-  margin: 0 0 1rem;
-  color: #f0f0f0;
+#calendarContainer {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 0.5rem;
+  margin-top: 1rem;
+  /* Se quiser limitar a largura do calendário, ajuste aqui, 
+     por exemplo: max-width: 350px; ou deixe em 100% para ocupar todo o espaço disponível */
+  /* max-width: 350px; */
 }
 
+.calendar-day {
+  /* Força a proporção 1:1 (quadrado) */
+  aspect-ratio: 1 / 1;
+
+  /* Estilização básica */
+  background: #1a1a1a;
+  color: #fff;
+  text-align: center;
+  border-radius: 6px;
+  cursor: pointer;
+  border: 1px solid #333;
+
+  /* Centraliza vertical e horizontalmente o número dentro do quadrado */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  /* Tamanho de fonte um pouco menor para caber no quadrado pequeno */
+  font-size: 0.9rem;
+  font-weight: 400;
+  user-select: none;
+  transition: background 0.2s, color 0.2s;
+}
+
+/* Quando houver observação no dia, destaca com outra cor */
+.calendar-day.highlight {
+  background: #7b2cbf;
+  color: #fff;
+  font-weight: bold;
+}
+
+/* Ao passar o mouse, dá um leve efeito */
+.calendar-day:hover {
+  background: #2a2a2a;
+  color: #fff;
+}
+
+/* ==============================================
+   Botões de navegação (← e →) do calendário
+   ============================================== */
 #calendarHeader {
   display: flex;
   justify-content: center;
@@ -293,40 +338,19 @@ nav button.active {
   padding: 0.4rem 0.8rem;
   border-radius: 6px;
   cursor: pointer;
-  min-width: 40px;
+  transition: background 0.2s;
 }
 
-#calendarContainer {
-  display: grid;
-  grid-template-columns: repeat(7, 1fr);
-  gap: 0.5rem;
-  margin-top: 1rem;
-  max-width: 100%;
+#calendarHeader button:hover {
+  background: #4a4a4a;
 }
 
-.calendar-day {
-  background: #1a1a1a;
-  text-align: center;
-  border-radius: 6px;
-  cursor: pointer;
-  border: 1px solid #333;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  /* garante aspecto 1:1 para cada célula */
-  aspect-ratio: 1 / 1;
-}
-
-.calendar-day.highlight {
-  background: #7b2cbf;
-  color: white;
+#calendarMonthYear {
   font-weight: bold;
+  min-width: 140px;
+  text-align: center;
 }
 
-#calendarResults {
-  margin-top: 1rem;
-  color: #f0f0f0;
-}
 
 /* ==============================================
    ABA “Configurações”
