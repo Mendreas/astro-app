@@ -256,12 +256,15 @@ if (importInput) {
 // EVENTOS E INICIALIZAÇÃO
 // =========================
 document.addEventListener('DOMContentLoaded', async () => {
+  // 1) Carrega as observações e renderiza na aba “Objectos”
   observacoes = await getAllObservacoes();
   renderObservacoes();
   translateUI();
   updateRedFilterClass();
 
-  // ======== MODAL DE ADICIONAR OBSERVAÇÃO ========
+  // =======================================
+  // A) CONFIGURAÇÃO DO MODAL “ADICIONAR OBSERVAÇÃO”
+  // =======================================
   const addBtn = document.getElementById('addObservationBtn');
   const modal = document.getElementById('addObservationModal');
   const closeModalBtn = document.getElementById('closeAddModal');
@@ -272,11 +275,12 @@ document.addEventListener('DOMContentLoaded', async () => {
   // Função para abrir o modal
   function openModal() {
     if (modal) {
-      modal.style.display = 'flex'; // exibe como flex para centrar
+      // Exibe o modal como flex, centrar vertical e horizontal
+      modal.style.display = 'flex';
     }
   }
 
-  // Função para fechar o modal e resetar o form
+  // Função para fechar o modal e resetar o formulário
   function closeAddForm() {
     if (form) form.reset();
     if (modal) modal.style.display = 'none';
@@ -293,12 +297,12 @@ document.addEventListener('DOMContentLoaded', async () => {
     closeModalBtn.addEventListener('click', closeAddForm);
   }
 
-  // Fecha o modal ao clicar em "Cancelar"
+  // Fecha o modal ao clicar no botão "Cancelar"
   if (cancelBtn) {
     cancelBtn.addEventListener('click', closeAddForm);
   }
 
-  // Fecha o modal se clicar fora da .modal-content
+  // Fecha o modal se clicar fora da área de conteúdo (fora de .modal-content)
   if (modal) {
     modal.addEventListener('click', (e) => {
       if (e.target === modal) {
@@ -342,9 +346,10 @@ document.addEventListener('DOMContentLoaded', async () => {
       }
     });
   }
-  // ======== FIM DO MODAL DE ADICIONAR OBSERVAÇÃO ========
 
-  // Botão de download de backup
+  // =======================================
+  // B) BOTÃO DE DOWNLOAD DE BACKUP (JSON)
+  // =======================================
   const backupBtn = document.getElementById('downloadBackup');
   if (backupBtn) {
     backupBtn.addEventListener('click', () => {
@@ -364,65 +369,49 @@ document.addEventListener('DOMContentLoaded', async () => {
       URL.revokeObjectURL(url);
     });
   }
-});
 
-// =========================
-// FUNÇÃO PARA FECHAR O MODAL (fora do DOMContentLoaded)
-function closeAddForm() {
-  const form = document.getElementById('addObservationForm');
-  const modal = document.getElementById('addObservationModal');
-  const successMsg = document.getElementById('addSuccessMsg');
-  if (form) form.reset();
-  if (modal) modal.style.display = 'none';
-  if (successMsg) successMsg.style.display = 'none';
-}
-
-// =========================
-// FUNÇÃO PARA ATUALIZAR BACKUP NO localStorage
-function atualizarBackupJSON() {
-  const json = JSON.stringify(observacoes, null, 2);
-  localStorage.setItem('backupAstroLog', json);
-}
-
-
-  // ========== INÍCIO: LÓGICA DE NAVEGAÇÃO ENTRE TABS ==========
-
-  // 1) Seleciona todos os botões <nav button data-tab="...">
+  // =======================================
+  // C) NAVEGAÇÃO ENTRE ABAS (TABS)
+  // =======================================
   const navButtons = document.querySelectorAll('nav button[data-tab]');
-  // 2) Seleciona todas as seções <section class="tab" id="tab-...">
   const tabSections = document.querySelectorAll('.tab');
+  const footer = document.querySelector('footer');
 
   navButtons.forEach(btn => {
     btn.addEventListener('click', () => {
-      const alvo = btn.dataset.tab; // por ex. "recursos", "links", "calendario"...
+      const alvo = btn.dataset.tab; // ex.: "objectos", "recursos", "links", "calendario", "configuracoes"
 
-      // Remover a classe 'active' de TODOS os botões
+      // 1) Atualizar classe "active" nos botões
       navButtons.forEach(b => b.classList.remove('active'));
-      // Adicionar 'active' apenas ao botão clicado
       btn.classList.add('active');
 
-      // Remover 'active' de todas as seções
+      // 2) Mostrar a seção correspondente e ocultar as outras
       tabSections.forEach(sec => sec.classList.remove('active'));
-      // Adicionar 'active' apenas à seção cujo id seja `tab-${alvo}`
       const sectionAlvo = document.getElementById(`tab-${alvo}`);
       if (sectionAlvo) {
         sectionAlvo.classList.add('active');
       }
 
-      // Se a aba selecionada for 'configuracoes', mostra o footer; senão, esconde
-      const footer = document.querySelector('footer');
+      // 3) Se a aba for “configuracoes”, exibe o footer; senão, oculta-o
       if (footer) {
         footer.style.display = (alvo === 'configuracoes') ? 'flex' : 'none';
       }
 
-      // Se a aba selecionada for 'calendario', renderiza o calendário
+      // 4) Se a aba for “objectos”, renderiza novamente as observações
+      if (alvo === 'objectos') {
+        renderObservacoes();
+      }
+
+      // 5) Se a aba for “calendario”, chama renderCalendario()
       if (alvo === 'calendario') {
         renderCalendario();
       }
     });
   });
-
-  // =========== FIM: LÓGICA DE NAVEGAÇÃO ENTRE TABS ===========
+});
+// =========================
+// FIM: EVENTOS E INICIALIZAÇÃO
+// =========================
 
 
 // =========================
