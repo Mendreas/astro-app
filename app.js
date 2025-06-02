@@ -580,17 +580,32 @@ document.addEventListener('DOMContentLoaded', async () => {
   const form          = document.getElementById('addObservationForm');
   const successMsg    = document.getElementById('addSuccessMsg');
 
-  function openModal() {
-    if (modal) modal.classList.add('open');
+   function openModal() {
+    if (modal) {
+      modal.classList.add('open');
+    }
   }
   function closeAddForm() {
     if (form) form.reset();
     if (modal) modal.classList.remove('open');
     if (successMsg) successMsg.style.display = 'none';
   }
-  if (addBtn) addBtn.addEventListener('click', openModal);
-  if (closeModalBtn) closeModalBtn.addEventListener('click', closeAddForm);
-  if (cancelBtn) cancelBtn.addEventListener('click', closeAddForm);
+ // Se o botão “+” existir, atrelamos o “click” à openModal()
+  if (addBtn) {
+    addBtn.addEventListener('click', openModal);
+  }
+
+  // Se o “×” do modal existir, atrelamos o “click” ao closeAddForm()
+  if (closeModalBtn) {
+    closeModalBtn.addEventListener('click', closeAddForm);
+  }
+
+  // Se o botão “Cancelar” existir, também fecha o modal
+  if (cancelBtn) {
+    cancelBtn.addEventListener('click', closeAddForm);
+  }
+
+  // Se o usuário clicar fora da “.modal-content”, fecha também
   if (modal) {
     modal.addEventListener('click', (e) => {
       if (e.target === modal) {
