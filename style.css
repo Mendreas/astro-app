@@ -427,107 +427,128 @@ body.light textarea {
   padding: 0;
 }
 
-/* -------------------------------------------------
-   B) Cada card (<li>) fica exatamente 450×450 px
-   e sem “vazar” seu conteúdo
-   ------------------------------------------------- */
+/* ================================================
+   1) ESTILOS GERAIS PARA <ul> E <li> DOS CARDS
+   ================================================ */
+
+/* Remove bullets, força flex-wrap, define gap entre cards */
+#tab-recursos ul,
+#tab-links ul {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  justify-content: center;
+
+  list-style: none; /* remove bolinhas */
+  margin: 0;
+  padding: 0;
+}
+
+/* Cada <li> vira um quadrado preto de 450×450 px */
 #tab-recursos ul li,
 #tab-links ul li {
   display: flex;
   flex-direction: column;
-  background-color: #000;       /* fundo preto puro, sem influenciar no logo */
+  background-color: #000; /* fundo preto */
   border-radius: 0.5rem;
   overflow: hidden;
-  
-  max-width: 450px;                  /* força 450px de largura */
-  height: 450px;                 /* força 450px de altura */
-  
+
+  width: 450px;  /* largura fixa */
+  height: 450px; /* altura fixa */
+
   box-shadow: 0 0 5px rgba(255, 255, 255, 0.1);
   transition: transform 0.2s;
+  position: relative;
 }
 
-/* efeito de hover (aumenta um pouco) */
+/* Pequena escala ao passar o mouse */
 #tab-recursos ul li:hover,
 #tab-links ul li:hover {
   transform: scale(1.03);
 }
 
-/* -------------------------------------------------
-   C) Fazendo o <a> interno “encher” todo o <li>
-   e organizar o conteúdo em coluna
-   ------------------------------------------------- */
+/* ================================================
+   2) COMPORTAMENTO DO LINK (A) DENTRO DO <li>
+   ================================================ */
+
+/* O <a> “embeleza” todo o <li>, organizando em coluna */
 #tab-recursos ul li a,
 #tab-links ul li a {
   display: flex;
   flex-direction: column;
-  justify-content: flex-start;  /* empilha .card-img em cima, .card-desc embaixo */
+  justify-content: flex-start; /* .card-img em cima, .card-desc em baixo */
   align-items: center;
-  
+
   width: 100%;
   height: 100%;
-  
   text-decoration: none;
   color: #fff;
   position: relative;
 }
 
-/* -------------------------------------------------
-   D) Remover qualquer ::after que você usasse para puxar title
-   (caso tenha deixado algo parecido antes)
-   ------------------------------------------------- */
+/* Caso ainda houvesse algum ::after puxando title, aqui “zeramos” */
 #tab-recursos ul li a::after,
 #tab-links ul li a::after {
   content: none !important;
 }
 
-/* -------------------------------------------------
-   E) Estilo do bloco que contém a imagem (logo)
-   ------------------------------------------------- */
+/* ================================================
+   3) ESTILO DA DIV QUE ENVOLVE A IMAGEM (.card-img)
+   ================================================ */
+
+/* .card-img ocupa todo espaço acima da legenda (.card-desc) */
 .card-img {
-  flex: 1;                       /* ocupa todo o espaço livre acima do rodapé */
+  flex: 1;                  /* ocupa espaço livre (entre topo e rodapé) */
   
-  display: flex;                 /* para centralizar o <img> */
-  align-items: center;           /* centraliza verticalmente */
-  justify-content: center;       /* centraliza horizontalmente */
-  
-  width: 100%;                   /* ocupa 100% da largura do li */
-  overflow: hidden;              /* impede “vazar” se a imagem for muito grande */
-  
-  /* IMPORTANTE: deixe transparente ou #000 como fundo,
-     para não “tinture”” o logo. */
+  display: flex;            /* para centralizar a <img> internamente */
+  align-items: center;      /* centra verticalmente */
+  justify-content: center;  /* centra horizontalmente */
+
+  width: 100%;
+  overflow: hidden;
+
+  /* 1) Damos um padding interno para “afastar” a imagem das bordas */
+  padding: 1rem;            /* ajuste este valor conforme goste */
+
+  /* 2) Fundo transparente (ou preto, se preferir) para não “tinture” o logo */
   background-color: transparent;
 }
 
-/* Quando houver um <img> dentro de .card-img: */
+/* ================================================
+   4) ESTILO DA PRÓPRIA IMAGEM (miniatura)
+   ================================================ */
+
+/* Limita a imagem a, no máximo, 80% da área interna de .card-img */
 .card-img img {
-  max-width: 100%;    /* nunca extrapola a borda lateral */
-  max-height: 100%;   /* nunca extrapola a borda vertical */
-  object-fit: contain;/* ajusta mantendo proporção, sem cortar nem distorcer */
+  max-width: 80%;     /* largura máxima = 80% do espaço que sobrou */
+  max-height: 80%;    /* altura máxima = 80% do espaço que sobrou */
+  object-fit: contain;/* mantém proporção, sem cortar nem distorcer */
 }
 
-/* -------------------------------------------------
-   F) Legenda fixa no rodapé de cada card
-   ------------------------------------------------- */
+/* ================================================
+   5) ESTILO DA LEGENDA NO RODAPÉ DA CAIXA (.card-desc)
+   ================================================ */
+
+/* .card-desc ocupa apenas a altura necessária para o texto */
 .card-desc {
-  flex: 0 0 auto;               /* não cresce, ocupa somente a altura do texto */
+  flex: 0 0 auto;            /* não cresce, fica apenas no espaço do texto */
   
-  padding: 0.6rem 1rem;
+  padding: 0.6rem 1rem;      /* espaço interno para o texto não ficar colado */
   font-size: 1rem;
   text-align: center;
   color: #fff;
-  
-  /* fundo semitransparente para destacar o texto,
-     mas sem “tinture” o logo, pois o card inteiro já é preto (#000). */
+
+  /* fundo semitransparente no rodapé, destacando o texto */
   background: rgba(0, 0, 0, 0.6);
-  
   width: 100%;
   box-sizing: border-box;
-  
-  /* se a legenda for MUITO longa, corta com “...” */
+
+  /* se a legenda for muito grande, usar reticências */
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
+
 <!-- CSS A ADICIONAR AO style.css -->
 <style>
 #addObservationBtn {
