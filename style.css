@@ -26,18 +26,11 @@ header {
   position: relative;
 }
 
-.header-left {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-}
-
 .header-controls {
   display: flex;
   gap: 0.5rem;
 }
 
-/* Botões de controle do header: pesquisa, modo vermelho, etc. */
 .header-controls input {
   padding: 0.4rem 1rem;
   border: none;
@@ -58,15 +51,28 @@ header {
   line-height: 1;
 }
 
+/* Botão “＋” específico */
+#addObservationBtn {
+  background: #2a2a2a;
+  border: none;
+  padding: 0 0.6rem;
+  border-radius: 12px;
+  color: white;
+  font-size: 1.2rem;
+  line-height: 1;
+  cursor: pointer;
+}
+
+#addObservationBtn:hover {
+  background: #3a3a3a;
+}
+
 main {
   display: flex;
   flex: 1;
   overflow: hidden;
 }
 
-/* ==============================================
-   NAVEGAÇÃO (MENU LATERAL)
-   ============================================== */
 nav {
   display: flex;
   flex-direction: column;
@@ -95,9 +101,6 @@ nav button.active {
   color: #a463ff;
 }
 
-/* ==============================================
-   ÁREA DE CONTEÚDO PRINCIPAL
-   ============================================== */
 .content {
   flex: 1;
   overflow-y: auto;
@@ -113,42 +116,7 @@ nav button.active {
 }
 
 /* ==============================================
-   FORMULÁRIOS E CONTROLES GERAIS
-   ============================================== */
-form {
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-  max-width: 800px;
-  background: #1a1a1a;
-  padding: 2rem;
-  border-radius: 12px;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.5);
-}
-
-input,
-select,
-textarea,
-button {
-  padding: 0.6rem;
-  border-radius: 8px;
-  border: none;
-  background: #252525;
-  color: white;
-}
-
-input[type="checkbox"] {
-  width: auto;
-}
-
-.form-actions {
-  display: flex;
-  justify-content: flex-end;
-  gap: 1rem;
-}
-
-/* ==============================================
-   FILTROS NO TAB “Objectos”
+   ABA “Objetos”
    ============================================== */
 .filters {
   display: flex;
@@ -172,9 +140,6 @@ input[type="checkbox"] {
   color: white;
 }
 
-/* ==============================================
-   LISTA DE OBSERVAÇÕES (TAB “Objectos”)
-   ============================================== */
 #observationsList {
   display: flex;
   flex-wrap: wrap;
@@ -211,26 +176,190 @@ input[type="checkbox"] {
 }
 
 /* ==============================================
-   RODAPÉ (FOOTER) - somente na aba “Configurações”
+   ABA “Recursos” e “Links Úteis” (cards)
    ============================================== */
-footer {
-  margin-top: 2rem;
-  padding: 1rem 2rem;
-  background: #1a1a1a;
-  display: none;
-  flex-direction: column;
-  gap: 0.5rem;
+#tab-recursos ul.cards-list,
+#tab-links ul.cards-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  justify-content: flex-start;
+  list-style: none;
+  margin: 0;
+  padding: 0;
 }
 
-.tab#tab-configuracoes.active + footer {
+#tab-recursos ul.cards-list li,
+#tab-links ul.cards-list li {
   display: flex;
+  flex-direction: column;
+  background-color: #000;
+  border-radius: 0.5rem;
+  overflow: hidden;
+  width: 300px;
+  height: 300px;
+  box-shadow: 0 0 5px rgba(255, 255, 255, 0.1);
+  transition: transform 0.2s;
+  position: relative;
+}
+
+#tab-recursos ul.cards-list li:hover,
+#tab-links ul.cards-list li:hover {
+  transform: scale(1.03);
+}
+
+#tab-recursos ul.cards-list li a,
+#tab-links ul.cards-list li a {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
+  width: 100%;
+  height: 100%;
+  text-decoration: none;
+  color: #fff;
+  position: relative;
+}
+
+#tab-recursos ul.cards-list li a::after,
+#tab-links ul.cards-list li a::after {
+  content: none !important;
+}
+
+.card-img {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  overflow: hidden;
+  background-color: transparent;
+}
+
+.card-img img {
+  max-width: 80%;
+  max-height: 80%;
+  object-fit: contain;
+}
+
+.card-desc {
+  flex: 0 0 auto;
+  padding: 0.4rem 0.8rem;
+  font-size: 0.9rem;
+  text-align: center;
+  color: #fff;
+  background: rgba(0, 0, 0, 0.6);
+  width: 100%;
+  box-sizing: border-box;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 /* ==============================================
-   MODAL (ABRIR/CLOSE)
+   ABA “Calendário”
+   ============================================== */
+#tab-calendario h2 {
+  margin: 0 0 1rem;
+  color: #f0f0f0;
+}
+
+#calendarHeader {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 1rem;
+  margin-top: 1rem;
+  font-size: 1.2rem;
+}
+
+#calendarHeader button {
+  background: #333;
+  color: white;
+  border: none;
+  padding: 0.4rem 0.8rem;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+#calendarContainer {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 0.5rem;
+  margin-top: 1rem;
+  max-width: 100%;
+}
+
+.calendar-day {
+  padding: 0.5rem;
+  background: #1a1a1a;
+  text-align: center;
+  border-radius: 6px;
+  cursor: pointer;
+  border: 1px solid #333;
+}
+
+.calendar-day.highlight {
+  background: #7b2cbf;
+  color: white;
+  font-weight: bold;
+}
+
+#calendarResults {
+  margin-top: 1rem;
+}
+
+/* ==============================================
+   ABA “Configurações”
+   ============================================== */
+#tab-configuracoes p {
+  font-size: 1rem;
+  color: #f0f0f0;
+  margin-bottom: 1rem;
+}
+
+.config-actions {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+  margin-top: 1rem;
+}
+
+.config-actions button,
+.config-actions .import-label {
+  background: #2a2a2a;
+  color: white;
+  padding: 0.6rem 1.2rem;
+  border-radius: 8px;
+  cursor: pointer;
+  border: none;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.config-actions .import-label {
+  position: relative;
+  overflow: hidden;
+}
+
+.config-actions .import-label input[type="file"] {
+  position: absolute;
+  top: 0;
+  left: 0;
+  opacity: 0;
+  cursor: pointer;
+}
+
+.config-actions button:hover,
+.config-actions .import-label:hover {
+  background: #3a3a3a;
+}
+
+/* ==============================================
+   Modal de Adicionar/Ver/Editar Observação
    ============================================== */
 .modal {
-  /* escondido por padrão; JavaScript vai fazer display: flex inline */
   display: none;
   position: fixed;
   z-index: 999;
@@ -239,46 +368,27 @@ footer {
   width: 100%;
   height: 100%;
   background-color: rgba(0,0,0,0.6);
-
-  display: flex;           /* para centralizar conteúdo */
   justify-content: center;
   align-items: center;
-  padding: 1rem;           /* garante folga ao redor */
-  box-sizing: border-box;
+}
+
+.modal.open {
+  display: flex;
 }
 
 .modal-content {
   background-color: #111;
   color: #fff;
-  width: 100%;
+  width: 90%;
   max-width: 500px;
+  max-height: 90vh;
   border-radius: 8px;
-  padding: 1rem 1.2rem;
+  padding: 20px;
   position: relative;
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
-
-  /* permite rolagem interna caso ultrapasse 90vh */
-  max-height: 90vh;
   overflow-y: auto;
 }
 
-/* Customização sutil da scrollbar */
-.modal-content::-webkit-scrollbar {
-  width: 8px;
-}
-.modal-content::-webkit-scrollbar-track {
-  background: #222;
-  border-radius: 4px;
-}
-.modal-content::-webkit-scrollbar-thumb {
-  background-color: #555;
-  border-radius: 4px;
-}
-.modal-content::-webkit-scrollbar-thumb:hover {
-  background-color: #777;
-}
-
-/* “×” de fechar no canto superior direito */
 .modal-content .close {
   position: absolute;
   top: 12px;
@@ -288,23 +398,19 @@ footer {
   cursor: pointer;
 }
 
-.modal-content h3 {
-  margin: 0 0 1rem 0;
-  color: #9d4edd;
-}
-
-/* Estilo dos campos do formulário dentro do modal */
 .modal-content form {
   display: flex;
   flex-direction: column;
   gap: 0.8rem;
 }
+
 .modal-content form label {
   display: flex;
   flex-direction: column;
   font-size: 0.95rem;
   color: #ddd;
 }
+
 .modal-content form input[type="text"],
 .modal-content form input[type="date"],
 .modal-content form input[type="number"],
@@ -319,22 +425,24 @@ footer {
   color: white;
   font-size: 0.95rem;
 }
+
 .modal-content form input[type="checkbox"] {
   margin-right: 0.4rem;
   width: auto;
 }
+
 .modal-content form textarea {
   resize: vertical;
   min-height: 60px;
 }
 
-/* Botões “Guardar” e “Cancelar” dentro do modal */
 .modal-buttons {
   display: flex;
   justify-content: flex-end;
   gap: 0.6rem;
   margin-top: 0.6rem;
 }
+
 .modal-content button[type="submit"],
 .modal-content button#cancelAdd {
   padding: 0.5rem 1rem;
@@ -343,22 +451,25 @@ footer {
   cursor: pointer;
   font-size: 0.95rem;
 }
+
 .modal-content button[type="submit"] {
   background: #7b2cbf;
   color: white;
 }
+
 .modal-content button[type="submit"]:hover {
   background: #9d4edd;
 }
+
 .modal-content button#cancelAdd {
   background: #333;
   color: #fff;
 }
+
 .modal-content button#cancelAdd:hover {
   background: #444;
 }
 
-/* Mensagem de sucesso dentro do modal */
 .success-msg {
   color: #4caf50;
   margin-top: 1rem;
@@ -367,9 +478,8 @@ footer {
 }
 
 /* ==============================================
-   FILTRO VERMELHO UNIFORME
-   ==============================================
-*/
+   Filtro Vermelho (modo noturno vermelho)
+   ============================================== */
 body.red-filter {
   background-color: #360700 !important;
   color: #ff5555 !important;
@@ -380,6 +490,7 @@ body.red-filter header {
   background-image: none !important;
   color: #ff5555 !important;
 }
+
 body.red-filter.intensity-20 { background-color: #240000 !important; }
 body.red-filter.intensity-40 { background-color: #2c0000 !important; }
 body.red-filter.intensity-60 { background-color: #360700 !important; }
@@ -404,9 +515,10 @@ body.red-filter textarea {
 body.red-filter button,
 body.red-filter .dropdown-menu,
 body.red-filter .dropdown-menu div,
-body.red-filter #tab-recursos li,
-body.red-filter #tab-recursos a,
-body.red-filter #tab-recursos img {
+body.red-filter #tab-recursos ul.cards-list li,
+body.red-filter #tab-recursos img,
+body.red-filter #tab-links ul.cards-list li,
+body.red-filter #tab-links img {
   background-color: #360700 !important;
   color: #ff5555 !important;
   border-color: #550000 !important;
@@ -414,7 +526,7 @@ body.red-filter #tab-recursos img {
 
 body.red-filter .filters button.active,
 body.red-filter nav button.active,
-body.red-filter .form-actions button,
+body.red-filter .config-actions button,
 body.red-filter .modal-content h3,
 body.red-filter .view-btn,
 body.red-filter button:hover {
@@ -431,7 +543,7 @@ body.red-filter textarea::placeholder {
 }
 
 /* ==============================================
-   MODO CLARO (Light Mode)
+   Light mode
    ============================================== */
 body.light {
   background-color: #f0f0f0;
@@ -447,7 +559,7 @@ body.light textarea {
 }
 
 /* ==============================================
-   DROPDOWN‐MENU (para filtro por tipo)
+   Dropdown-menu (para filtrar por tipo)
    ============================================== */
 .dropdown-menu {
   background-color: #222;
@@ -460,196 +572,12 @@ body.light textarea {
   min-width: 150px;
   position: absolute;
 }
+
 .dropdown-menu div {
-  padding: 5px;
+  padding: 0.4rem 0.6rem;
   cursor: pointer;
 }
+
 .dropdown-menu div:hover {
   background-color: #444;
-}
-
-/* ==============================================
-   CONFIGURAÇÕES (aba “Configurações”)
-   ============================================== */
-.config-actions {
-  display: flex;
-  gap: 1rem;
-  flex-wrap: wrap;
-  margin-top: 1rem;
-}
-
-.config-actions button,
-.config-actions .import-label {
-  background: #2a2a2a;
-  color: white;
-  padding: 0.6rem 1.2rem;
-  border-radius: 8px;
-  cursor: pointer;
-  border: none;
-  font-size: 0.95rem;
-}
-.config-actions .import-label {
-  display: inline-block;
-  position: relative;
-  overflow: hidden;
-}
-
-/* ==============================================
-   CALENDÁRIO (aba “Calendário”)
-   ==============================================
-*/
-#calendarContainer {
-  display: grid;
-  grid-template-columns: repeat(7, 1fr);
-  gap: 0.5rem;
-  margin-top: 1rem;
-  max-width: 400px;
-}
-
-.calendar-day {
-  padding: 0.5rem;
-  background: #1a1a1a;
-  text-align: center;
-  border-radius: 6px;
-  cursor: pointer;
-  border: 1px solid #333;
-}
-
-.calendar-day.highlight {
-  background: #7b2cbf;
-  color: white;
-  font-weight: bold;
-}
-
-#calendarHeader {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  gap: 1rem;
-  margin-top: 1rem;
-  font-size: 1.2rem;
-}
-
-#calendarHeader button {
-  background: #333;
-  color: white;
-  border: none;
-  padding: 0.4rem 0.8rem;
-  border-radius: 6px;
-  cursor: pointer;
-}
-
-#calendarMonthYear {
-  font-weight: bold;
-  min-width: 140px;
-  text-align: center;
-}
-
-/* ==============================================
-   RECURSOS E LINKS ÚTEIS (abas “Recursos” e “Links Úteis”)
-   ==============================================
-*/
-/* Remove bullets e organiza o <ul> como flex-wrap */
-#tab-recursos ul.cards-list,
-#tab-links ul.cards-list {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 1rem;
-  justify-content: flex-start;
-  list-style: none;
-  margin: 0;
-  padding: 0;
-}
-
-/* Cada <li> vira quadrado de exatos 300×300 px */
-#tab-recursos ul.cards-list li,
-#tab-links ul.cards-list li {
-  display: flex;
-  flex-direction: column;
-  background-color: #000;
-  border-radius: 0.5rem;
-  overflow: hidden;
-  width: 300px;
-  height: 300px;
-  box-shadow: 0 0 5px rgba(255, 255, 255, 0.1);
-  transition: transform 0.2s;
-  position: relative;
-}
-
-#tab-recursos ul.cards-list li:hover,
-#tab-links ul.cards-list li:hover {
-  transform: scale(1.03);
-}
-
-/* Fazendo o <a> interno “encher” todo o <li> */
-#tab-recursos ul.cards-list li a,
-#tab-links ul.cards-list li a {
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-start;
-  align-items: center;
-  width: 100%;
-  height: 100%;
-  text-decoration: none;
-  color: #fff;
-  position: relative;
-}
-
-/* Remove qualquer ::after que puxasse o “title” */
-#tab-recursos ul.cards-list li a::after,
-#tab-links ul.cards-list li a::after {
-  content: none !important;
-}
-
-/* Bloco que envolve a imagem (.card-img) */
-.card-img {
-  flex: 1;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 100%;
-  overflow: hidden;
-  background-color: transparent;
-}
-
-/* Imagem dentro de .card-img (proporcional, sem distorcer) */
-.card-img img {
-  max-width: 80%;
-  max-height: 80%;
-  object-fit: contain;
-}
-
-/* Legenda fixa no rodapé (.card-desc) */
-.card-desc {
-  flex: 0 0 auto;
-  padding: 0.4rem 0.8rem;
-  font-size: 0.9rem;
-  text-align: center;
-  color: #fff;
-  background: rgba(0, 0, 0, 0.6);
-  width: 100%;
-  box-sizing: border-box;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-/* ==============================================
-   BOTÃO “＋” ESPECÍFICO NO HEADER
-   ==============================================
-*/
-#addObservationBtn {
-  background: #2a2a2a;
-  border: none;
-  padding: 0 0.6rem;
-  border-radius: 12px;
-  color: white;
-  font-size: 1.2rem;
-  line-height: 1;
-  cursor: pointer;
-  position: relative;
-}
-
-#addObservationBtn:hover {
-  background: #3a3a3a;
 }
