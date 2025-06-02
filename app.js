@@ -144,33 +144,7 @@ if (langBtn) {
 }
 
 // Navegação entre tabs
-const tabs = document.querySelectorAll('nav button[data-tab]');
-const tabSections = document.querySelectorAll('.tab');
-
-tabs.forEach(tab => {
-  tab.addEventListener('click', () => {
-    const target = tab.dataset.tab; 
-    // “target” = sufixo que vamos anexar a “tab-”
-    tabs.forEach(t => t.classList.remove('active'));
-    tab.classList.add('active');
-    tabSections.forEach(sec => sec.classList.remove('active'));
-
-    const sectionId = `tab-${target}`; 
-    const seçãoAlvo = document.getElementById(sectionId);
-    if (seçãoAlvo) {
-      seçãoAlvo.classList.add('active');
-    }
-
-    // Se a aba “configuracoes” abrir, mostra o footer; senão, esconde
-    const footer = document.querySelector('footer');
-    if (footer) {
-      footer.style.display = (target === 'configuracoes') ? 'flex' : 'none';
-    }
-
-    // Se a aba for “calendario”, renderiza o calendário
-    if (target === 'calendario') renderCalendario();
-  });
-});
+nav button[data-tab]
 
 // Filtro por tipo (dropdown)
 const filterBtn = document.getElementById('filterByType');
