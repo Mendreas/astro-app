@@ -431,8 +431,8 @@ body.light textarea {
   background-color: #000;
   border-radius: 0.5rem;
   overflow: hidden;
-  width: 500px;
-  height: 240px;
+  width: 450px;
+  height: 450px;
   box-shadow: 0 0 5px rgba(255, 255, 255, 0.1);
   transition: transform 0.2s;
   position: relative;
@@ -448,9 +448,10 @@ body.light textarea {
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: space-between; /* antes era center */
+  justify-content: flex-start; 
+  align-items: center;
   text-align: center;
-  padding: 1rem;
+  padding: 0;      /* o padding foi movido para .card-img ou .card-desc, se necessário */
   height: 100%;
   width: 100%;
   text-decoration: none;
@@ -460,19 +461,7 @@ body.light textarea {
 
 #tab-recursos li a::after,
 #tab-links li a::after {
-  content: attr(title);
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  font-size: 0.85rem;
-  text-align: center;
-  color: #fff;
-  background: rgba(0, 0, 0, 0.6);
-  padding: 0.4rem;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  content: none !important;
 }
 
 /* Estilos gerais para o container de cards */
@@ -497,30 +486,32 @@ body.light textarea {
 
 /* Container da imagem */
 .card-img {
-  width: 100%;
-  height: 0;
-  padding-bottom: 75%; /* proporção 4:3, por exemplo */
-  position: relative;
+  flex: 1;
+  display: flex;           /* para centrar a imagem */
+  align-items: center;     /* centraliza verticalmente */
+  justify-content: center; /* centraliza horizontalmente */
   overflow: hidden;
-  border-radius: 0.5rem;
-  background: #222; /* cor de fundo caso a imagem demore a carregar */
+  width: 100%;
+  background-color: #111;
 }
 
 .card-img img {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
+  /* nunca ultrapassa a largura/altura do container */
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain; /* mantém proporção e centraliza dentro de .card-img */
 }
 
 /* Texto que aparece abaixo da imagem */
 .card-desc {
-  margin-top: 0.5rem;
+  flex: 0 0 auto;
+  padding: 0.5rem 1rem; 
   font-size: 0.9rem;
   text-align: center;
-  color: #fff; /* ou qualquer cor legível no seu fundo */
+  color: #fff;
+  background: rgba(0, 0, 0, 0.6);
+  width: 100%;
+  box-sizing: border-box;
 }
 
 <!-- CSS A ADICIONAR AO style.css -->
