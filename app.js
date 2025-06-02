@@ -655,7 +655,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   }
 
   // 4) NAVEGAÇÃO ENTRE “TABS”
-  const navButtons = document.querySelectorAll('nav button[data-tab]');
+  const navButtons  = document.querySelectorAll('nav button[data-tab]');
   const tabSections = document.querySelectorAll('.tab');
   navButtons.forEach(btn => {
     btn.addEventListener('click', () => {
@@ -667,10 +667,14 @@ document.addEventListener('DOMContentLoaded', async () => {
       if (sectionAlvo) {
         sectionAlvo.classList.add('active');
       }
-      // Mostrar/ocultar footer
+      // Mostrar/ocultar footer conforme aba
       const footer = document.querySelector('footer');
       if (footer) {
-        footer.style.display = (alvo === 'configuracoes') ? 'flex' : 'none';
+        if (alvo === 'configuracoes') {
+          footer.classList.add('active');
+        } else {
+          footer.classList.remove('active');
+        }
       }
       // Se for “calendário”, renderiza
       if (alvo === 'calendario') {
@@ -678,6 +682,12 @@ document.addEventListener('DOMContentLoaded', async () => {
       }
     });
   });
+
+  // Esconder footer logo no início (porque a aba inicial é “Objectos”)
+  const footerInicial = document.querySelector('footer');
+  if (footerInicial) {
+    footerInicial.classList.remove('active');
+  }
 
   // 5) FILTRO POR TIPO (Dropdown)
   const filterBtn2 = document.getElementById('filterByType');

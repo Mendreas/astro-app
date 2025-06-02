@@ -51,7 +51,7 @@ header {
   line-height: 1;
 }
 
-/* Botão “＋” específico */
+/* Botão “＋” específico (Adicionar Observação) */
 #addObservationBtn {
   background: #2a2a2a;
   border: none;
@@ -61,7 +61,7 @@ header {
   font-size: 1.2rem;
   line-height: 1;
   cursor: pointer;
-  z-index: 20; /* certifique-se de que seja maior que qualquer overlay */
+  z-index: 20; /* garante que fique acima de overlays invisíveis */
 }
 
 #addObservationBtn:hover {
@@ -117,7 +117,7 @@ nav button.active {
 }
 
 /* ==============================================
-   ABA “Objetos”
+   ABA “Objectos”
    ============================================== */
 .filters {
   display: flex;
@@ -177,7 +177,7 @@ nav button.active {
 }
 
 /* ==============================================
-   ABA “Recursos” e “Links Úteis” (cards)
+   ABA “Recursos” e “Links Úteis”
    ============================================== */
 #tab-recursos ul.cards-list,
 #tab-links ul.cards-list {
@@ -364,6 +364,38 @@ nav button.active {
 }
 
 /* ==============================================
+   O footer (com o “Filtro Vermelho” e o slider)
+   Fica ESCONDIDO exceto quando a aba Configurações estiver ativa
+   ============================================== */
+footer {
+  margin-top: 2rem;
+  padding: 1rem 2rem;
+  background: #1a1a1a;
+  display: none; /* escondido por padrão */
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+footer.active {
+  display: flex !important;
+}
+
+footer label {
+  display: inline-block;
+  font-size: 1rem;
+  margin-right: 0.5rem;
+  cursor: pointer;
+}
+
+footer input[type="checkbox"] {
+  width: auto;
+}
+
+footer input[type="range"] {
+  width: 100%;
+}
+
+/* ==============================================
    Modal de Adicionar/Ver/Editar Observação
    ============================================== */
 .modal {
@@ -505,7 +537,6 @@ body.red-filter.intensity-80 { background-color: #3e0a00 !important; }
 body.red-filter.intensity-100 { background-color: #4a0d00 !important; }
 
 body.red-filter nav,
-body.red-filter footer,
 body.red-filter .tab,
 body.red-filter .observation-card,
 body.red-filter .filters button,
