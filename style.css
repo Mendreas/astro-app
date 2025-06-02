@@ -412,112 +412,122 @@ body.light textarea {
   text-align: center;
 }
 
-/* Estilos partilhados entre Recursos e Links Úteis */
+/* -------------------------------------------------
+   A) Remover bullets de <ul> e garantir flex-wrap
+   ------------------------------------------------- */
 #tab-recursos ul,
 #tab-links ul {
   display: flex;
   flex-wrap: wrap;
   gap: 1rem;
   justify-content: center;
-  list-style: none;
-  padding: 0;
+  
+  list-style: none; /* remove bullets/marcadores dos <li> */
   margin: 0;
+  padding: 0;
 }
 
-#tab-recursos li,
-#tab-links li {
+/* -------------------------------------------------
+   B) Cada card (<li>) fica exatamente 450×450 px
+   e sem “vazar” seu conteúdo
+   ------------------------------------------------- */
+#tab-recursos ul li,
+#tab-links ul li {
   display: flex;
   flex-direction: column;
-  background-color: #000;
+  background-color: #000;       /* fundo preto puro, sem influenciar no logo */
   border-radius: 0.5rem;
   overflow: hidden;
-  width: 450px;
-  height: 450px;
-  aspect-ratio: 1 / 1;
-  /* height: 450px; */
+  
+  width: 450px;                  /* força 450px de largura */
+  height: 450px;                 /* força 450px de altura */
+  
   box-shadow: 0 0 5px rgba(255, 255, 255, 0.1);
   transition: transform 0.2s;
-  position: relative;
 }
 
-#tab-recursos li:hover,
-#tab-links li:hover {
+/* efeito de hover (aumenta um pouco) */
+#tab-recursos ul li:hover,
+#tab-links ul li:hover {
   transform: scale(1.03);
 }
 
-#tab-recursos li a,
-#tab-links li a {
+/* -------------------------------------------------
+   C) Fazendo o <a> interno “encher” todo o <li>
+   e organizar o conteúdo em coluna
+   ------------------------------------------------- */
+#tab-recursos ul li a,
+#tab-links ul li a {
   display: flex;
   flex-direction: column;
-  justify-content: flex-start; 
+  justify-content: flex-start;  /* empilha .card-img em cima, .card-desc embaixo */
   align-items: center;
-  text-align: center;
-  padding: 0;      /* o padding foi movido para .card-img ou .card-desc, se necessário */
-  text-decoration: none;
-  color: #fff;
+  
   width: 100%;
   height: 100%;
+  
+  text-decoration: none;
+  color: #fff;
   position: relative;
 }
 
-#tab-recursos li a::after,
-#tab-links li a::after {
+/* -------------------------------------------------
+   D) Remover qualquer ::after que você usasse para puxar title
+   (caso tenha deixado algo parecido antes)
+   ------------------------------------------------- */
+#tab-recursos ul li a::after,
+#tab-links ul li a::after {
   content: none !important;
 }
 
-/* Estilos gerais para o container de cards */
-.cards-container {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 1rem; /* espaçamento entre os cards */
-  list-style: none;
-  padding: 0;
-}
-
-/* Cada <li> pode ter uma largura fixa ou responsiva */
-.cards-container li {
-  width: 200px; /* ajuste conforme sua necessidade */
-}
-
-/* Faz o próprio <a> “englobar” imagem + texto */
-.cards-container a {
-  text-decoration: none;
-  display: block;
-}
-
-/* Container da imagem */
+/* -------------------------------------------------
+   E) Estilo do bloco que contém a imagem (logo)
+   ------------------------------------------------- */
 .card-img {
-  flex: 1;
-  display: flex;           /* para centrar a imagem */
-  align-items: center;     /* centraliza verticalmente */
-  justify-content: center; /* centraliza horizontalmente */
-  overflow: hidden;
-  width: 100%;
+  flex: 1;                       /* ocupa todo o espaço livre acima do rodapé */
+  
+  display: flex;                 /* para centralizar o <img> */
+  align-items: center;           /* centraliza verticalmente */
+  justify-content: center;       /* centraliza horizontalmente */
+  
+  width: 100%;                   /* ocupa 100% da largura do li */
+  overflow: hidden;              /* impede “vazar” se a imagem for muito grande */
+  
+  /* IMPORTANTE: deixe transparente ou #000 como fundo,
+     para não “tinture”” o logo. */
   background-color: transparent;
 }
 
+/* Quando houver um <img> dentro de .card-img: */
 .card-img img {
-  /* nunca ultrapassa a largura/altura do container */
-  max-width: 100%;
-  max-height: 100%;
-  object-fit: contain; /* mantém proporção e centraliza dentro de .card-img */
+  max-width: 100%;    /* nunca extrapola a borda lateral */
+  max-height: 100%;   /* nunca extrapola a borda vertical */
+  object-fit: contain;/* ajusta mantendo proporção, sem cortar nem distorcer */
 }
 
-/* Texto que aparece abaixo da imagem */
+/* -------------------------------------------------
+   F) Legenda fixa no rodapé de cada card
+   ------------------------------------------------- */
 .card-desc {
-  flex: 0 0 auto;
-  padding: 0.6rem 1rem; 
+  flex: 0 0 auto;               /* não cresce, ocupa somente a altura do texto */
+  
+  padding: 0.6rem 1rem;
   font-size: 1rem;
   text-align: center;
   color: #fff;
+  
+  /* fundo semitransparente para destacar o texto,
+     mas sem “tinture” o logo, pois o card inteiro já é preto (#000). */
   background: rgba(0, 0, 0, 0.6);
+  
   width: 100%;
   box-sizing: border-box;
+  
+  /* se a legenda for MUITO longa, corta com “...” */
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
-
 <!-- CSS A ADICIONAR AO style.css -->
 <style>
 #addObservationBtn {
