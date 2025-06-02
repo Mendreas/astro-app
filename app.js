@@ -1,77 +1,80 @@
 // ======================================================
-// AstroLog – app.js (com correção para traduzir a frase “Ajustes e configurações da aplicação.”)
+// AstroLog - app.js
 // ======================================================
 
-let observacoes    = [];
-let currentLang    = 'pt';
-let currentFilter  = 'todos';
-let searchQuery    = '';
-let editId         = null;
-let calendarioMes  = new Date().getMonth();
-let calendarioAno  = new Date().getFullYear();
+// =========================
+// VARIÁVEIS GLOBAIS
+// =========================
+let observacoes = [];
+let currentLang = 'pt';
+let currentFilter = 'todos';
+let searchQuery = '';
+let editId = null;
+let calendarioMes = new Date().getMonth();
+let calendarioAno = new Date().getFullYear();
 
 const obsList = document.getElementById('observationsList');
 
 // =========================
-// TRADUÇÕES (i18n)
+// TRADUÇÕES
 // =========================
 const i18n = {
   pt: {
-    searchPlaceholder:    "Pesquisar observações...",
-    all:                  "Todos",
-    recent:               "Recentes",
-    favorites:            "Favoritos",
-    filterType:           "Filtrar por tipo",
-    cancel:               "Cancelar",
-    save:                 "Guardar",
-    redFilter:            "Filtro Vermelho",
-    intensity:            "Intensidade do Filtro",
-    edit:                 "Editar",
-    delete:               "Eliminar",
-    close:                "Fechar",
-    objectos:             "Objectos",
-    adicionar:            "Adicionar",
-    calendario:           "Calendário",
-    calendarTitle:        "Calendário de Observações",
-    recursos:             "Recursos",
-    configuracoes:        "Configurações",
-    links:                "Links Úteis",
-    ver:                  "Ver",
-    exportJson:           "📤 Exportar Observações",
-    importJson:           "📥 Importar Observações",
-    downloadBackup:       "💾 Descarregar Backup",
-    configDescription:    "Ajustes e configurações da aplicação."
+    searchPlaceholder: "Pesquisar observações...",
+    all: "Todos",
+    recent: "Recentes",
+    favorites: "Favoritos",
+    filterType: "Filtrar por tipo",
+    cancel: "Cancelar",
+    save: "Guardar",
+    redFilter: "Filtro Vermelho",
+    intensity: "Intensidade do Filtro",
+    edit: "Editar",
+    delete: "Eliminar",
+    close: "Fechar",
+    objectos: "Objectos",
+    adicionar: "Adicionar",
+    calendario: "Calendário",
+    calendarTitle: "Calendário de Observações",
+    recursos: "Recursos",
+    configuracoes: "Configurações",
+    configText: "Ajustes e configurações da aplicação.",
+    links: "Links Úteis",
+    ver: "Ver",
+    exportObs: "📤 Exportar Observações",
+    importObs: "📥 Importar Observações",
+    downloadBackup: "💾 Descarregar Backup"
   },
   en: {
-    searchPlaceholder:    "Search observations...",
-    all:                  "All",
-    recent:               "Recent",
-    favorites:            "Favorites",
-    filterType:           "Filter by type",
-    cancel:               "Cancel",
-    save:                 "Save",
-    redFilter:            "Red Filter",
-    intensity:            "Filter Intensity",
-    edit:                 "Edit",
-    delete:               "Delete",
-    close:                "Close",
-    objectos:             "Objects",
-    adicionar:            "Add",
-    calendario:           "Calendar",
-    calendarTitle:        "Observation Calendar",
-    recursos:             "Resources",
-    configuracoes:        "Settings",
-    links:                "Useful Links",
-    ver:                  "View",
-    exportJson:           "📤 Export Observations",
-    importJson:           "📥 Import Observations",
-    downloadBackup:       "💾 Download Backup",
-    configDescription:    "Application settings and configuration."
+    searchPlaceholder: "Search observations...",
+    all: "All",
+    recent: "Recent",
+    favorites: "Favorites",
+    filterType: "Filter by type",
+    cancel: "Cancel",
+    save: "Save",
+    redFilter: "Red Filter",
+    intensity: "Filter Intensity",
+    edit: "Edit",
+    delete: "Delete",
+    close: "Close",
+    objectos: "Objects",
+    adicionar: "Add",
+    calendario: "Calendar",
+    calendarTitle: "Observation Calendar",
+    recursos: "Resources",
+    configuracoes: "Settings",
+    configText: "App settings and configuration.",
+    links: "Useful Links",
+    ver: "View",
+    exportObs: "📤 Export Observations",
+    importObs: "📥 Import Observations",
+    downloadBackup: "💾 Download Backup"
   }
 };
 
 // =========================
-// INDEXEDDB (Store: 'observacoes')
+// INDEXEDDB
 // =========================
 const DB_NAME    = 'AstroLogDB';
 const DB_VERSION = 1;
@@ -80,8 +83,8 @@ const STORE_NAME = 'observacoes';
 function openDB() {
   return new Promise((resolve, reject) => {
     const request = indexedDB.open(DB_NAME, DB_VERSION);
-    request.onerror        = () => reject(request.error);
-    request.onsuccess      = () => resolve(request.result);
+    request.onerror = () => reject(request.error);
+    request.onsuccess = () => resolve(request.result);
     request.onupgradeneeded = () => {
       const db = request.result;
       if (!db.objectStoreNames.contains(STORE_NAME)) {
@@ -94,11 +97,11 @@ function openDB() {
 async function getAllObservacoes() {
   const db = await openDB();
   return new Promise((resolve, reject) => {
-    const tx    = db.transaction(STORE_NAME, 'readonly');
+    const tx = db.transaction(STORE_NAME, 'readonly');
     const store = tx.objectStore(STORE_NAME);
-    const req   = store.getAll();
-    req.onsuccess = () => resolve(req.result);
-    req.onerror   = () => reject(req.error);
+    const request = store.getAll();
+    request.onsuccess = () => resolve(request.result);
+    request.onerror   = () => reject(request.error);
   });
 }
 
@@ -134,110 +137,92 @@ async function loadObservacoes() {
 loadObservacoes();
 
 // =========================
-// document.addEventListener('DOMContentLoaded', …)
+// EVENTOS E INICIALIZAÇÃO
 // =========================
 document.addEventListener('DOMContentLoaded', async () => {
-  // 1) Carregar e exibir observações
+  // Obtemos as observações e renderizamos pela primeira vez
   observacoes = await getAllObservacoes();
   renderObservacoes();
-
-  // 2) Traduzir interface e aplicar filtro vermelho
   translateUI();
   updateRedFilterClass();
 
-  // 3) Botão trocar idioma (EN / PT)
-  const langBtn = document.getElementById('toggleLanguage');
-  if (langBtn) {
-    langBtn.addEventListener('click', () => {
-      currentLang = (currentLang === 'pt') ? 'en' : 'pt';
-      langBtn.textContent = (currentLang === 'pt') ? 'EN' : 'PT';
-      translateUI();
-      // Se estiver na aba “Objectos”, recarrega a lista
-      if (document.getElementById('tab-objectos').classList.contains('active')) {
-        renderObservacoes();
-      }
-    });
-  }
-
-  // 4) Navegação entre abas (tabs)
-  const navButtons  = document.querySelectorAll('nav button[data-tab]');
+  // =========================
+  // NAVEGAÇÃO ENTRE TABS
+  // =========================
+  const navButtons = document.querySelectorAll('nav button[data-tab]');
   const tabSections = document.querySelectorAll('.tab');
+
   navButtons.forEach(btn => {
     btn.addEventListener('click', () => {
-      const alvo = btn.dataset.tab; // ex: "recursos", "links", "calendario", "configuracoes", etc.
+      const alvo = btn.dataset.tab; // ex: "objetos", "recursos", "links", "calendario", "configuracoes"
 
-      // Marcar botão ativo
+      // 1) Atualiza estado “active” no menu lateral
       navButtons.forEach(b => b.classList.remove('active'));
       btn.classList.add('active');
 
-      // Mostrar apenas a seção correspondente
+      // 2) Exibe/esconde seções
       tabSections.forEach(sec => sec.classList.remove('active'));
       const sectionAlvo = document.getElementById(`tab-${alvo}`);
       if (sectionAlvo) {
         sectionAlvo.classList.add('active');
       }
 
-      // Mostrar ou esconder <footer> se for aba “configuracoes”
+      // 3) Footer: somente mostra se for aba “configuracoes”
       const footer = document.querySelector('footer');
       if (footer) {
         footer.style.display = (alvo === 'configuracoes') ? 'flex' : 'none';
       }
 
-      // Se for aba “calendario”, renderiza o calendário (com mês traduzido)
+      // 4) Se for aba “calendario”, renderiza o calendário
       if (alvo === 'calendario') {
         renderCalendario();
+      }
+
+      // 5) Se voltar para “objetos”, re‐renderiza as observações
+      if (alvo === 'objetos') {
+        renderObservacoes();
       }
     });
   });
 
-  // 5) Inicializar o modal “Adicionar Observação”
-  setupModalAdicionarObservacao();
-
-  // 6) Filtros rápidos (Todos / Recentes / Favoritos)
-  const filterButtons = document.querySelectorAll('[data-filter]');
-  filterButtons.forEach(btn => {
-    btn.addEventListener('click', () => {
-      currentFilter = btn.dataset.filter;
-      filterButtons.forEach(b => b.classList.remove('active'));
-      btn.classList.add('active');
-      renderObservacoes();
-    });
-  });
-
-  // 7) Campo de pesquisa
-  const searchInput = document.getElementById('searchInput');
-  if (searchInput) {
-    searchInput.addEventListener('input', () => {
-      searchQuery = searchInput.value.toLowerCase();
+  // =========================
+  // TRADUZIR UI (BOTAO “EN”)
+  // =========================
+  const langBtn = document.getElementById('toggleLanguage');
+  if (langBtn) {
+    langBtn.addEventListener('click', () => {
+      currentLang = (currentLang === 'pt') ? 'en' : 'pt';
+      langBtn.textContent = currentLang === 'pt' ? 'EN' : 'PT';
+      translateUI();
       renderObservacoes();
     });
   }
 
-  // 8) Dropdown “Filtrar por tipo”
+  // =========================
+  // FILTRO POR TIPO (DROPDOWN)
+  // =========================
   const filterBtn = document.getElementById('filterByType');
   if (filterBtn) {
     filterBtn.addEventListener('click', async () => {
       if (!observacoes || observacoes.length === 0) {
         observacoes = await getAllObservacoes();
       }
-      if (observacoes.length === 0) {
+      if (!observacoes.length) {
         alert("Sem observações para filtrar.");
         return;
       }
       document.querySelectorAll('.dropdown-menu').forEach(m => m.remove());
-
-      // Extrair tipos únicos
       const tipos = [...new Set(observacoes.map(o => o.tipo).filter(Boolean))];
       const menu  = document.createElement('div');
       menu.className = 'dropdown-menu';
 
-      // Iterar tipos e adicionar ao dropdown
+      // Itens de tipo
       tipos.forEach(tipo => {
         const item = document.createElement('div');
         item.textContent = tipo;
         item.addEventListener('click', () => {
           currentFilter = 'tipo';
-          searchQuery   = tipo.toLowerCase();
+          searchQuery = tipo.toLowerCase();
           renderObservacoes();
           menu.remove();
         });
@@ -255,17 +240,43 @@ document.addEventListener('DOMContentLoaded', async () => {
       });
       menu.appendChild(allItem);
 
-      // Posicionar o dropdown sob o botão
+      // Posiciona o menu logo abaixo do botão
       const rect = filterBtn.getBoundingClientRect();
       menu.style.position = 'absolute';
-      menu.style.top      = `${rect.bottom + window.scrollY}px`;
-      menu.style.left     = `${rect.left + window.scrollX}px`;
-      menu.style.zIndex   = 1000;
+      menu.style.top = `${rect.bottom + window.scrollY}px`;
+      menu.style.left = `${rect.left + window.scrollX}px`;
+      menu.style.zIndex = 1000;
       document.body.appendChild(menu);
     });
   }
 
-  // 9) Botão “📤 Exportar Observações” (aba Configurações)
+  // =========================
+  // CAMPO DE PESQUISA
+  // =========================
+  const searchInput = document.getElementById('searchInput');
+  if (searchInput) {
+    searchInput.addEventListener('input', () => {
+      searchQuery = searchInput.value.toLowerCase();
+      renderObservacoes();
+    });
+  }
+
+  // =========================
+  // FILTROS RÁPIDOS (TODOS, RECENTES, FAVORITOS)
+  // =========================
+  const filterButtons = document.querySelectorAll('[data-filter]');
+  filterButtons.forEach(btn => {
+    btn.addEventListener('click', () => {
+      currentFilter = btn.dataset.filter;
+      filterButtons.forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      renderObservacoes();
+    });
+  });
+
+  // =========================
+  // EXPORTAR JSON
+  // =========================
   const exportBtn = document.getElementById('exportJson');
   if (exportBtn) {
     exportBtn.addEventListener('click', async () => {
@@ -273,8 +284,8 @@ document.addEventListener('DOMContentLoaded', async () => {
       const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
       const url  = URL.createObjectURL(blob);
       const a    = document.createElement('a');
-      a.href     = url;
-      a.download = 'astro-observacoes.json';
+      a.href       = url;
+      a.download   = 'astro-observacoes.json';
       document.body.appendChild(a);
       a.click();
       document.body.removeChild(a);
@@ -282,7 +293,9 @@ document.addEventListener('DOMContentLoaded', async () => {
     });
   }
 
-  // 10) Botão “📥 Importar Observações” (aba Configurações)
+  // =========================
+  // IMPORTAR JSON
+  // =========================
   const importInput = document.getElementById('importJson');
   if (importInput) {
     importInput.addEventListener('change', async (event) => {
@@ -313,254 +326,23 @@ document.addEventListener('DOMContentLoaded', async () => {
     });
   }
 
-  // 11) Botão “💾 Descarregar Backup” (aba Configurações)
-  const backupBtn = document.getElementById('downloadBackup');
-  if (backupBtn) {
-    backupBtn.addEventListener('click', () => {
-      const backupStr = localStorage.getItem('backupAstroLog');
-      if (!backupStr) {
-        alert('Não há backup disponível para download.');
-        return;
-      }
-      const blob = new Blob([backupStr], { type: 'application/json' });
-      const url  = URL.createObjectURL(blob);
-      const a    = document.createElement('a');
-      a.href     = url;
-      a.download = 'astro-observacoes-backup.json';
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-      URL.revokeObjectURL(url);
-    });
-  }
-});
-
-// =========================
-// RENDERIZAR OBSERVAÇÕES
-// =========================
-function renderObservacoes() {
-  if (!obsList) return;
-  obsList.innerHTML = '';
-  let lista = [...observacoes];
-
-  // Filtrar “favoritos” ou “recentes”
-  if (currentFilter === 'favoritos') {
-    lista = lista.filter(o => o.favorito);
-  } else if (currentFilter === 'recentes') {
-    lista = lista.sort((a, b) => new Date(b.data) - new Date(a.data));
-  }
-
-  // Filtro de busca (searchQuery)
-  if (searchQuery) {
-    lista = lista.filter(o =>
-      o.nome.toLowerCase().includes(searchQuery) ||
-      o.tipo.toLowerCase().includes(searchQuery) ||
-      o.local.toLowerCase().includes(searchQuery)
-    );
-  }
-
-  // Construir cada card
-  lista.forEach(obs => {
-    const card = document.createElement('div');
-    card.className = 'observation-card';
-
-    const icon = getIcon(obs.tipo);
-    const data = new Date(obs.data).toLocaleDateString(
-      currentLang === 'pt' ? 'pt-PT' : 'en-US'
-    );
-
-    const imgHTML = obs.imagem
-      ? `<img 
-           src="${obs.imagem}" 
-           style="max-width:100%; max-height:100px; cursor:pointer" 
-           onclick="window.open('${obs.imagem}','_blank')" 
-         />`
-      : '';
-
-    const viewBtn   = `<button class="view-btn" onclick="viewObservation(${obs.id})">
-                         🔍 ${i18n[currentLang].ver}
-                       </button>`;
-    const editBtn   = `<button onclick="editObservation(${obs.id})">
-                         ✏️ ${i18n[currentLang].edit}
-                       </button>`;
-    const deleteBtn = `<button onclick="deleteObservacao(${obs.id})">
-                         🗑️ ${i18n[currentLang].delete}
-                       </button>`;
-
-    card.innerHTML = `
-      <div class="title">${icon} ${obs.nome} ${obs.favorito ? '⭐' : ''}</div>
-      <div><small>${obs.tipo}</small></div>
-      <div><small>${data} – ${obs.local}</small></div>
-      ${imgHTML}
-      <div style="margin-top:0.5rem">
-        ${viewBtn} ${editBtn} ${deleteBtn}
-      </div>
-    `;
-    obsList.appendChild(card);
-  });
-}
-
-function getIcon(tipo) {
-  const icons = {
-    'Estrela':       '⭐',
-    'Galáxia':       '🌌',
-    'Aglomerado':    '✨',
-    'Nebulosa':      '☁️',
-    'Sistema Solar': '🪐',
-    'Outro':         '🔭'
-  };
-  return icons[tipo] || '❔';
-}
-
-// =========================
-// TRADUÇÃO DE UI
-// =========================
-function translateUI() {
-  const t = i18n[currentLang];
-
-  // 1) Placeholder de pesquisa
-  const searchInputElem = document.getElementById('searchInput');
-  if (searchInputElem) searchInputElem.placeholder = t.searchPlaceholder;
-
-  // 2) Botões rápidos (Todos / Recentes / Favoritos)
-  const btnTodos     = document.querySelector('[data-filter="todos"]');
-  const btnRecentes  = document.querySelector('[data-filter="recentes"]');
-  const btnFavoritos = document.querySelector('[data-filter="favoritos"]');
-  if (btnTodos)     btnTodos.textContent     = t.all;
-  if (btnRecentes)  btnRecentes.textContent  = t.recent;
-  if (btnFavoritos) btnFavoritos.textContent = t.favorites;
-
-  // 3) Botão “Filtrar por tipo”
-  const filterBtnElem = document.getElementById('filterByType');
-  if (filterBtnElem) filterBtnElem.textContent = t.filterType;
-
-  // 4) Botões “Ver” em cada card
-  document.querySelectorAll(".observation-card button.view-btn").forEach(btn => {
-    btn.textContent = `🔍 ${t.ver}`;
-  });
-
-  // 5) Títulos das abas de navegação (data-tab)
-  document.querySelectorAll("nav button[data-tab]").forEach(btn => {
-    const key = btn.getAttribute("data-tab");
-    if (t[key]) btn.textContent = t[key];
-  });
-
-  // 6) Itens “Configurações” → Botões export/import/backup
-  const btnExport = document.getElementById('exportJson');
-  if (btnExport) btnExport.textContent = t.exportJson;
-
-  const lblImport = document.querySelector('label.import-label');
-  if (lblImport) lblImport.textContent = t.importJson;
-
-  const btnBackup = document.getElementById('downloadBackup');
-  if (btnBackup) btnBackup.textContent = t.downloadBackup;
-
-  // 7) Traduzir rodapé (footer) – “Filtro Vermelho” e “Intensidade do Filtro”
-  const footerLabels = document.querySelectorAll('footer label');
-  if (footerLabels.length >= 2) {
-    footerLabels[0].textContent = t.redFilter;   // primeiro <label> do footer
-    footerLabels[1].textContent = t.intensity;   // segundo <label> do footer
-  }
-
-  // 8) Traduzir o parágrafo em “Configurações”
-  // Aqui garantimos que a <p> dentro de #tab-configuracoes seja atualizada
-  const configPara = document.querySelector('#tab-configuracoes p');
-  if (configPara) {
-    configPara.textContent = t.configDescription;
-  }
-
-  // 9) Se a aba “Calendário” estiver ativa, atualiza título e re-renderiza
-  const calendarioVisivel = document
-    .getElementById('tab-calendario')
-    ?.classList.contains('active');
-  if (calendarioVisivel) {
-    const tituloCalendario = document.querySelector('#tab-calendario h2');
-    if (tituloCalendario) tituloCalendario.textContent = t.calendarTitle;
-    renderCalendario();
-  }
-}
-
-// =========================
-// RENDERIZAR CALENDÁRIO
-// =========================
-function renderCalendario() {
-  const container = document.getElementById('calendarContainer');
-  const title     = document.getElementById('calendarMonthYear');
-  if (!container || !title) return;
-
-  container.innerHTML = '';
-
-  const firstDay    = new Date(calendarioAno, calendarioMes, 1).getDay();
-  const daysInMonth = new Date(calendarioAno, calendarioMes + 1, 0).getDate();
-
-  // Escolhe locale para nome do mês
-  const locale  = (currentLang === 'pt') ? 'pt-PT' : 'en-US';
-  const nomeMes = new Date(calendarioAno, calendarioMes)
-                    .toLocaleString(locale, { month: 'long' });
-  title.textContent = `${capitalize(nomeMes)} ${calendarioAno}`;
-
-  // Mapear dias que têm observações
-  const diasComObservacoes = new Set(
-    observacoes.map(o => normalizarDataLocal(o.data))
-  );
-
-  // Espaços vazios até o primeiro dia da semana
-  for (let i = 0; i < firstDay; i++) {
-    container.appendChild(document.createElement('div'));
-  }
-
-  // Preencher cada dia
-  for (let d = 1; d <= daysInMonth; d++) {
-    const date    = new Date(calendarioAno, calendarioMes, d);
-    const dateStr = normalizarDataLocal(date);
-
-    const divDay = document.createElement('div');
-    divDay.className = 'calendar-day';
-    divDay.textContent = d;
-
-    if (diasComObservacoes.has(dateStr)) {
-      divDay.classList.add('highlight');
-      divDay.addEventListener('click', () => mostrarObservacoesDoDia(dateStr));
-    }
-    container.appendChild(divDay);
-  }
-}
-
-function mostrarObservacoesDoDia(dataISO) {
-  const lista = observacoes.filter(o => o.data.startsWith(dataISO));
-  const cont  = document.getElementById('calendarResults');
-  if (!cont) return;
-
-  if (lista.length === 0) {
-    const msg = (currentLang === 'pt')
-      ? `Sem observações para ${dataISO}`
-      : `No observations for ${dataISO}`;
-    cont.innerHTML = `<p>${msg}</p>`;
-    return;
-  }
-
-  const prefix = (currentLang === 'pt') ? 'Observações em' : 'Observations on';
-  cont.innerHTML = `<h3>${prefix} ${dataISO}:</h3><ul>` +
-    lista.map(o => `<li>${getIcon(o.tipo)} ${o.nome}</li>`).join('') +
-    `</ul>`;
-}
-
-// =========================
-// MODAL DE ADICIONAR OBSERVAÇÃO
-// =========================
-function setupModalAdicionarObservacao() {
-  const addBtn        = document.getElementById('addObservationBtn');
-  const modal         = document.getElementById('addObservationModal');
+  // =========================
+  // BOTÃO + (ABRIR MODAL)
+  // =========================
+  const addBtn       = document.getElementById('addObservationBtn');
+  const modal        = document.getElementById('addObservationModal');
   const closeModalBtn = document.getElementById('closeAddModal');
-  const cancelBtn     = document.getElementById('cancelAdd');
-  const form          = document.getElementById('addObservationForm');
-  const successMsg    = document.getElementById('addSuccessMsg');
+  const cancelBtn    = document.getElementById('cancelAdd');
+  const form         = document.getElementById('addObservationForm');
+  const successMsg   = document.getElementById('addSuccessMsg');
 
   function openModal() {
-    if (modal) modal.classList.add('open');
+    if (modal) {
+      modal.classList.add('open');
+    }
   }
 
-  function closeForm() {
+  function closeAddForm() {
     if (form) form.reset();
     if (modal) modal.classList.remove('open');
     if (successMsg) successMsg.style.display = 'none';
@@ -569,35 +351,40 @@ function setupModalAdicionarObservacao() {
   if (addBtn) {
     addBtn.addEventListener('click', openModal);
   }
+
   if (closeModalBtn) {
-    closeModalBtn.addEventListener('click', closeForm);
+    closeModalBtn.addEventListener('click', closeAddForm);
   }
+
   if (cancelBtn) {
-    cancelBtn.addEventListener('click', closeForm);
+    cancelBtn.addEventListener('click', closeAddForm);
   }
+
   if (modal) {
-    modal.addEventListener('click', e => {
-      if (e.target === modal) closeForm();
+    modal.addEventListener('click', (e) => {
+      if (e.target === modal) {
+        closeAddForm();
+      }
     });
   }
 
   if (form) {
-    form.addEventListener('submit', async function(e) {
+    form.addEventListener('submit', async function (e) {
       e.preventDefault();
       const formData = new FormData(form);
-      const obs      = Object.fromEntries(formData.entries());
-      obs.favorito   = !!formData.get('favorito');
-      obs.id         = Date.now();
+      const obs = Object.fromEntries(formData.entries());
+      obs.favorito = !!formData.get('favorito');
+      obs.id        = Date.now();
 
       const file = formData.get('imagem');
-      async function saveObs() {
+      const saveObs = async () => {
         await saveObservacao(obs);
         observacoes = await getAllObservacoes();
         renderObservacoes();
         atualizarBackupJSON();
         if (successMsg) successMsg.style.display = 'block';
-        setTimeout(closeForm, 1500);
-      }
+        setTimeout(closeAddForm, 1500);
+      };
 
       if (file && file.name && file.size > 0) {
         const reader = new FileReader();
@@ -615,8 +402,33 @@ function setupModalAdicionarObservacao() {
       }
     });
   }
-}
 
+  // =========================
+  // BOTÃO DE DOWNLOAD DE BACKUP
+  // =========================
+  const backupBtn = document.getElementById('downloadBackup');
+  if (backupBtn) {
+    backupBtn.addEventListener('click', () => {
+      const backupStr = localStorage.getItem('backupAstroLog');
+      if (!backupStr) {
+        alert('Não há backup disponível para download.');
+        return;
+      }
+      const blob = new Blob([backupStr], { type: 'application/json' });
+      const url  = URL.createObjectURL(blob);
+      const a    = document.createElement('a');
+      a.href       = url;
+      a.download   = 'astro-observacoes-backup.json';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    });
+  }
+});
+
+// =========================
+// FUNÇÃO PARA FECHAR O MODAL (fora do DOMContentLoaded)
 function closeAddForm() {
   const form       = document.getElementById('addObservationForm');
   const modal      = document.getElementById('addObservationModal');
@@ -626,15 +438,253 @@ function closeAddForm() {
   if (successMsg) successMsg.style.display = 'none';
 }
 
+// =========================
+// FUNÇÃO PARA ATUALIZAR BACKUP NO localStorage
 function atualizarBackupJSON() {
   const json = JSON.stringify(observacoes, null, 2);
   localStorage.setItem('backupAstroLog', json);
 }
 
 // =========================
-// VISUALIZAR / EDITAR / EXCLUIR OBSERVAÇÃO (modais)
+// FUNÇÃO DE TRADUÇÃO DE UI
 // =========================
+function translateUI() {
+  const t = i18n[currentLang];
 
+  // --- Campo de pesquisa ---
+  const searchInputElem = document.getElementById('searchInput');
+  if (searchInputElem) searchInputElem.placeholder = t.searchPlaceholder;
+
+  // --- Botões de filtro rápido ---
+  const btnTodos    = document.querySelector('[data-filter="todos"]');
+  const btnRecentes = document.querySelector('[data-filter="recentes"]');
+  const btnFavoritos= document.querySelector('[data-filter="favoritos"]');
+  if (btnTodos)    btnTodos.textContent    = t.all;
+  if (btnRecentes) btnRecentes.textContent = t.recent;
+  if (btnFavoritos)btnFavoritos.textContent= t.favorites;
+
+  // --- Botão “Filtrar por tipo” ---
+  const filterBtnElem = document.getElementById('filterByType');
+  if (filterBtnElem) filterBtnElem.textContent = t.filterType;
+
+  // --- Cabeçalho (navbar lateral) ---
+  document.querySelectorAll("nav button[data-tab]").forEach(btn => {
+    const key = btn.getAttribute("data-tab");
+    if (t[key]) {
+      btn.textContent = t[key];
+    }
+  });
+
+  // --- Título da aba “Calendário” ---
+  const calendarioVisivel = document.getElementById('tab-calendario')?.classList.contains('active');
+  if (calendarioVisivel) {
+    const tituloCalendario = document.querySelector('#tab-calendario h2');
+    if (tituloCalendario) tituloCalendario.textContent = t.calendarTitle;
+    renderCalendario();
+  }
+
+  // --- Texto no tab “Configurações” ---
+  const configP = document.querySelector('#tab-configuracoes p');
+  if (configP) configP.textContent = t.configText;
+
+  // --- Botões de export/import/download ---
+  const exportBtn     = document.getElementById('exportJson');
+  const importLabel   = document.querySelector('.import-label');
+  const downloadBtn   = document.getElementById('downloadBackup');
+  if (exportBtn)   exportBtn.textContent   = t.exportObs;
+  if (importLabel) importLabel.childNodes[0].textContent = t.importObs; 
+  // (A label contém o texto + <input type="file">, então substituímos apenas o texto)
+  if (downloadBtn) downloadBtn.textContent = t.downloadBackup;
+
+  // --- Botões “Ver” nas observações ---
+  document.querySelectorAll(".observation-card button.view-btn").forEach(btn => {
+    btn.textContent = `🔍 ${t.ver}`;
+  });
+
+  // --- Rodapé (Footer) ---
+  const redFilterLabel = document.querySelector('footer label:first-child');
+  const intensityLabel = document.querySelector('footer label:last-of-type');
+  if (redFilterLabel) redFilterLabel.textContent = t.redFilter;
+  if (intensityLabel) intensityLabel.textContent = t.intensity;
+}
+
+// =========================
+// FILTRO VERMELHO
+// =========================
+const redToggle = document.getElementById('redFilterToggle');
+const redSlider = document.getElementById('redFilterIntensity');
+const redButton = document.getElementById('toggleRedFilter');
+
+function applyRedFilter(active) {
+  if (active) {
+    document.body.classList.add('red-filter');
+    const intensity = parseInt(redSlider.value);
+    document.body.style.backgroundColor = `rgba(255, 0, 0, ${intensity / 100})`;
+  } else {
+    document.body.classList.remove('red-filter');
+    document.body.style.backgroundColor = '';
+  }
+}
+
+redButton?.addEventListener('click', () => {
+  if (!redToggle) return;
+  redToggle.checked = !redToggle.checked;
+  applyRedFilter(redToggle.checked);
+});
+
+redToggle?.addEventListener('change', () => {
+  applyRedFilter(redToggle.checked);
+});
+
+redSlider?.addEventListener('input', () => {
+  if (redToggle.checked) applyRedFilter(true);
+});
+
+function updateRedFilterClass() {
+  document.body.classList.remove('intensity-20', 'intensity-40', 'intensity-60', 'intensity-80', 'intensity-100');
+  if (redToggle?.checked) {
+    document.body.classList.add('red-filter');
+    const val = parseInt(redSlider.value);
+    if (val > 80) document.body.classList.add('intensity-100');
+    else if (val > 60) document.body.classList.add('intensity-80');
+    else if (val > 40) document.body.classList.add('intensity-60');
+    else if (val > 20) document.body.classList.add('intensity-40');
+    else document.body.classList.add('intensity-20');
+  } else {
+    document.body.classList.remove('red-filter');
+  }
+}
+
+redToggle?.addEventListener('change', updateRedFilterClass);
+redSlider?.addEventListener('input', updateRedFilterClass);
+
+// =========================
+// RENDERIZAR CALENDÁRIO
+// =========================
+function renderCalendario() {
+  const container = document.getElementById('calendarContainer');
+  const title     = document.getElementById('calendarMonthYear');
+  if (!container || !title) return;
+
+  container.innerHTML = '';
+  const firstDay    = new Date(calendarioAno, calendarioMes, 1).getDay();
+  const daysInMonth = new Date(calendarioAno, calendarioMes + 1, 0).getDate();
+
+  // Traduz nome do mês no idioma atual
+  const nomeMes = new Date(calendarioAno, calendarioMes).toLocaleString(
+    currentLang === 'pt' ? 'pt-PT' : 'en-US',
+    { month: 'long' }
+  );
+  title.textContent = `${capitalize(nomeMes)} ${calendarioAno}`;
+
+  const diasComObservacoes = new Set(
+    observacoes.map(o => normalizarDataLocal(o.data))
+  );
+
+  // Espaços vazios antes do primeiro dia
+  for (let i = 0; i < firstDay; i++) {
+    container.appendChild(document.createElement('div'));
+  }
+
+  // Cria as células de dia
+  for (let d = 1; d <= daysInMonth; d++) {
+    const date = new Date(calendarioAno, calendarioMes, d);
+    const dateStr = normalizarDataLocal(date);
+
+    const div = document.createElement('div');
+    div.className = 'calendar-day';
+    div.textContent = d;
+
+    if (diasComObservacoes.has(dateStr)) {
+      div.classList.add('highlight');
+      div.addEventListener('click', () => mostrarObservacoesDoDia(dateStr));
+    }
+    container.appendChild(div);
+  }
+}
+
+function mostrarObservacoesDoDia(dataISO) {
+  const lista = observacoes.filter(o => o.data.startsWith(dataISO));
+  const container = document.getElementById('calendarResults');
+  if (!container) return;
+
+  if (!lista.length) {
+    container.innerHTML = `<p>${i18n[currentLang].all} para ${dataISO}</p>`;
+    return;
+  }
+
+  container.innerHTML = `<h3>${i18n[currentLang].calendarTitle} - ${dataISO}:</h3><ul>` +
+    lista.map(o => `<li>${getIcon(o.tipo)} ${o.nome}</li>`).join('') +
+    `</ul>`;
+}
+
+function getIcon(tipo) {
+  const icons = {
+    'Estrela': '⭐',
+    'Galáxia': '🌌',
+    'Aglomerado': '✨',
+    'Nebulosa': '☁️',
+    'Sistema Solar': '🪐',
+    'Outro': '🔭'
+  };
+  return icons[tipo] || '❔';
+}
+
+// =========================
+// RENDERIZAR OBSERVAÇÕES
+// =========================
+function renderObservacoes() {
+  if (!obsList) return;
+  obsList.innerHTML = '';
+  let list = [...observacoes];
+
+  if (currentFilter === 'favoritos') {
+    list = list.filter(o => o.favorito);
+  } else if (currentFilter === 'recentes') {
+    list = list.sort((a, b) => new Date(b.data) - new Date(a.data));
+  }
+
+  if (searchQuery) {
+    list = list.filter(o =>
+      o.nome.toLowerCase().includes(searchQuery) ||
+      o.tipo.toLowerCase().includes(searchQuery) ||
+      o.local.toLowerCase().includes(searchQuery)
+    );
+  }
+
+  list.forEach(obs => {
+    const card = document.createElement('div');
+    card.className = 'observation-card';
+
+    const icon = getIcon(obs.tipo);
+    const data = new Date(obs.data).toLocaleDateString(currentLang === 'pt' ? 'pt-PT' : 'en-US');
+
+    const imgHTML = obs.imagem
+      ? `<img src="${obs.imagem}" style="max-width: 100%; max-height: 100px; cursor: pointer;" onclick="window.open('${obs.imagem}', '_blank')" />`
+      : '';
+
+    const viewBtn   = `<button class="view-btn" onclick="viewObservation(${obs.id})">🔍 ${i18n[currentLang].ver}</button>`;
+    const editBtn   = `<button onclick="editObservation(${obs.id})">✏️ ${i18n[currentLang].edit}</button>`;
+    const deleteBtn = `<button onclick="deleteObservation(${obs.id})">🗑️ ${i18n[currentLang].delete}</button>`;
+
+    card.innerHTML = `
+      <div class="title">${icon} ${obs.nome} ${obs.favorito ? '⭐' : ''}</div>
+      <div><small>${obs.tipo}</small></div>
+      <div><small>${data} - ${obs.local}</small></div>
+      ${imgHTML}
+      <div style="margin-top: 0.5rem">
+        ${viewBtn}
+        ${editBtn}
+        ${deleteBtn}
+      </div>
+    `;
+    obsList.appendChild(card);
+  });
+}
+
+// =========================
+// VISUALIZAR OBSERVAÇÃO (modal)
+// =========================
 window.viewObservation = function(id) {
   const obs = observacoes.find(o => o.id === id);
   if (!obs) return;
@@ -645,27 +695,20 @@ window.viewObservation = function(id) {
     <div class="modal-content">
       <h3>${obs.nome}</h3>
       <p><strong>Tipo:</strong> ${obs.tipo}</p>
-      <p><strong>Data:</strong> ${new Date(obs.data).toLocaleString(
-        currentLang === 'pt' ? 'pt-PT' : 'en-US'
-      )}</p>
+      <p><strong>Data:</strong> ${new Date(obs.data).toLocaleString(currentLang === 'pt' ? 'pt-PT' : 'en-US')}</p>
       <p><strong>Local:</strong> ${obs.local}</p>
       <p><strong>RA:</strong> ${obs.ra || ''}</p>
       <p><strong>DEC:</strong> ${obs.dec || ''}</p>
       <p><strong>Distância:</strong> ${obs.distancia || ''} ${obs.unidadeDistancia || ''}</p>
       <p><strong>Magnitude:</strong> ${obs.magnitude || ''}</p>
       <p><strong>Descrição:</strong> ${obs.descricao || ''}</p>
-      ${
-        obs.imagem
-          ? `<img src="${obs.imagem}"
-                  style="max-width:100%; max-height:200px; margin-top:1rem; cursor:pointer"
-                  onclick="openImageModal('${obs.imagem}')" />`
-          : ''
-      }
+      ${obs.imagem ? `<img src="${obs.imagem}" style="max-width:100%; max-height:200px; margin-top:1rem; cursor:pointer" onclick="openImageModal('${obs.imagem}')" />` : ''}
       <button onclick="closeModal()">${i18n[currentLang].close}</button>
     </div>
   `;
   document.body.appendChild(modal);
 
+  // Fecha ao clicar fora do conteúdo
   modal.addEventListener('click', e => {
     if (e.target === modal) {
       closeModalById('view-modal');
@@ -673,24 +716,25 @@ window.viewObservation = function(id) {
   });
 };
 
+// =========================
+// VISUALIZAR IMAGEM EM MODAL
+// =========================
 window.openImageModal = function(imgSrc) {
   const modal = document.createElement('div');
   modal.className = 'modal';
   modal.id = 'image-modal';
   modal.innerHTML = `
     <div class="modal-content">
-      <img src="${imgSrc}"
-           style="max-width:100%; max-height:80vh; display:block; margin:0 auto 1rem;" />
+      <img src="${imgSrc}" style="max-width:100%; max-height:80vh; display:block; margin: 0 auto 1rem;" />
       <div style="text-align:center">
         <button onclick="closeModalById('image-modal')">${i18n[currentLang].close}</button>
-        <button onclick="closeModalById('image-modal'); closeModalById('view-modal')">
-          ${i18n[currentLang].close} tudo
-        </button>
+        <button onclick="closeModalById('image-modal'); closeModalById('view-modal')">${i18n[currentLang].close} tudo</button>
       </div>
     </div>
   `;
   document.body.appendChild(modal);
 
+  // Fecha ao clicar fora do conteúdo
   modal.addEventListener('click', e => {
     if (e.target === modal) {
       closeModalById('image-modal');
@@ -698,15 +742,24 @@ window.openImageModal = function(imgSrc) {
   });
 };
 
+// =========================
+// FECHAR MODAL POR ID
+// =========================
 window.closeModalById = function(id) {
   const modal = document.getElementById(id);
   if (modal) modal.remove();
 };
 
+// =========================
+// FECHAR MODAL QUALQUER
+// =========================
 window.closeModal = function() {
   document.querySelectorAll('.modal').forEach(m => m.remove());
 };
 
+// =========================
+// EDITAR OBSERVAÇÃO (modal)
+// =========================
 window.editObservation = function(id) {
   const obs = observacoes.find(o => o.id === id);
   if (!obs) return;
@@ -724,12 +777,12 @@ window.editObservation = function(id) {
         <label>
           Tipo:
           <select name="tipo" required>
-            <option${obs.tipo === 'Estrela'       ? ' selected' : ''}>Estrela</option>
-            <option${obs.tipo === 'Galáxia'       ? ' selected' : ''}>Galáxia</option>
-            <option${obs.tipo === 'Aglomerado'    ? ' selected' : ''}>Aglomerado</option>
-            <option${obs.tipo === 'Nebulosa'      ? ' selected' : ''}>Nebulosa</option>
+            <option${obs.tipo === 'Estrela' ? ' selected' : ''}>Estrela</option>
+            <option${obs.tipo === 'Galáxia' ? ' selected' : ''}>Galáxia</option>
+            <option${obs.tipo === 'Aglomerado' ? ' selected' : ''}>Aglomerado</option>
+            <option${obs.tipo === 'Nebulosa' ? ' selected' : ''}>Nebulosa</option>
             <option${obs.tipo === 'Sistema Solar' ? ' selected' : ''}>Sistema Solar</option>
-            <option${obs.tipo === 'Outro'         ? ' selected' : ''}>Outro</option>
+            <option${obs.tipo === 'Outro' ? ' selected' : ''}>Outro</option>
           </select>
         </label>
         <label>
@@ -752,28 +805,26 @@ window.editObservation = function(id) {
           Distância:
           <input name="distancia" value="${obs.distancia || ''}" placeholder="Distância" />
           <select name="unidadeDistancia">
-            <option${obs.unidadeDistancia === 'ly'  ? ' selected' : ''}>ly</option>
-            <option${obs.unidadeDistancia === 'AU'  ? ' selected' : ''}>AU</option>
+            <option${obs.unidadeDistancia === 'ly' ? ' selected' : ''}>ly</option>
+            <option${obs.unidadeDistancia === 'AU' ? ' selected' : ''}>AU</option>
           </select>
         </label>
         <label>
           Magnitude:
-          <input name="magnitude" type="number"
-                 value="${obs.magnitude || ''}" placeholder="Magnitude" />
+          <input name="magnitude" type="number" value="${obs.magnitude || ''}" placeholder="Magnitude" />
         </label>
         <label>
           Descrição:
           <textarea name="descricao">${obs.descricao || ''}</textarea>
         </label>
         <label>
-          <input type="checkbox" name="favorito" ${obs.favorito ? 'checked' : ''} />
-          Favorito
+          <input type="checkbox" name="favorito" ${obs.favorito ? 'checked' : ''}/> Favorito
         </label>
         <label>
           Imagem (opcional):
           <input type="file" name="imagem" accept="image/*" />
         </label>
-        <div style="margin-top:1rem; display:flex; justify-content:flex-end; gap:0.5rem;">
+        <div style="margin-top: 1rem; display: flex; justify-content: flex-end; gap: 0.5rem;">
           <button type="submit">${i18n[currentLang].save}</button>
           <button type="button" onclick="closeModal()">${i18n[currentLang].cancel}</button>
         </div>
@@ -782,22 +833,24 @@ window.editObservation = function(id) {
   `;
   document.body.appendChild(modal);
 
+  // Fecha ao clicar fora do conteúdo
   modal.addEventListener('click', e => {
     if (e.target === modal) {
       modal.remove();
     }
   });
 
+  // Submissão do formulário de edição
   const modalForm = modal.querySelector('#modalForm');
   modalForm.addEventListener('submit', async e => {
     e.preventDefault();
-    const data   = new FormData(modalForm);
+    const data = new FormData(modalForm);
     const newObs = Object.fromEntries(data.entries());
-    newObs.id      = id;
+    newObs.id       = id;
     newObs.favorito = !!data.get('favorito');
 
     const file = data.get('imagem');
-    async function saveEdit() {
+    const saveEdit = async () => {
       const original = observacoes.find(o => o.id === id);
       if (original?.imagem && !newObs.imagem) {
         newObs.imagem = original.imagem;
@@ -806,7 +859,7 @@ window.editObservation = function(id) {
       observacoes = await getAllObservacoes();
       renderObservacoes();
       closeModal();
-    }
+    };
 
     if (file && file.size > 0) {
       const reader = new FileReader();
@@ -825,11 +878,14 @@ window.editObservation = function(id) {
   });
 };
 
-window.deleteObservacao = async function(id) {
+// =========================
+// EXCLUIR OBSERVAÇÃO
+// =========================
+window.deleteObservaçao = async function(id) {
   if (confirm('Eliminar esta observação?')) {
-    await deleteObservacao(id);
-    observacoes = await getAllObservacoes();
-    renderObservacoes();
+    await deleteObservação(id);
+    observacoes = await getAllObservações();
+    renderObservações();
   }
 };
 
@@ -837,65 +893,9 @@ window.deleteObservacao = async function(id) {
 // UTILITÁRIOS
 // =========================
 function normalizarDataLocal(data) {
-  return new Date(data).toLocaleDateString('sv-SE'); // formata “YYYY-MM-DD”
+  return new Date(data).toLocaleDateString('sv-SE'); // YYYY-MM-DD
 }
 
 function capitalize(str) {
   return str.charAt(0).toUpperCase() + str.slice(1);
 }
-
-// =========================
-// FILTRO VERMELHO (auxiliares)
-// =========================
-const redToggle = document.getElementById('redFilterToggle');
-const redSlider = document.getElementById('redFilterIntensity');
-const redButton = document.getElementById('toggleRedFilter');
-
-function applyRedFilter(active) {
-  if (active) {
-    document.body.classList.add('red-filter');
-    const intensity = parseInt(redSlider.value, 10);
-    document.body.style.backgroundColor = `rgba(255,0,0,${intensity/100})`;
-  } else {
-    document.body.classList.remove('red-filter');
-    document.body.style.backgroundColor = '';
-  }
-}
-
-redButton?.addEventListener('click', () => {
-  if (!redToggle) return;
-  redToggle.checked = !redToggle.checked;
-  applyRedFilter(redToggle.checked);
-});
-
-redToggle?.addEventListener('change', () => {
-  applyRedFilter(redToggle.checked);
-});
-
-redSlider?.addEventListener('input', () => {
-  if (redToggle.checked) applyRedFilter(true);
-});
-
-function updateRedFilterClass() {
-  document.body.classList.remove(
-    'intensity-20','intensity-40','intensity-60','intensity-80','intensity-100'
-  );
-  if (redToggle?.checked) {
-    document.body.classList.add('red-filter');
-    const val = parseInt(redSlider.value, 10);
-    if (val > 80)      document.body.classList.add('intensity-100');
-    else if (val > 60) document.body.classList.add('intensity-80');
-    else if (val > 40) document.body.classList.add('intensity-60');
-    else if (val > 20) document.body.classList.add('intensity-40');
-    else               document.body.classList.add('intensity-20');
-  } else {
-    document.body.classList.remove('red-filter');
-  }
-}
-
-redToggle?.addEventListener('change', updateRedFilterClass);
-redSlider?.addEventListener('input', updateRedFilterClass);
-
-// ======================================================
-// FIM DO ARQUIVO app.js
-// ======================================================

@@ -64,6 +64,9 @@ main {
   overflow: hidden;
 }
 
+/* ==============================================
+   NAVEGAÇÃO (MENU LATERAL)
+   ============================================== */
 nav {
   display: flex;
   flex-direction: column;
@@ -92,6 +95,9 @@ nav button.active {
   color: #a463ff;
 }
 
+/* ==============================================
+   ÁREA DE CONTEÚDO PRINCIPAL
+   ============================================== */
 .content {
   flex: 1;
   overflow-y: auto;
@@ -106,6 +112,9 @@ nav button.active {
   display: block;
 }
 
+/* ==============================================
+   FORMULÁRIOS E CONTROLES GERAIS
+   ============================================== */
 form {
   display: flex;
   flex-direction: column;
@@ -138,6 +147,9 @@ input[type="checkbox"] {
   gap: 1rem;
 }
 
+/* ==============================================
+   FILTROS NO TAB “Objectos”
+   ============================================== */
 .filters {
   display: flex;
   gap: 1rem;
@@ -160,6 +172,9 @@ input[type="checkbox"] {
   color: white;
 }
 
+/* ==============================================
+   LISTA DE OBSERVAÇÕES (TAB “Objectos”)
+   ============================================== */
 #observationsList {
   display: flex;
   flex-wrap: wrap;
@@ -195,6 +210,9 @@ input[type="checkbox"] {
   width: 100%;
 }
 
+/* ==============================================
+   RODAPÉ (FOOTER) - somente na aba “Configurações”
+   ============================================== */
 footer {
   margin-top: 2rem;
   padding: 1rem 2rem;
@@ -208,9 +226,11 @@ footer {
   display: flex;
 }
 
-/* Modal */
+/* ==============================================
+   MODAL (ABRIR/CLOSE)
+   ============================================== */
 .modal {
-  display: none;
+  display: none;          /* escondido por padrão */
   position: fixed;
   z-index: 999;
   left: 0;
@@ -218,39 +238,131 @@ footer {
   width: 100%;
   height: 100%;
   background-color: rgba(0,0,0,0.6);
+
+  /* Configura como flex-container para centralizar conteúdo */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 1rem;          /* garante folga ao redor do modal-content */
+  box-sizing: border-box;
+}
+
+.modal.open {
+  display: flex;
 }
 
 .modal-content {
   background-color: #111;
   color: #fff;
-  margin: 10% auto;
-  padding: 20px;
-  border-radius: 8px;
-  width: 90%;
+  width: 100%;
   max-width: 500px;
+  border-radius: 8px;
+  padding: 1rem 1.2rem;
   position: relative;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
+
+  /* Limita altura a 90% da viewport e permite scroll interno */
+  max-height: 90vh;
+  overflow-y: auto;
 }
 
-.modal-content h3 {
-  margin: 0;
-  color: #9d4edd;
+/* Customização sutil da scrollbar no Chrome/Edge/Safari */
+.modal-content::-webkit-scrollbar {
+  width: 8px;
+}
+.modal-content::-webkit-scrollbar-track {
+  background: #222;
+  border-radius: 4px;
+}
+.modal-content::-webkit-scrollbar-thumb {
+  background-color: #555;
+  border-radius: 4px;
+}
+.modal-content::-webkit-scrollbar-thumb:hover {
+  background-color: #777;
 }
 
-.modal-content form button {
-  margin-top: 1rem;
-  background: #7b2cbf;
-  color: white;
-}
-
+/* “×” de fechar no canto superior direito */
 .modal-content .close {
   position: absolute;
-  top: 10px;
-  right: 15px;
+  top: 12px;
+  right: 16px;
+  font-size: 1.4rem;
   color: white;
-  font-size: 24px;
   cursor: pointer;
 }
 
+.modal-content h3 {
+  margin: 0 0 1rem 0;
+  color: #9d4edd;
+}
+
+/* Estilo dos campos do formulário dentro do modal */
+.modal-content form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+}
+.modal-content form label {
+  display: flex;
+  flex-direction: column;
+  font-size: 0.95rem;
+  color: #ddd;
+}
+.modal-content form input[type="text"],
+.modal-content form input[type="date"],
+.modal-content form input[type="number"],
+.modal-content form textarea,
+.modal-content form select,
+.modal-content form input[type="file"] {
+  margin-top: 0.3rem;
+  padding: 0.5rem;
+  border: none;
+  border-radius: 6px;
+  background: #222;
+  color: white;
+  font-size: 0.95rem;
+}
+.modal-content form input[type="checkbox"] {
+  margin-right: 0.4rem;
+  width: auto;
+}
+.modal-content form textarea {
+  resize: vertical;
+  min-height: 60px;
+}
+
+/* Botões “Guardar” e “Cancelar” dentro do modal */
+.modal-buttons {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.6rem;
+  margin-top: 0.6rem;
+}
+.modal-content button[type="submit"],
+.modal-content button#cancelAdd {
+  padding: 0.5rem 1rem;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.95rem;
+}
+.modal-content button[type="submit"] {
+  background: #7b2cbf;
+  color: white;
+}
+.modal-content button[type="submit"]:hover {
+  background: #9d4edd;
+}
+.modal-content button#cancelAdd {
+  background: #333;
+  color: #fff;
+}
+.modal-content button#cancelAdd:hover {
+  background: #444;
+}
+
+/* Mensagem de sucesso dentro do modal */
 .success-msg {
   color: #4caf50;
   margin-top: 1rem;
@@ -258,19 +370,19 @@ footer {
   text-align: center;
 }
 
-/* === Filtro Vermelho Uniforme === */
+/* ==============================================
+   FILTRO VERMELHO UNIFORME
+   ============================================== */
 body.red-filter {
   background-color: #360700 !important;
   color: #ff5555 !important;
 }
 
-/* Fundos consistentes em todos os elementos principais */
 body.red-filter header {
   background-color: #360700 !important;
   background-image: none !important;
   color: #ff5555 !important;
 }
-
 body.red-filter.intensity-20 { background-color: #240000 !important; }
 body.red-filter.intensity-40 { background-color: #2c0000 !important; }
 body.red-filter.intensity-60 { background-color: #360700 !important; }
@@ -303,7 +415,6 @@ body.red-filter #tab-recursos img {
   border-color: #550000 !important;
 }
 
-/* Textos e botões em destaque */
 body.red-filter .filters button.active,
 body.red-filter nav button.active,
 body.red-filter .form-actions button,
@@ -313,18 +424,18 @@ body.red-filter button:hover {
   color: #ff8888 !important;
 }
 
-/* Modal backdrop */
 body.red-filter .modal {
   background-color: rgba(0, 0, 0, 0.85);
 }
 
-/* Placeholder nos inputs */
 body.red-filter input::placeholder,
 body.red-filter textarea::placeholder {
   color: #A61500 !important;
 }
 
-/* Light mode */
+/* ==============================================
+   MODO CLARO (Light Mode)
+   ============================================== */
 body.light {
   background-color: #f0f0f0;
   color: #000;
@@ -338,6 +449,9 @@ body.light textarea {
   border: 1px solid #ccc;
 }
 
+/* ==============================================
+   DROPDOWN‐MENU (para filtro por tipo)
+   ============================================== */
 .dropdown-menu {
   background-color: #222;
   color: #fff;
@@ -347,17 +461,19 @@ body.light textarea {
   box-shadow: 0 2px 5px rgba(0,0,0,0.5);
   font-size: 0.9rem;
   min-width: 150px;
+  position: absolute;
 }
-
 .dropdown-menu div {
   padding: 5px;
   cursor: pointer;
 }
-
 .dropdown-menu div:hover {
   background-color: #444;
 }
 
+/* ==============================================
+   CONFIGURAÇÕES (aba “Configurações”)
+   ============================================== */
 .config-actions {
   display: flex;
   gap: 1rem;
@@ -373,15 +489,17 @@ body.light textarea {
   border-radius: 8px;
   cursor: pointer;
   border: none;
+  font-size: 0.95rem;
 }
-
 .config-actions .import-label {
   display: inline-block;
   position: relative;
   overflow: hidden;
 }
 
-/* Calendário */
+/* ==============================================
+   CALENDÁRIO (aba “Calendário”)
+   ============================================== */
 #calendarContainer {
   display: grid;
   grid-template-columns: repeat(7, 1fr);
@@ -430,150 +548,103 @@ body.light textarea {
 }
 
 /* ==============================================
-   A) Remove bullets e organiza <ul> como flex-wrap
+   RECURSOS E LINKS ÚTEIS (abas “Recursos” e “Links Úteis”)
    ============================================== */
-#tab-recursos ul,
-#tab-links ul {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 1rem;
-  justify-content: flex-start;
-
-  list-style: none; /* remove marcadores “•” */
-  margin: 0;
-  padding: 0;
-}
-
-/* ==============================================
-   A) Remover bullets e organizar <ul> como flex-wrap
-   ============================================== */
+/* Remove bullets e organiza o <ul> como flex-wrap */
 #tab-recursos ul.cards-list,
 #tab-links ul.cards-list {
   display: flex;
   flex-wrap: wrap;
   gap: 1rem;
   justify-content: flex-start;
-
-  list-style: none; /* remove marcadores “•” */
+  list-style: none;
   margin: 0;
   padding: 0;
 }
 
-/* ==============================================
-   B) Cada <li> vira um quadrado de exatos 300×300 px
-   ============================================== */
+/* Cada <li> vira quadrado de exatos 300×300 px */
 #tab-recursos ul.cards-list li,
 #tab-links ul.cards-list li {
   display: flex;
   flex-direction: column;
-  background-color: #000;     /* fundo preto puro */
-  border-radius: 0.5rem;      /* cantos arredondados */
-  overflow: hidden;           /* evita “vazar” conteúdo */
-
-  width: 300px;               /* largura fixa */
-  height: 300px;              /* altura fixa */
-
+  background-color: #000;
+  border-radius: 0.5rem;
+  overflow: hidden;
+  width: 300px;
+  height: 300px;
   box-shadow: 0 0 5px rgba(255, 255, 255, 0.1);
   transition: transform 0.2s;
   position: relative;
 }
 
-/* leve zoom ao passar o mouse */
 #tab-recursos ul.cards-list li:hover,
 #tab-links ul.cards-list li:hover {
   transform: scale(1.03);
 }
 
-/* ==============================================
-   C) Fazendo o <a> interno “encher” todo o <li>, 
-      empilhando .card-img em cima e .card-desc abaixo
-   ============================================== */
+/* Fazendo o <a> interno “encher” todo o <li> */
 #tab-recursos ul.cards-list li a,
 #tab-links ul.cards-list li a {
   display: flex;
   flex-direction: column;
-  justify-content: flex-start; /* .card-img no topo, .card-desc no rodapé */
+  justify-content: flex-start;
   align-items: center;
-
   width: 100%;
   height: 100%;
-  text-decoration: none;       /* remove sublinhado */
+  text-decoration: none;
   color: #fff;
   position: relative;
 }
 
-/* Caso ainda tenha algum a::after puxando o title, remova: */
+/* Remove qualquer ::after que exibisse o “title” */
 #tab-recursos ul.cards-list li a::after,
 #tab-links ul.cards-list li a::after {
   content: none !important;
 }
 
-/* ==============================================
-   D) Bloco que envolve a imagem (.card-img)
-   ============================================== */
-/* .card-img ocupa TODO o espaço “em branco” acima do rodapé */
+/* Bloco que envolve a imagem (.card-img) */
 .card-img {
-  flex: 1;                   /* cresce para preencher a maior parte */
-  
-  display: flex;             /* usado para centralizar o <img> */
-  justify-content: center;   /* centraliza horizontalmente */
-  align-items: center;       /* centraliza verticalmente */
-
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   width: 100%;
-  overflow: hidden;          /* evita que imagem “vaze” do quadrado */
-
-  /* Se quiser um pequeno espaçamento interno, 
-     descomente o padding abaixo e ajuste ao seu gosto:
-  padding: 0.5rem; 
-  */
-
-  background-color: transparent; /* não “tinture” o logo */
+  overflow: hidden;
+  background-color: transparent;
 }
 
-/* ==============================================
-   E) Estilo da própria <img> dentro de .card-img
-   ============================================== */
-/* Limita a imagem a, no máximo, 80% do container .card-img */
+/* Imagem dentro de .card-img (proporcional, sem distorcer) */
 .card-img img {
   max-width: 80%;
   max-height: 80%;
-  object-fit: contain;       /* mantém proporção sem distorcer */
+  object-fit: contain;
 }
 
-/* ==============================================
-   F) Legenda fixa no rodapé (.card-desc)
-   ============================================== */
+/* Legenda fixa no rodapé (.card-desc) */
 .card-desc {
-  flex: 0 0 auto;            /* não cresce; ocupa só a altura do texto */
-
+  flex: 0 0 auto;
   padding: 0.4rem 0.8rem;
   font-size: 0.9rem;
   text-align: center;
   color: #fff;
-
-  /* fundo semitransparente para destacar o texto no rodapé */
   background: rgba(0, 0, 0, 0.6);
   width: 100%;
   box-sizing: border-box;
-
-  /* se a legenda for muito longa, corte com reticências (“…”) */
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
 
 /* ==============================================
-   CSS ADICIONAL (botões, modais, etc.)
+   BOTÃO “＋” ESPECÍFICO NO HEADER
    ============================================== */
-/* Botão “＋” específico */
 #addObservationBtn {
-  /* Mesma aparência que os outros botões do header */
   background: #2a2a2a;
   border: none;
   padding: 0 0.6rem;
   border-radius: 12px;
   color: white;
-  font-size: 1.2rem; /* deixa o “＋” um pouco maior */
+  font-size: 1.2rem;
   line-height: 1;
   cursor: pointer;
   position: relative;
@@ -582,131 +653,3 @@ body.light textarea {
 #addObservationBtn:hover {
   background: #3a3a3a;
 }
-
-/* ============================================
-   ESTILO DO MODAL DE ADICIONAR OBSERVAÇÃO
-   ============================================ */
-/* O container escuro que fica por trás */
-.modal {
-  display: none; /* fica escondido por padrão */
-  position: fixed;
-  z-index: 999;    /* acima de todo conteúdo */
-  left: 0;
-  top: 0;
-  width: 100%;
-  height: 100%;
-  background-color: rgba(0, 0, 0, 0.6);
-  justify-content: center; /* centra horizontalmente */
-  align-items: center;     /* centra verticalmente */
-}
-
-/* Quando for necessário abrir, troque o display para “flex” via JS */
-.modal.open {
-  display: flex;
-}
-
-/* A caixa branca (ou escura) onde fica o formulário */
-.modal-content {
-  background-color: #111;
-  color: #fff;
-  width: 90%;
-  max-width: 500px;
-  border-radius: 8px;
-  padding: 20px;
-  position: relative;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
-}
-
-/* O “×” de fechar no canto superior direito */
-.modal-content .close {
-  position: absolute;
-  top: 12px;
-  right: 16px;
-  font-size: 1.4rem;
-  color: white;
-  cursor: pointer;
-}
-
-/* Estilo dos campos do formulário */
-.modal-content form {
-  display: flex;
-  flex-direction: column;
-  gap: 0.8rem;
-}
-
-.modal-content form label {
-  display: flex;
-  flex-direction: column;
-  font-size: 0.95rem;
-  color: #ddd;
-}
-
-.modal-content form input[type="text"],
-.modal-content form input[type="date"],
-.modal-content form input[type="number"],
-.modal-content form textarea,
-.modal-content form select,
-.modal-content form input[type="file"] {
-  margin-top: 0.3rem;
-  padding: 0.5rem;
-  border: none;
-  border-radius: 6px;
-  background: #222;
-  color: white;
-  font-size: 0.95rem;
-}
-
-.modal-content form input[type="checkbox"] {
-  margin-right: 0.4rem;
-  width: auto;
-}
-
-.modal-content form textarea {
-  resize: vertical;
-  min-height: 60px;
-}
-
-/* Botões “Guardar” e “Cancelar” dentro do modal */
-.modal-buttons {
-  display: flex;
-  justify-content: flex-end;
-  gap: 0.6rem;
-  margin-top: 0.6rem;
-}
-
-.modal-content button[type="submit"],
-.modal-content button#cancelAdd {
-  padding: 0.5rem 1rem;
-  border: none;
-  border-radius: 6px;
-  cursor: pointer;
-  font-size: 0.95rem;
-}
-
-.modal-content button[type="submit"] {
-  background: #7b2cbf;
-  color: white;
-}
-
-.modal-content button[type="submit"]:hover {
-  background: #9d4edd;
-}
-
-.modal-content button#cancelAdd {
-  background: #333;
-  color: #fff;
-}
-
-.modal-content button#cancelAdd:hover {
-  background: #444;
-}
-
-/* Mensagem de sucesso (pipoco verde) */
-.success-msg {
-  color: #4caf50;
-  margin-top: 1rem;
-  font-weight: bold;
-  text-align: center;
-}
-
-</style>
