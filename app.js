@@ -384,6 +384,47 @@ function atualizarBackupJSON() {
   localStorage.setItem('backupAstroLog', json);
 }
 
+
+  // ========== INÍCIO: LÓGICA DE NAVEGAÇÃO ENTRE TABS ==========
+
+  // 1) Seleciona todos os botões <nav button data-tab="...">
+  const navButtons = document.querySelectorAll('nav button[data-tab]');
+  // 2) Seleciona todas as seções <section class="tab" id="tab-...">
+  const tabSections = document.querySelectorAll('.tab');
+
+  navButtons.forEach(btn => {
+    btn.addEventListener('click', () => {
+      const alvo = btn.dataset.tab; // por ex. "recursos", "links", "calendario"...
+
+      // Remover a classe 'active' de TODOS os botões
+      navButtons.forEach(b => b.classList.remove('active'));
+      // Adicionar 'active' apenas ao botão clicado
+      btn.classList.add('active');
+
+      // Remover 'active' de todas as seções
+      tabSections.forEach(sec => sec.classList.remove('active'));
+      // Adicionar 'active' apenas à seção cujo id seja `tab-${alvo}`
+      const sectionAlvo = document.getElementById(`tab-${alvo}`);
+      if (sectionAlvo) {
+        sectionAlvo.classList.add('active');
+      }
+
+      // Se a aba selecionada for 'configuracoes', mostra o footer; senão, esconde
+      const footer = document.querySelector('footer');
+      if (footer) {
+        footer.style.display = (alvo === 'configuracoes') ? 'flex' : 'none';
+      }
+
+      // Se a aba selecionada for 'calendario', renderiza o calendário
+      if (alvo === 'calendario') {
+        renderCalendario();
+      }
+    });
+  });
+
+  // =========== FIM: LÓGICA DE NAVEGAÇÃO ENTRE TABS ===========
+
+
 // =========================
 // FUNÇÃO DE TRADUÇÃO DE UI
 // =========================
