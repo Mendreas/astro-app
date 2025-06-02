@@ -1,5 +1,5 @@
 // ======================================================
-// AstroLog - app.js (versão revisada com modal e sem erros)
+// AstroLog - app.js 
 // ======================================================
 
 // =========================
@@ -142,9 +142,6 @@ if (langBtn) {
     renderObservacoes();
   });
 }
-
-// Navegação entre tabs
-nav button[data-tab]
 
 // Filtro por tipo (dropdown)
 const filterBtn = document.getElementById('filterByType');
