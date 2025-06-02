@@ -6,7 +6,7 @@
   <title>AstroLog</title>
   <link rel="stylesheet" href="style.css" />
   <link rel="manifest" href="manifest.json" />
-  <script defer src="app.js"></script>
+
 </head>
 <body>
 
@@ -256,101 +256,103 @@
      ABA “Calendario”
      ================================== -->
 
-		<section id="tab-calendario" class="tab">
-		  <h2 id="calendarTitle">Calendário de Observações</h2>
-		  <div id="calendarHeader">
-		    <button id="prevMonth">←</button>
-		    <span id="calendarMonthYear">Mês Ano</span>
-		    <button id="nextMonth">→</button>
-		  </div>
-		  <div id="calendarContainer"></div>
-		  <div id="calendarResults" style="margin-top: 1rem;"></div>
-		</section>
+  <section id="tab-calendario" class="tab">
+    <h2 id="calendarMonthYear">Mês Ano</h2>
+    <div id="calendarHeader">
+      <button id="prevMonth">←</button>
+      <span id="calendarMonthYear"></span>
+      <button id="nextMonth">→</button>
+    </div>
+    <div id="calendarContainer"></div>
+    <div id="calendarResults"></div>
+  </section>
 		
 	<!-- ==================================
      ABA “Configurações”
      ================================== -->
 		
-      <section id="tab-configuracoes" class="tab">
-  <p>Ajustes e configurações da aplicação.</p>
-  <div class="config-actions">
-    <button id="exportJson">📤 Exportar Observações</button>
-    <label for="importJson" class="import-label">📥 Importar Observações
-      <input type="file" id="importJson" accept=".json" style="display: none;" />
-    </label>
-    <button id="downloadBackup">💾 Descarregar Backup</button>
-  </div>
-</section>
+  <section id="tab-configuracoes" class="tab">
+    <p>Ajustes e configurações da aplicação.</p>
+    <div class="config-actions">
+      <button id="exportJson">📤 Exportar Observações</button>
+      <label for="importJson" class="import-label">
+        📥 Importar Observações
+        <input type="file" id="importJson" accept=".json" style="display: none;" />
+      </label>
+      <button id="downloadBackup">💾 Descarregar Backup</button>
+    </div>
+  </section>
 
     </div>
-  </main>
+  
+<footer>
+  <label>Filtro Vermelho</label>
+  <input type="checkbox" id="redFilterToggle" />
+  <label>Intensidade do Filtro</label>
+  <input type="range" id="redFilterIntensity" min="0" max="100" value="50" />
+</footer>
 
-    <footer>
-    <label>Filtro Vermelho</label>
-    <input type="checkbox" id="redFilterToggle" />
-    <label>Intensidade do Filtro</label>
-    <input type="range" id="redFilterIntensity" min="0" max="100" value="50" />
-  </footer>
-
-<!-- 4) MODAL DE ADICIONAR OBSERVAÇÃO -->
-  <div id="addObservationModal" class="modal">
-    <div class="modal-content dark-modal">
-      <span class="close" id="closeAddModal">&times;</span>
-      <h2>Adicionar Observação</h2>
-      <form id="addObservationForm">
-        <label>Nome do objeto
-          <input type="text" name="nome" required>
-        </label>
-        <label>Tipo
-          <select name="tipo">
-            <option value="Estrela">Estrela</option>
-            <option value="Galáxia">Galáxia</option>
-            <option value="Planeta">Planeta</option>
-            <option value="Cometa">Cometa</option>
-            <option value="Outro">Outro</option>
-          </select>
-        </label>
-        <label>Data da observação
-          <input type="date" name="data" required>
-        </label>
-        <label>Localização
-          <input type="text" name="local">
-        </label>
-        <label>RA
-          <input type="text" name="ra">
-        </label>
-        <label>DEC
-          <input type="text" name="dec">
-        </label>
-        <label>Magnitude
-          <input type="number" name="magnitude" step="0.1">
-        </label>
-        <label>Distância
-          <input type="text" name="distancia">
-          <select name="unidadeDistancia">
-            <option value="ly">ly</option>
-            <option value="AU">AU</option>
-          </select>
-        </label>
-        <label>Descrição
-          <textarea name="descricao"></textarea>
-        </label>
-        <label>
-          <input type="checkbox" name="favorito"> Favorito
-        </label>
-        <label>Imagem
-          <input type="file" name="imagem">
-        </label>
-        <div class="modal-buttons">
-          <button type="submit">Guardar</button>
-          <button type="button" id="cancelAdd">Cancelar</button>
-        </div>
-      </form>
-      <p id="addSuccessMsg" class="success-msg" style="display:none">
-        ✔️ Observação adicionada com sucesso
-      </p>
-    </div>
+<!-- MODAL DE ADICIONAR OBSERVAÇÃO -->
+<div id="addObservationModal" class="modal">
+  <div class="modal-content dark-modal">
+    <span class="close" id="closeAddModal">&times;</span>
+    <h2>Adicionar Observação</h2>
+    <form id="addObservationForm">
+      <label>Nome do objeto
+        <input type="text" name="nome" required>
+      </label>
+      <label>Tipo
+        <select name="tipo">
+          <option value="Estrela">Estrela</option>
+          <option value="Galáxia">Galáxia</option>
+          <option value="Planeta">Planeta</option>
+          <option value="Cometa">Cometa</option>
+          <option value="Outro">Outro</option>
+        </select>
+      </label>
+      <label>Data da observação
+        <input type="date" name="data" required>
+      </label>
+      <label>Localização
+        <input type="text" name="local">
+      </label>
+      <label>RA
+        <input type="text" name="ra">
+      </label>
+      <label>DEC
+        <input type="text" name="dec">
+      </label>
+      <label>Magnitude
+        <input type="number" name="magnitude" step="0.1">
+      </label>
+      <label>Distância
+        <input type="text" name="distancia">
+        <select name="unidadeDistancia">
+          <option value="ly">ly</option>
+          <option value="AU">AU</option>
+        </select>
+      </label>
+      <label>Descrição
+        <textarea name="descricao"></textarea>
+      </label>
+      <label>
+        <input type="checkbox" name="favorito"> Favorito
+      </label>
+      <label>Imagem
+        <input type="file" name="imagem">
+      </label>
+      <div class="modal-buttons">
+        <button type="submit">Guardar</button>
+        <button type="button" id="cancelAdd">Cancelar</button>
+      </div>
+    </form>
+    <p id="addSuccessMsg" class="success-msg" style="display:none">
+      ✔️ Observação adicionada com sucesso
+    </p>
   </div>
+</div>
+  
+<script defer src="app.js"></script>
   
 </body>
 </html>
