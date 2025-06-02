@@ -1,5 +1,5 @@
 // ======================================================
-// app.js
+// app.js (versão revisada)
 // ======================================================
 
 // =========================
@@ -13,10 +13,11 @@ let editId = null;
 let calendarioMes = new Date().getMonth();
 let calendarioAno = new Date().getFullYear();
 
-const obsList = document.getElementById('observationsList');
+// Atenção: obsList será definido dentro de DOMContentLoaded
+let obsList = null;
 
 // =========================
-// TRADUÇÕES
+// TRADUÇÕES (i18n)
 // =========================
 const i18n = {
   pt: {
@@ -120,10 +121,10 @@ async function deleteObservacao(id) {
 }
 
 // =========================
-// FUNÇÕES UTILITY
+// FUNÇÕES AUXILIARES
 // =========================
 function normalizarDataLocal(data) {
-  // Formato YYYY-MM-DD (usado pelo calendário)
+  // Retorna “YYYY-MM-DD” (formato usado no calendário)
   return new Date(data).toLocaleDateString('sv-SE');
 }
 
@@ -147,17 +148,21 @@ function getIcon(tipo) {
 // RENDERIZAR OBSERVAÇÕES
 // =========================
 function renderObservacoes() {
-  if (!obsList) return;
+  if (!obsList) return; // Se obsList for null, interrompe
   obsList.innerHTML = '';
+
   let list = [...observacoes];
 
+  // Aplica filtro “Favoritos”
   if (currentFilter === 'favoritos') {
     list = list.filter(o => o.favorito);
-  } else if (currentFilter === 'recentes') {
-    // Ordena do mais recente para o mais antigo
+  }
+  // Aplica filtro “Recentes” (ordena por data decrescente)
+  else if (currentFilter === 'recentes') {
     list = list.sort((a, b) => new Date(b.data) - new Date(a.data));
   }
 
+  // Aplica pesquisa de texto
   if (searchQuery) {
     list = list.filter(o =>
       o.nome.toLowerCase().includes(searchQuery) ||
@@ -166,6 +171,7 @@ function renderObservacoes() {
     );
   }
 
+  // Renderiza cada observação como “card”
   list.forEach(obs => {
     const card = document.createElement('div');
     card.className = 'observation-card';
@@ -173,15 +179,17 @@ function renderObservacoes() {
     const icon = getIcon(obs.tipo);
     const dataFormatada = new Date(obs.data).toLocaleDateString();
 
+    // Se houver imagem, cria <img> clicável
     const imgHTML = obs.imagem
-      ? `<img src="${obs.imagem}"
-               style="max-width: 100%; max-height: 100px; cursor: pointer;"
-               onclick="window.open('${obs.imagem}', '_blank')" />`
+      ? `<img 
+           src="${obs.imagem}"
+           style="max-width: 100%; max-height: 100px; cursor: pointer;"
+           onclick="window.open('${obs.imagem}', '_blank')" />`
       : '';
 
-    const viewBtn = `<button class="view-btn" onclick="viewObservation(${obs.id})">🔍 ${i18n[currentLang].ver}</button>`;
-    const editBtn = `<button onclick="editObservation(${obs.id})">✏️ ${i18n[currentLang].edit}</button>`;
-    const deleteBtn = `<button onclick="deleteObservation(${obs.id})">🗑️ ${i18n[currentLang].delete}</button>`;
+    const viewBtn   = `<button class="view-btn" onclick="viewObservation(${obs.id})">🔍 ${i18n[currentLang].ver}</button>`;
+    const editBtn   = `<button onclick="editObservation(${obs.id})">✏️ ${i18n[currentLang].edit}</button>`;
+    const deleteBtn = `<button onclick="deleteObservacao(${obs.id})">🗑️ ${i18n[currentLang].delete}</button>`;
 
     card.innerHTML = `
       <div class="title">${icon} ${obs.nome} ${obs.favorito ? '⭐' : ''}</div>
@@ -200,11 +208,12 @@ function renderObservacoes() {
 }
 
 // =========================
-// VISUALIZAR OBSERVAÇÃO (modal)
+// MODAL: VISUALIZAR OBSERVAÇÃO
 // =========================
 window.viewObservation = function(id) {
   const obs = observacoes.find(o => o.id === id);
   if (!obs) return;
+
   const modal = document.createElement('div');
   modal.className = 'modal';
   modal.id = 'view-modal';
@@ -220,16 +229,17 @@ window.viewObservation = function(id) {
       <p><strong>Magnitude:</strong> ${obs.magnitude || ''}</p>
       <p><strong>Descrição:</strong> ${obs.descricao || ''}</p>
       ${obs.imagem
-        ? `<img src="${obs.imagem}"
-                style="max-width:100%; max-height:200px; margin-top:1rem; cursor:pointer"
-                onclick="openImageModal('${obs.imagem}')" />`
+        ? `<img 
+             src="${obs.imagem}" 
+             style="max-width:100%; max-height:200px; margin-top:1rem; cursor:pointer"
+             onclick="openImageModal('${obs.imagem}')" />`
         : ''}
       <button onclick="closeModal()">${i18n[currentLang].close}</button>
     </div>
   `;
   document.body.appendChild(modal);
 
-  // Fecha ao clicar fora do conteúdo
+  // Fecha se clicar fora do conteúdo
   modal.addEventListener('click', e => {
     if (e.target === modal) {
       closeModalById('view-modal');
@@ -238,7 +248,7 @@ window.viewObservation = function(id) {
 };
 
 // =========================
-// VISUALIZAR IMAGEM EM MODAL
+// MODAL: VISUALIZAR IMAGEM EM TELA CHEIA
 // =========================
 window.openImageModal = function(imgSrc) {
   const modal = document.createElement('div');
@@ -246,16 +256,20 @@ window.openImageModal = function(imgSrc) {
   modal.id = 'image-modal';
   modal.innerHTML = `
     <div class="modal-content">
-      <img src="${imgSrc}" style="max-width:100%; max-height:80vh; display:block; margin: 0 auto 1rem;" />
+      <img 
+        src="${imgSrc}" 
+        style="max-width:100%; max-height:80vh; display:block; margin: 0 auto 1rem;"
+      />
       <div style="text-align:center">
         <button onclick="closeModalById('image-modal')">${i18n[currentLang].close}</button>
-        <button onclick="closeModalById('image-modal'); closeModalById('view-modal')">${i18n[currentLang].close} tudo</button>
+        <button onclick="closeModalById('image-modal'); closeModalById('view-modal')">
+          ${i18n[currentLang].close} tudo
+        </button>
       </div>
     </div>
   `;
   document.body.appendChild(modal);
 
-  // Fecha ao clicar fora do conteúdo
   modal.addEventListener('click', e => {
     if (e.target === modal) {
       closeModalById('image-modal');
@@ -279,12 +293,13 @@ window.closeModal = function() {
 };
 
 // =========================
-// EDITAR OBSERVAÇÃO (modal)
+// MODAL: EDITAR OBSERVAÇÃO
 // =========================
 window.editObservation = function(id) {
   const obs = observacoes.find(o => o.id === id);
   if (!obs) return;
   editId = id;
+
   const modal = document.createElement('div');
   modal.className = 'modal';
   modal.innerHTML = `
@@ -298,12 +313,12 @@ window.editObservation = function(id) {
         <label>
           Tipo:
           <select name="tipo" required>
-            <option${obs.tipo === 'Estrela' ? ' selected' : ''}>Estrela</option>
-            <option${obs.tipo === 'Galáxia' ? ' selected' : ''}>Galáxia</option>
-            <option${obs.tipo === 'Aglomerado' ? ' selected' : ''}>Aglomerado</option>
-            <option${obs.tipo === 'Nebulosa' ? ' selected' : ''}>Nebulosa</option>
-            <option${obs.tipo === 'Sistema Solar' ? ' selected' : ''}>Sistema Solar</option>
-            <option${obs.tipo === 'Outro' ? ' selected' : ''}>Outro</option>
+            <option${obs.tipo === 'Estrela'      ? ' selected' : ''}>Estrela</option>
+            <option${obs.tipo === 'Galáxia'      ? ' selected' : ''}>Galáxia</option>
+            <option${obs.tipo === 'Aglomerado'   ? ' selected' : ''}>Aglomerado</option>
+            <option${obs.tipo === 'Nebulosa'     ? ' selected' : ''}>Nebulosa</option>
+            <option${obs.tipo === 'Sistema Solar'? ' selected' : ''}>Sistema Solar</option>
+            <option${obs.tipo === 'Outro'        ? ' selected' : ''}>Outro</option>
           </select>
         </label>
         <label>
@@ -354,7 +369,7 @@ window.editObservation = function(id) {
   `;
   document.body.appendChild(modal);
 
-  // Fecha ao clicar fora do conteúdo
+  // Fecha se clicar fora do conteúdo
   modal.addEventListener('click', e => {
     if (e.target === modal) {
       modal.remove();
@@ -365,13 +380,14 @@ window.editObservation = function(id) {
   const modalForm = modal.querySelector('#modalForm');
   modalForm.addEventListener('submit', async e => {
     e.preventDefault();
-    const data = new FormData(modalForm);
-    const newObs = Object.fromEntries(data.entries());
-    newObs.id = id;
-    newObs.favorito = !!data.get('favorito');
+    const dataForm = new FormData(modalForm);
+    const newObs   = Object.fromEntries(dataForm.entries());
+    newObs.id      = id;
+    newObs.favorito= !!dataForm.get('favorito');
 
-    const file = data.get('imagem');
+    const file = dataForm.get('imagem');
     async function saveEdit() {
+      // Se não carregou nova imagem, preserva a antiga
       const original = observacoes.find(o => o.id === id);
       if (original?.imagem && !newObs.imagem) {
         newObs.imagem = original.imagem;
@@ -422,20 +438,22 @@ function renderCalendario() {
   const firstDay    = new Date(calendarioAno, calendarioMes, 1).getDay();
   const daysInMonth = new Date(calendarioAno, calendarioMes + 1, 0).getDate();
 
-  // Atualizar título do calendário
+  // Atualiza o título (“Maio 2025”, etc.)
   const nomeMes = new Date(calendarioAno, calendarioMes)
                     .toLocaleString('pt-PT', { month: 'long' });
   title.textContent = `${capitalize(nomeMes)} ${calendarioAno}`;
 
+  // Coleta datas (YYYY-MM-DD) que contêm observações
   const diasComObservacoes = new Set(
     observacoes.map(o => normalizarDataLocal(o.data))
   );
 
-  // Dias vazios até o dia da semana correto
+  // Adiciona “células vazias” até o primeiro dia da semana
   for (let i = 0; i < firstDay; i++) {
     container.appendChild(document.createElement('div'));
   }
 
+  // Preenche cada dia do mês
   for (let d = 1; d <= daysInMonth; d++) {
     const date    = new Date(calendarioAno, calendarioMes, d);
     const dateStr = normalizarDataLocal(date);
@@ -469,7 +487,7 @@ function mostrarObservacoesDoDia(dataISO) {
 }
 
 // =========================
-// TRADUZIR UI (botões, placeholders, textos)
+// TRADUZIR UI (botões, placeholders, etc.)
 // =========================
 function translateUI() {
   const t = i18n[currentLang];
@@ -478,19 +496,19 @@ function translateUI() {
   const searchInputElem = document.getElementById('searchInput');
   if (searchInputElem) searchInputElem.placeholder = t.searchPlaceholder;
 
-  // Textos dos filtros rápidos
+  // Botões rápidos “Todos”, “Recentes”, “Favoritos”
   const btnTodos     = document.querySelector('[data-filter="todos"]');
   const btnRecentes  = document.querySelector('[data-filter="recentes"]');
   const btnFavoritos = document.querySelector('[data-filter="favoritos"]');
-  if (btnTodos)    btnTodos.textContent    = t.all;
-  if (btnRecentes) btnRecentes.textContent = t.recent;
-  if (btnFavoritos)btnFavoritos.textContent= t.favorites;
+  if (btnTodos)     btnTodos.textContent    = t.all;
+  if (btnRecentes)  btnRecentes.textContent = t.recent;
+  if (btnFavoritos) btnFavoritos.textContent= t.favorites;
 
-  // Texto do botão “Filtrar por tipo”
+  // Botão “Filtrar por tipo”
   const filterBtnElem = document.getElementById('filterByType');
   if (filterBtnElem) filterBtnElem.textContent = t.filterType;
 
-  // Botões de “Cancelar” / “Guardar” no modal
+  // Botões “Cancelar” e “Guardar” nos formulários
   const cancelBtn = document.querySelector('button[type="reset"]');
   const saveBtn   = document.querySelector('button[type="submit"]');
   if (cancelBtn) cancelBtn.textContent = t.cancel;
@@ -502,20 +520,20 @@ function translateUI() {
   if (redFilterLabel) redFilterLabel.textContent = t.redFilter;
   if (intensityLabel) intensityLabel.textContent = t.intensity;
 
-  // Traduzir nomes das tabs
-  document.querySelectorAll("nav button[data-tab]").forEach(btn => {
-    const key = btn.getAttribute("data-tab");
+  // Traduz nomes das abas (nav buttons data-tab="...")
+  document.querySelectorAll('nav button[data-tab]').forEach(btn => {
+    const key = btn.getAttribute('data-tab');
     if (t[key]) {
       btn.textContent = t[key];
     }
   });
 
-  // Traduzir botões “Ver” dentro das observações (caso já estejam no DOM)
-  document.querySelectorAll(".observation-card button.view-btn").forEach(btn => {
+  // Traduz botões “🔍 Ver” nos cartões de observação (caso já existam no DOM)
+  document.querySelectorAll('.observation-card button.view-btn').forEach(btn => {
     btn.textContent = `🔍 ${t.ver}`;
   });
 
-  // Se o calendário estiver visível, atualiza o título e rerenderiza
+  // Se o calendário estiver visível, atualiza o título
   const calendarioVisivel = document.getElementById('tab-calendario')
                               ?.classList.contains('active');
   if (calendarioVisivel) {
@@ -526,7 +544,7 @@ function translateUI() {
 }
 
 // =========================
-// FILTRO VERMELHO
+// FILTRO VERMELHO / INTENSIDADE
 // =========================
 function applyRedFilter(active) {
   if (active) {
@@ -556,49 +574,48 @@ function updateRedFilterClass() {
   }
 }
 
-// Pegando referências aos controles de filtro vermelho
-const redToggle = document.getElementById('redFilterToggle');
-const redSlider = document.getElementById('redFilterIntensity');
-const redButton = document.getElementById('toggleRedFilter');
-
-redButton?.addEventListener('click', () => {
-  if (!redToggle) return;
-  redToggle.checked = !redToggle.checked;
-  applyRedFilter(redToggle.checked);
-  updateRedFilterClass();
-});
-
-redToggle?.addEventListener('change', () => {
-  applyRedFilter(redToggle.checked);
-  updateRedFilterClass();
-});
-
-redSlider?.addEventListener('input', () => {
-  if (redToggle.checked) {
-    applyRedFilter(true);
-    updateRedFilterClass();
-  }
-});
+// Guardamos referências aqui, mas só funcionam de verdade depois do DOMContentLoaded
+let redToggle = null;
+let redSlider = null;
+let redButton = null;
 
 // =========================
-// CARREGAR OBSERVAÇÕES AO INICIAR (fora do DOMContentLoaded apenas para garantir que IndexedDB já exista)
-// =========================
-loadObservacoes();
-async function loadObservacoes() {
-  observacoes = await getAllObservacoes();
-}
-
-// =========================
-// EVENTOS E INICIALIZAÇÃO
+// INICIALIZAÇÃO: DOMContentLoaded
 // =========================
 document.addEventListener('DOMContentLoaded', async () => {
-  // (Recarrega as observações antes de renderizar)
+  // Agora que o DOM carregou, podemos obter o elemento observationsList
+  obsList = document.getElementById('observationsList');
+
+  // Carrega observações do IndexedDB e renderiza
   observacoes = await getAllObservacoes();
   renderObservacoes();
-  translateUI();
-  updateRedFilterClass();
 
-  // ======== MODAL DE ADICIONAR OBSERVAÇÃO ========
+  // Traduzir a interface para o idioma atual (pt/e n)
+  translateUI();
+
+  // Configurar controle do Filtro Vermelho
+  redToggle = document.getElementById('redFilterToggle');
+  redSlider = document.getElementById('redFilterIntensity');
+  redButton = document.getElementById('toggleRedFilter');
+
+  redButton?.addEventListener('click', () => {
+    if (!redToggle) return;
+    redToggle.checked = !redToggle.checked;
+    applyRedFilter(redToggle.checked);
+    updateRedFilterClass();
+  });
+  redToggle?.addEventListener('change', () => {
+    applyRedFilter(redToggle.checked);
+    updateRedFilterClass();
+  });
+  redSlider?.addEventListener('input', () => {
+    if (redToggle.checked) {
+      applyRedFilter(true);
+      updateRedFilterClass();
+    }
+  });
+
+  // ========== MODAL DE ADICIONAR OBSERVAÇÃO ==========
   const addBtn       = document.getElementById('addObservationBtn');
   const modal        = document.getElementById('addObservationModal');
   const closeModalBtn= document.getElementById('closeAddModal');
@@ -607,7 +624,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   const successMsg   = document.getElementById('addSuccessMsg');
 
   function openModal() {
-    if (modal) modal.style.display = 'flex'; // Exibe como flex para centralizar
+    if (modal) modal.style.display = 'flex'; // exibe como flex (centra vertical/horizontal)
   }
   function closeAddForm() {
     if (form) form.reset();
@@ -615,17 +632,20 @@ document.addEventListener('DOMContentLoaded', async () => {
     if (successMsg) successMsg.style.display = 'none';
   }
 
+  // Abrir modal ao clicar em “＋”
   if (addBtn) {
     addBtn.addEventListener('click', openModal);
   }
+  // Fechar ao clicar no “×”
   if (closeModalBtn) {
     closeModalBtn.addEventListener('click', closeAddForm);
   }
+  // Fechar ao clicar em “Cancelar”
   if (cancelBtn) {
     cancelBtn.addEventListener('click', closeAddForm);
   }
+  // Fechar se clicar fora da .modal-content
   if (modal) {
-    // Fecha o modal se clicar fora de .modal-content
     modal.addEventListener('click', e => {
       if (e.target === modal) {
         closeAddForm();
@@ -633,6 +653,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     });
   }
 
+  // Submissão do formulário de adicionar observação
   if (form) {
     form.addEventListener('submit', async function(e) {
       e.preventDefault();
@@ -690,7 +711,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     });
   }
 
-  // ======== FILTRO POR TIPO (dropdown) ========
+  // ========== FILTRO POR TIPO (dropdown) ==========
   const filterBtn = document.getElementById('filterByType');
   if (filterBtn) {
     filterBtn.addEventListener('click', async () => {
@@ -718,7 +739,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         menu.appendChild(item);
       });
 
-      // Opção “Todos”
+      // “Todos”
       const allItem = document.createElement('div');
       allItem.textContent = i18n[currentLang].all;
       allItem.addEventListener('click', () => {
@@ -738,7 +759,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     });
   }
 
-  // ======== CAMPO DE PESQUISA ========
+  // ========== CAMPO DE PESQUISA ==========
   const searchInput = document.getElementById('searchInput');
   if (searchInput) {
     searchInput.addEventListener('input', () => {
@@ -747,7 +768,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     });
   }
 
-  // ======== FILTROS RÁPIDOS (Todos, Recentes, Favoritos) ========
+  // ========== FILTROS RÁPIDOS (Todos, Recentes, Favoritos) ==========
   const filterButtons = document.querySelectorAll('[data-filter]');
   filterButtons.forEach(btn => {
     btn.addEventListener('click', () => {
@@ -758,7 +779,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     });
   });
 
-  // ======== EXPORTAR JSON ========
+  // ========== EXPORTAR JSON ==========
   const exportBtn = document.getElementById('exportJson');
   if (exportBtn) {
     exportBtn.addEventListener('click', async () => {
@@ -775,7 +796,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     });
   }
 
-  // ======== IMPORTAR JSON ========
+  // ========== IMPORTAR JSON ==========
   const importInput = document.getElementById('importJson');
   if (importInput) {
     importInput.addEventListener('change', async (event) => {
@@ -806,47 +827,46 @@ document.addEventListener('DOMContentLoaded', async () => {
     });
   }
 
-  // ======== LÓGICA DE NAVEGAÇÃO ENTRE ABAS ========
+  // ========== NAVEGAÇÃO ENTRE ABAS ==========
   const navButtons  = document.querySelectorAll('nav button[data-tab]');
   const tabSections = document.querySelectorAll('.tab');
   const footer      = document.querySelector('footer');
 
   navButtons.forEach(btn => {
     btn.addEventListener('click', () => {
-      const alvo = btn.dataset.tab; // "objectos", "recursos", "links", "calendario", "configuracoes"
+      const alvo = btn.dataset.tab; // “objectos”, “recursos”, “links”, “calendario”, “configuracoes”
 
-      // 1) Atualiza classe 'active' nos botões
+      // 1) Atualiza classe “active” nos botões
       navButtons.forEach(b => b.classList.remove('active'));
       btn.classList.add('active');
 
-      // 2) Mostra apenas a seção cujo id seja "tab-" + alvo
+      // 2) Mostra apenas a <section> cujo id seja “tab-” + alvo
       tabSections.forEach(sec => sec.classList.remove('active'));
       const sectionAlvo = document.getElementById(`tab-${alvo}`);
       if (sectionAlvo) {
         sectionAlvo.classList.add('active');
       }
 
-      // 3) Se for aba CONFIGURAÇÕES, mostra o footer; senão, esconde-o
+      // 3) Se for aba “configuracoes”, mostra o footer; senão, esconde
       if (footer) {
         footer.style.display = (alvo === 'configuracoes') ? 'flex' : 'none';
       }
 
-      // 4) Ao voltar para OBJETOS, renderiza as observações de novo
+      // 4) Se voltar para “objectos”, renderiza as observações de novo
       if (alvo === 'objectos') {
         renderObservacoes();
       }
 
-      // 5) Se for aba CALENDÁRIO, renderiza o calendário
+      // 5) Se for aba “calendario”, renderiza o calendário
       if (alvo === 'calendario') {
         renderCalendario();
       }
     });
   });
 
-  // ======== NAVEGAÇÃO DO CALENDÁRIO (botões “←” e “→”) ========
+  // ========== CONTROLES DO CALENDÁRIO ==========
   const prevBtn = document.getElementById('prevMonth');
   const nextBtn = document.getElementById('nextMonth');
-
   if (prevBtn) {
     prevBtn.addEventListener('click', () => {
       calendarioMes--;
@@ -857,7 +877,6 @@ document.addEventListener('DOMContentLoaded', async () => {
       renderCalendario();
     });
   }
-
   if (nextBtn) {
     nextBtn.addEventListener('click', () => {
       calendarioMes++;
@@ -868,10 +887,10 @@ document.addEventListener('DOMContentLoaded', async () => {
       renderCalendario();
     });
   }
-}); // fim do DOMContentLoaded
+}); // fim DOMContentLoaded
 
 // =========================
-// FUNÇÃO QUE ATUALIZA O “BACKUP” NO localStorage
+// ATUALIZA BACKUP NO localStorage
 // =========================
 function atualizarBackupJSON() {
   const json = JSON.stringify(observacoes, null, 2);
