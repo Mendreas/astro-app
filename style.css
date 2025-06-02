@@ -1,3 +1,6 @@
+/* ==============================================
+   Estilos Gerais do Layout
+   ============================================== */
 body {
   margin: 0;
   font-family: 'Segoe UI', sans-serif;
@@ -105,7 +108,10 @@ form {
   box-shadow: 0 2px 6px rgba(0,0,0,0.5);
 }
 
-input, select, textarea, button {
+input,
+select,
+textarea,
+button {
   padding: 0.6rem;
   border-radius: 8px;
   border: none;
@@ -198,8 +204,10 @@ footer {
   display: none;
   position: fixed;
   z-index: 999;
-  left: 0; top: 0;
-  width: 100%; height: 100%;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
   background-color: rgba(0,0,0,0.6);
 }
 
@@ -209,7 +217,8 @@ footer {
   margin: 10% auto;
   padding: 20px;
   border-radius: 8px;
-  width: 90%; max-width: 500px;
+  width: 90%;
+  max-width: 500px;
   position: relative;
 }
 
@@ -226,7 +235,8 @@ footer {
 
 .modal-content .close {
   position: absolute;
-  top: 10px; right: 15px;
+  top: 10px;
+  right: 15px;
   color: white;
   font-size: 24px;
   cursor: pointer;
@@ -292,20 +302,18 @@ body.red-filter .modal-content h3,
 body.red-filter .view-btn,
 body.red-filter button:hover {
   color: #ff8888 !important;
-
+}
 
 /* Modal backdrop */
 body.red-filter .modal {
   background-color: rgba(0, 0, 0, 0.85);
 }
 
-
 /* Placeholder nos inputs */
 body.red-filter input::placeholder,
 body.red-filter textarea::placeholder {
   color: #A61500 !important;
 }
-
 
 /* Light mode */
 body.light {
@@ -412,24 +420,24 @@ body.light textarea {
   text-align: center;
 }
 
-/* ================================================
+/* ==============================================
    A) Remove bullets e organiza <ul> como flex-wrap
-   ================================================ */
+   ============================================== */
 #tab-recursos ul,
 #tab-links ul {
   display: flex;
   flex-wrap: wrap;
   gap: 1rem;
-  justify-content: center;
+  justify-content: flex-start;
 
   list-style: none; /* remove marcadores “•” */
   margin: 0;
   padding: 0;
 }
 
-/* ================================================
+/* ==============================================
    B) Cada <li> vira um quadrado 250×250 px
-   ================================================ */
+   ============================================== */
 #tab-recursos ul li,
 #tab-links ul li {
   display: flex;
@@ -452,10 +460,10 @@ body.light textarea {
   transform: scale(1.03);
 }
 
-/* ================================================
+/* ==============================================
    C) Fazendo o <a> interno “encher” todo o <li> e empilhar
-   imagem + texto em coluna
-   ================================================ */
+      imagem + texto em coluna
+   ============================================== */
 #tab-recursos ul li a,
 #tab-links ul li a {
   display: flex;
@@ -476,9 +484,9 @@ body.light textarea {
   content: none !important;
 }
 
-/* ================================================
+/* ==============================================
    D) Bloco que envolve a imagem (.card-img)
-   ================================================ */
+   ============================================== */
 /* .card-img ocupa todo espaço acima da legenda (.card-desc) */
 .card-img {
   flex: 1;                 /* cresce para preencher quase todo o <li> */
@@ -491,25 +499,25 @@ body.light textarea {
   overflow: hidden;
 
   /* afastamento interno para não deixar a imagem “grudar” na borda */
-  padding: 0.5rem;         /* você pode ajustar: 0.25rem, 1rem, etc */
+  padding: 0.5rem;         /* ajuste conforme sua preferência */
 
-  /* fundo transparente para não “tinture”” o logo */
+  /* fundo transparente para não “tinture” o logo */
   background-color: transparent;
 }
 
-/* ================================================
+/* ==============================================
    E) Estilo da própria imagem (miniatura)
-   ================================================ */
-/* Limita a imagem a no máximo 70% ou 80% do container .card-img */
+   ============================================== */
+/* Limita a imagem a no máximo 80% do container .card-img */
 .card-img img {
   max-width: 80%;      /* 80% da largura disponível dentro de .card-img */
   max-height: 80%;     /* 80% da altura disponível dentro de .card-img */
   object-fit: contain; /* mantém proporção original, sem distorcer */
 }
 
-/* ================================================
+/* ==============================================
    F) Legenda fixa no rodapé do card (.card-desc)
-   ================================================ */
+   ============================================== */
 /* .card-desc ocupa apenas a altura do texto, colado ao rodapé do <li> */
 .card-desc {
   flex: 0 0 auto;           /* não cresce, consome apenas a altura do texto */
@@ -524,15 +532,16 @@ body.light textarea {
   width: 100%;
   box-sizing: border-box;
 
-  /* em caso de texto muito longo, corta com “…” */
+  /* em caso de texto muito longo, corta com “...” */
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
 
 
-<!-- CSS A ADICIONAR AO style.css -->
-<style>
+/* ==============================================
+   CSS ADICIONAL (botões, modais, etc.)
+   ============================================== */
 #addObservationBtn {
   font-size: 1.5rem;
   margin-left: 1rem;
@@ -572,4 +581,3 @@ body.light textarea {
   text-align: center;
 }
 </style>
-
