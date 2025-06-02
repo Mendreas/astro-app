@@ -1,5 +1,5 @@
 // ======================================================
-// AstroLog – app.js (versão completa com correções finais)
+// AstroLog – app.js (versão completa com as duas correções)
 // ======================================================
 
 let observacoes    = [];
@@ -17,54 +17,56 @@ const obsList = document.getElementById('observationsList');
 // =========================
 const i18n = {
   pt: {
-    searchPlaceholder: "Pesquisar observações...",
-    all:               "Todos",
-    recent:            "Recentes",
-    favorites:         "Favoritos",
-    filterType:        "Filtrar por tipo",
-    cancel:            "Cancelar",
-    save:              "Guardar",
-    redFilter:         "Filtro Vermelho",
-    intensity:         "Intensidade do Filtro",
-    edit:              "Editar",
-    delete:            "Eliminar",
-    close:             "Fechar",
-    objectos:          "Objectos",
-    adicionar:         "Adicionar",
-    calendario:        "Calendário",
-    calendarTitle:     "Calendário de Observações",
-    recursos:          "Recursos",
-    configuracoes:     "Configurações",
-    links:             "Links Úteis",
-    ver:               "Ver",
-    exportJson:        "📤 Exportar Observações",
-    importJson:        "📥 Importar Observações",
-    downloadBackup:    "💾 Descarregar Backup"
+    searchPlaceholder:    "Pesquisar observações...",
+    all:                  "Todos",
+    recent:               "Recentes",
+    favorites:            "Favoritos",
+    filterType:           "Filtrar por tipo",
+    cancel:               "Cancelar",
+    save:                 "Guardar",
+    redFilter:            "Filtro Vermelho",
+    intensity:            "Intensidade do Filtro",
+    edit:                 "Editar",
+    delete:               "Eliminar",
+    close:                "Fechar",
+    objectos:             "Objectos",
+    adicionar:            "Adicionar",
+    calendario:           "Calendário",
+    calendarTitle:        "Calendário de Observações",
+    recursos:             "Recursos",
+    configuracoes:        "Configurações",
+    links:                "Links Úteis",
+    ver:                  "Ver",
+    exportJson:           "📤 Exportar Observações",
+    importJson:           "📥 Importar Observações",
+    downloadBackup:       "💾 Descarregar Backup",
+    configDescription:    "Ajustes e configurações da aplicação."
   },
   en: {
-    searchPlaceholder: "Search observations...",
-    all:               "All",
-    recent:            "Recent",
-    favorites:         "Favorites",
-    filterType:        "Filter by type",
-    cancel:            "Cancel",
-    save:              "Save",
-    redFilter:         "Red Filter",
-    intensity:         "Filter Intensity",
-    edit:              "Edit",
-    delete:            "Delete",
-    close:             "Close",
-    objectos:          "Objects",
-    adicionar:         "Add",
-    calendario:        "Calendar",
-    calendarTitle:     "Observation Calendar",
-    recursos:          "Resources",
-    configuracoes:     "Settings",
-    links:             "Useful Links",
-    ver:               "View",
-    exportJson:        "📤 Export Observations",
-    importJson:        "📥 Import Observations",
-    downloadBackup:    "💾 Download Backup"
+    searchPlaceholder:    "Search observations...",
+    all:                  "All",
+    recent:               "Recent",
+    favorites:            "Favorites",
+    filterType:           "Filter by type",
+    cancel:               "Cancel",
+    save:                 "Save",
+    redFilter:            "Red Filter",
+    intensity:            "Filter Intensity",
+    edit:                 "Edit",
+    delete:               "Delete",
+    close:                "Close",
+    objectos:             "Objects",
+    adicionar:            "Add",
+    calendario:           "Calendar",
+    calendarTitle:        "Observation Calendar",
+    recursos:             "Resources",
+    configuracoes:        "Settings",
+    links:                "Useful Links",
+    ver:                  "View",
+    exportJson:           "📤 Export Observations",
+    importJson:           "📥 Import Observations",
+    downloadBackup:       "💾 Download Backup",
+    configDescription:    "Application settings and configuration."
   }
 };
 
@@ -78,8 +80,8 @@ const STORE_NAME = 'observacoes';
 function openDB() {
   return new Promise((resolve, reject) => {
     const request = indexedDB.open(DB_NAME, DB_VERSION);
-    request.onerror    = () => reject(request.error);
-    request.onsuccess  = () => resolve(request.result);
+    request.onerror        = () => reject(request.error);
+    request.onsuccess      = () => resolve(request.result);
     request.onupgradeneeded = () => {
       const db = request.result;
       if (!db.objectStoreNames.contains(STORE_NAME)) {
@@ -454,15 +456,22 @@ function translateUI() {
   if (btnBackup) btnBackup.textContent = t.downloadBackup;
 
   // 7) Traduzir rodapé (footer) – “Filtro Vermelho” e “Intensidade do Filtro”
-  //    Selecionamos diretamente pela ordem dos <label> dentro de <footer>
   const footerLabels = document.querySelectorAll('footer label');
   if (footerLabels.length >= 2) {
-    footerLabels[0].textContent = t.redFilter;    // primeiro <label>
-    footerLabels[1].textContent = t.intensity;    // segundo <label>
+    footerLabels[0].textContent = t.redFilter;   // primeiro <label>
+    footerLabels[1].textContent = t.intensity;   // segundo <label>
   }
 
-  // 8) Se a aba “Calendário” estiver ativa, atualiza título e re-renderiza
-  const calendarioVisivel = document.getElementById('tab-calendario')?.classList.contains('active');
+  // 8) Traduzir o parágrafo em “Configurações”
+  const configPara = document.querySelector('#tab-configuracoes p');
+  if (configPara) {
+    configPara.textContent = t.configDescription;
+  }
+
+  // 9) Se a aba “Calendário” estiver ativa, atualiza título e re-renderiza
+  const calendarioVisivel = document
+    .getElementById('tab-calendario')
+    ?.classList.contains('active');
   if (calendarioVisivel) {
     const tituloCalendario = document.querySelector('#tab-calendario h2');
     if (tituloCalendario) tituloCalendario.textContent = t.calendarTitle;
@@ -781,7 +790,7 @@ window.editObservation = function(id) {
   const modalForm = modal.querySelector('#modalForm');
   modalForm.addEventListener('submit', async e => {
     e.preventDefault();
-    const data = new FormData(modalForm);
+    const data   = new FormData(modalForm);
     const newObs = Object.fromEntries(data.entries());
     newObs.id      = id;
     newObs.favorito = !!data.get('favorito');
@@ -887,5 +896,5 @@ redToggle?.addEventListener('change', updateRedFilterClass);
 redSlider?.addEventListener('input', updateRedFilterClass);
 
 // ======================================================
-// Fim do arquivo app.js
+// FIM DO ARQUIVO app.js
 // ======================================================
