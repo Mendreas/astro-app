@@ -419,7 +419,6 @@ document.addEventListener('DOMContentLoaded', async () => {
       renderCalendario();
     });
   }
-  // =======================================================
 });
 // =========================
 // FUNÇÃO PARA FECHAR O MODAL (ADICIONAR OBSERVAÇÃO) – VERSÃO GLOBAL
