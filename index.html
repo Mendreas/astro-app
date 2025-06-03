@@ -6,30 +6,27 @@
   <title>AstroLog</title>
   <link rel="stylesheet" href="style.css" />
   <link rel="manifest" href="manifest.json" />
-
 </head>
 
-<!-- 1) CABEÇALHO DA PÁGINA -->
+<body>
   <header>
     <h1>AstroLog</h1>
     <div class="header-controls">
       <input type="text" id="searchInput" placeholder="Pesquisar observações..." />
       <button id="toggleLanguage">EN</button>
       <button id="toggleRedFilter">🔴</button>
-	  <button id="addObservationBtn" title="Adicionar observação">＋</button>
+      <button id="addObservationBtn" title="Adicionar observação">＋</button>
     </div>
   </header>
 
-<body>
-
-<main>
-	<nav>
-	  <button class="active" data-tab="objectos">Objectos</button>
-	  <button data-tab="recursos">Recursos</button>
-	  <button data-tab="links">Links Úteis</button>
-	  <button data-tab="calendario">Calendário</button>
-	  <button data-tab="configuracoes">Configurações</button>
-	</nav>
+  <main>
+    <nav>
+      <button class="active" data-tab="objectos">Objectos</button>
+      <button data-tab="recursos">Recursos</button>
+      <button data-tab="links">Links Úteis</button>
+      <button data-tab="calendario">Calendário</button>
+      <button data-tab="configuracoes">Configurações</button>
+    </nav>
 
     <div class="content">
 	
@@ -38,14 +35,14 @@
      ================================== -->
 	
       <section id="tab-objectos" class="tab active">
-		  <div class="filters">
-		    <button data-filter="todos">Todos</button>
-		    <button data-filter="recentes">Recentes</button>
-		    <button data-filter="favoritos">Favoritos ⭐</button>
-		    <button id="filterByType">Filtrar por tipo</button>
-		  </div>
-	  <div id="observationsList"></div>
-	</section>
+        <div class="filters">
+          <button data-filter="todos">Todos</button>
+          <button data-filter="recentes">Recentes</button>
+          <button data-filter="favoritos">Favoritos ⭐</button>
+          <button id="filterByType">Filtrar por tipo</button>
+        </div>
+        <div id="observationsList"></div>
+      </section>
 
 <!-- ==================================
      ABA “Recursos”
@@ -54,11 +51,9 @@
   <ul class="cards-list">
     <!-- 1. Catálogo Messier (NASA/Hubble) -->
     <li>
-        <a href="https://science.nasa.gov/mission/hubble/science/explore-the-night-sky/hubble-messier-catalog/"
-           target="_blank" title="Catálogo Messier (NASA/Hubble)">
+        <a href="https://science.nasa.gov/mission/hubble/science/explore-the-night-sky/hubble-messier-catalog/" target="_blank" title="Catálogo Messier (NASA/Hubble)">
           <div class="card-img">
-            <img src="https://upload.wikimedia.org/wikipedia/commons/8/81/Whirlpool_%28M51%29.jpg"
-                 alt="Catálogo Messier">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/8/81/Whirlpool_%28M51%29.jpg" alt="Catálogo Messier">
           </div>
           <div class="card-desc">Catálogo Messier (NASA/Hubble)</div>
         </a>
@@ -256,38 +251,34 @@
 	<!-- ==================================
      ABA “Calendário”
      ================================== -->
-<section id="tab-calendario" class="tab">
-  <!-- Apenas um elemento com id="calendarMonthYear" -->
-  <h2 id="calendarMonthYear">Mês Ano</h2>
-
-  <div id="calendarHeader">
-    <button id="prevMonth">←</button>
-    <!-- Removemos o segundo <span id="calendarMonthYear"> -->
-    <span id="calendarMonthYearDisplay"></span>
-    <button id="nextMonth">→</button>
-  </div>
-
-  <div id="calendarContainer"></div>
-  <div id="calendarResults" style="margin-top: 1rem;"></div>
-</section>
+      <section id="tab-calendario" class="tab">
+        <h2 id="calendarMonthYear">Mês Ano</h2>
+        <div id="calendarHeader">
+          <button id="prevMonth">←</button>
+          <span id="calendarMonthYearDisplay"></span>
+          <button id="nextMonth">→</button>
+        </div>
+        <div id="calendarContainer"></div>
+        <div id="calendarResults" style="margin-top: 1rem;"></div>
+      </section>
 		
 	<!-- ==================================
      ABA “Configurações”
      ================================== -->
 		
-  <section id="tab-configuracoes" class="tab">
-    <p>Ajustes e configurações da aplicação.</p>
-    <div class="config-actions">
-      <button id="exportJson">📤 Exportar Observações</button>
-      <label for="importJson" class="import-label">
-        📥 Importar Observações
-        <input type="file" id="importJson" accept=".json" style="display: none;" />
-      </label>
-      <button id="downloadBackup">💾 Descarregar Backup</button>
+      <section id="tab-configuracoes" class="tab">
+        <p>Ajustes e configurações da aplicação.</p>
+        <div class="config-actions">
+          <button id="exportJson">📤 Exportar Observações</button>
+          <label for="importJson" class="import-label">
+            📥 Importar Observações
+            <input type="file" id="importJson" accept=".json" style="display: none;" />
+          </label>
+          <button id="downloadBackup">💾 Descarregar Backup</button>
+        </div>
+      </section>
     </div>
-  </section>
-
-    </div>
+  </main>
   
 <footer>
   <label>Filtro Vermelho</label>
@@ -297,65 +288,63 @@
 </footer>
 
 <!-- MODAL DE ADICIONAR OBSERVAÇÃO -->
-<div id="addObservationModal" class="modal">
-  <div class="modal-content dark-modal">
-    <span class="close" id="closeAddModal">&times;</span>
-    <h2>Adicionar Observação</h2>
-    <form id="addObservationForm">
-      <label>Nome do objeto
-        <input type="text" name="nome" required>
-      </label>
-      <label>Tipo
-        <select name="tipo">
-          <option value="Estrela">Estrela</option>
-          <option value="Galáxia">Galáxia</option>
-          <option value="Planeta">Planeta</option>
-          <option value="Cometa">Cometa</option>
-          <option value="Outro">Outro</option>
-        </select>
-      </label>
-      <label>Data da observação
-        <input type="date" name="data" required>
-      </label>
-      <label>Localização
-        <input type="text" name="local">
-      </label>
-      <label>RA
-        <input type="text" name="ra">
-      </label>
-      <label>DEC
-        <input type="text" name="dec">
-      </label>
-      <label>Magnitude
-        <input type="number" name="magnitude" step="0.1">
-      </label>
-      <label>Distância
-        <input type="text" name="distancia">
-        <select name="unidadeDistancia">
-          <option value="ly">ly</option>
-          <option value="AU">AU</option>
-        </select>
-      </label>
-      <label>Descrição
-        <textarea name="descricao"></textarea>
-      </label>
-      <label>
-        <input type="checkbox" name="favorito"> Favorito
-      </label>
-      <label>Imagem
-        <input type="file" name="imagem">
-      </label>
-      <div class="modal-buttons">
-        <button type="submit">Guardar</button>
-        <button type="button" id="cancelAdd">Cancelar</button>
-      </div>
-    </form>
- <p id="addSuccessMsg" class="success-msg" style="display: none">
-      ✔️ Observação adicionada com sucesso
-    </p>
+  <div id="addObservationModal" class="modal">
+    <div class="modal-content dark-modal">
+      <span class="close" id="closeAddModal">&times;</span>
+      <h2>Adicionar Observação</h2>
+      <form id="addObservationForm">
+        <label>Nome do objeto
+          <input type="text" name="nome" required>
+        </label>
+        <label>Tipo
+          <select name="tipo">
+            <option value="Estrela">Estrela</option>
+            <option value="Galáxia">Galáxia</option>
+            <option value="Planeta">Planeta</option>
+            <option value="Cometa">Cometa</option>
+            <option value="Outro">Outro</option>
+          </select>
+        </label>
+        <label>Data da observação
+          <input type="date" name="data" required>
+        </label>
+        <label>Localização
+          <input type="text" name="local">
+        </label>
+        <label>RA
+          <input type="text" name="ra">
+        </label>
+        <label>DEC
+          <input type="text" name="dec">
+        </label>
+        <label>Magnitude
+          <input type="number" name="magnitude" step="0.1">
+        </label>
+        <label>Distância
+          <input type="text" name="distancia">
+          <select name="unidadeDistancia">
+            <option value="ly">ly</option>
+            <option value="AU">AU</option>
+          </select>
+        </label>
+        <label>Descrição
+          <textarea name="descricao"></textarea>
+        </label>
+        <label>
+          <input type="checkbox" name="favorito"> Favorito
+        </label>
+        <label>Imagem
+          <input type="file" name="imagem">
+        </label>
+        <div class="modal-buttons">
+          <button type="submit">Guardar</button>
+          <button type="button" id="cancelAdd">Cancelar</button>
+        </div>
+      </form>
+      <p id="addSuccessMsg" class="success-msg" style="display: none">✔️ Observação adicionada com sucesso</p>
+    </div>
   </div>
-</div>
-  
-<script defer src="app.js"></script>  
+
+  <script defer src="app.js"></script>
 </body>
 </html>
