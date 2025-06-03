@@ -755,7 +755,7 @@ window.viewObservation = function(id) {
   if (!obs) return;
 
   const modal = document.createElement('div');
-  modal.className = 'modal';
+  modal.className = 'modal open';
   modal.id = 'view-modal';
   modal.innerHTML = `
     <div class="modal-content">
@@ -792,7 +792,7 @@ window.editObservation = function(id) {
   if (!obs) return;
 
   const modal = document.createElement('div');
-  modal.className = 'modal';
+  modal.className = 'modal open';
   modal.innerHTML = `
     <div class="modal-content">
       <h3>Editar Observação</h3>
@@ -908,7 +908,7 @@ window.deleteObservacaoHandler = async function(id) {
 // =========================
 window.openImageModal = function(imgSrc) {
   const modal = document.createElement('div');
-  modal.className = 'modal';
+  modal.className = 'modal open';
   modal.id = 'image-modal';
   modal.innerHTML = `
     <div class="modal-content">
