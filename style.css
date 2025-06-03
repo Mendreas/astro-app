@@ -1,0 +1,723 @@
+/* ==============================================
+   Estilos Gerais do Layout
+   ============================================== */
+body {
+  margin: 0;
+  font-family: 'Segoe UI', sans-serif;
+  background-color: #0f0f0f;
+  color: #f0f0f0;
+  transition: background-color 0.3s, color 0.3s;
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  overflow: hidden;
+}
+
+/* ----------------------------------------------
+   CABEÇALHO
+   ---------------------------------------------- */
+header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  height: 48px;
+  background: linear-gradient(to right, #7b2cbf, #9d4edd);
+  padding: 0 1rem;
+  color: white;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.4);
+  z-index: 10;
+  position: relative;
+}
+
+.header-controls {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.header-controls input {
+  padding: 0.4rem 1rem;
+  border: none;
+  border-radius: 20px;
+  background: #6a1b9a;
+  color: white;
+  outline: none;
+}
+
+.header-controls button {
+  background: #2a2a2a;
+  border: none;
+  padding: 0.4rem 0.8rem;
+  border-radius: 12px;
+  color: white;
+  cursor: pointer;
+  font-size: 1rem;
+  line-height: 1;
+}
+
+/* Botão “＋” específico (Adicionar Observação) */
+#addObservationBtn {
+  background: #2a2a2a;
+  border: none;
+  padding: 0 0.6rem;
+  border-radius: 12px;
+  color: white;
+  font-size: 1.2rem;
+  line-height: 1;
+  cursor: pointer;
+  z-index: 20; /* garante que fique acima de overlays invisíveis */
+}
+
+#addObservationBtn:hover {
+  background: #3a3a3a;
+}
+
+/* ----------------------------------------------
+   LAYOUT PRINCIPAL
+   ---------------------------------------------- */
+main {
+  display: flex;
+  flex: 1;
+  overflow: hidden;
+}
+
+/* ----------------------------------------------
+   NAV (abas)
+   ---------------------------------------------- */
+nav {
+  display: flex;
+  flex-direction: column;
+  background: #1a1a1a;
+  padding: 1rem;
+  width: 180px;
+  height: 100%;
+  gap: 2rem;
+  position: relative;
+  z-index: 5;
+}
+
+nav button {
+  background: none;
+  border: none;
+  color: #bbb;
+  text-align: left;
+  font-size: 1rem;
+  cursor: pointer;
+  padding: 0.5rem;
+  transition: color 0.3s;
+}
+
+nav button:hover,
+nav button.active {
+  color: #a463ff;
+}
+
+/* ----------------------------------------------
+   CONTEÚDO
+   ---------------------------------------------- */
+.content {
+  flex: 1;
+  overflow-y: auto;
+  padding: 2rem;
+}
+
+.tab {
+  display: none;
+}
+
+.tab.active {
+  display: block;
+}
+
+/* ==================================================
+   Ajustes de estilo para “colar” o calendário à esquerda
+   ================================================== */
+
+/* Por defeito, #tab-calendario herda de .tab { display: none; } */
+
+/* Quando #tab-calendario tiver .active, então mostramos em flex */
+#tab-calendario.active {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  padding-left: 0;
+  margin-left: 0;
+}
+
+/* Retira qualquer centralização do header (← Mês / Ano →) */
+#calendarHeader {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+  padding-left: 0;
+}
+
+/* “Gruda” o grid dos dias na esquerda, sem margens adicionais */
+#calendarContainer {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 0.5rem;
+  max-width: 400px; /* ou a largura que preferir */
+  margin-top: 1rem;
+  margin-left: 0;
+  padding-left: 0;
+  justify-items: start;
+}
+
+/* Garante que nenhum texto fique centralizado por herança */
+#tab-calendario,
+#tab-calendario * {
+  text-align: left !important;
+}
+
+/* Resultados (observações daquele dia) também alinhados à esquerda */
+#calendarResults {
+  margin-top: 1rem;
+  width: 100%;
+  text-align: left;
+}
+
+/* ==============================================
+   ABA “Objectos”
+   ============================================== */
+.filters {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.filters button {
+  background: #222;
+  border: none;
+  padding: 0.5rem 1rem;
+  color: #ccc;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+
+.filters button:hover,
+.filters button.active {
+  background: #7b2cbf;
+  color: white;
+}
+
+#observationsList {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.5rem;
+}
+
+.observation-card {
+  background: #1e1e1e;
+  border-radius: 12px;
+  padding: 1rem;
+  width: 300px;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.observation-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 4px 8px rgba(0,0,0,0.4);
+}
+
+.observation-card .title {
+  font-weight: bold;
+  font-size: 1.1rem;
+}
+
+.observation-card img {
+  border-radius: 6px;
+  max-height: 120px;
+  object-fit: cover;
+  width: 100%;
+}
+
+/* ←←← NOVO: Estilo para os botões “Ver / Editar / Eliminar” dentro de cada card */
+.observation-card button {
+  background: #333;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  padding: 0.4rem 0.8rem;
+  cursor: pointer;
+  margin-right: 0.5rem;
+  transition: background 0.2s;
+  font-size: 0.9rem;
+}
+
+.observation-card button:hover {
+  background: #4a4a4a;
+}
+
+/* ==============================================
+   ABA “Recursos” e “Links Úteis”
+   ============================================== */
+#tab-recursos ul.cards-list,
+#tab-links ul.cards-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  justify-content: flex-start;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+#tab-recursos ul.cards-list li,
+#tab-links ul.cards-list li {
+  display: flex;
+  flex-direction: column;
+  background-color: #000;
+  border-radius: 0.5rem;
+  overflow: hidden;
+  width: 300px;
+  height: 300px;
+  box-shadow: 0 0 5px rgba(255, 255, 255, 0.1);
+  transition: transform 0.2s;
+  position: relative;
+}
+
+#tab-recursos ul.cards-list li:hover,
+#tab-links ul.cards-list li:hover {
+  transform: scale(1.03);
+}
+
+#tab-recursos ul.cards-list li a,
+#tab-links ul.cards-list li a {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
+  width: 100%;
+  height: 100%;
+  text-decoration: none;
+  color: #fff;
+  position: relative;
+}
+
+#tab-recursos ul.cards-list li a::after,
+#tab-links ul.cards-list li a::after {
+  content: none !important;
+}
+
+.card-img {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  overflow: hidden;
+  background-color: transparent;
+}
+
+.card-img img {
+  max-width: 80%;
+  max-height: 80%;
+  object-fit: contain;
+}
+
+.card-desc {
+  flex: 0 0 auto;
+  padding: 0.4rem 0.8rem;
+  font-size: 0.9rem;
+  text-align: center;
+  color: #fff;
+  background: rgba(0, 0, 0, 0.6);
+  width: 100%;
+  box-sizing: border-box;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* ==============================================
+   CSS DO CALENDÁRIO (quase 60×60px por dia)
+   ============================================== */
+#calendarContainer {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 0.5rem;
+  margin-top: 1rem;
+
+  /* Limita a largura total a 7 células de ~60px + 6 gaps de 0.5rem (~8px cada) */
+  max-width: calc(7 * 60px + 6 * 0.5rem);
+  margin-left: 0;    /* alinha à esquerda */
+}
+
+.calendar-day {
+  /* Força dimensões fixas (aprox. 60×60px) */
+  width: 60px;
+  height: 60px;
+
+  /* Estilo básico */
+  background: #1a1a1a;
+  color: #fff;
+  text-align: center;
+  border-radius: 6px;
+  cursor: pointer;
+  border: 1px solid #333;
+
+  /* Centraliza o número dentro do quadrado */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  font-size: 0.9rem;
+  font-weight: 400;
+  user-select: none;
+  transition: background 0.2s, color 0.2s;
+}
+
+/* Destaca dias com observações */
+.calendar-day.highlight {
+  background: #7b2cbf;
+  color: #fff;
+  font-weight: bold;
+}
+
+/* Hover para deixar levemente mais claro */
+.calendar-day:hover {
+  background: #2a2a2a;
+  color: #fff;
+}
+
+/* ==============================================
+   Botões de navegação (← e →) do calendário
+   ============================================== */
+#calendarHeader {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 1rem;
+  font-size: 1.2rem;
+  padding-left: 0;
+}
+
+#calendarHeader button {
+  background: #333;
+  color: white;
+  border: none;
+  padding: 0.4rem 0.8rem;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+#calendarHeader button:hover {
+  background: #4a4a4a;
+}
+
+/* Título “Mês Ano” dentro do próprio <h2> */
+#calendarMonthYear {
+  font-weight: bold;
+  text-align: left;  /* alinhado à esquerda */
+}
+
+/* ==============================================
+   ABA “Configurações”
+   ============================================== */
+#tab-configuracoes p {
+  font-size: 1rem;
+  color: #f0f0f0;
+  margin-bottom: 1rem;
+}
+
+.config-actions {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+  margin-top: 1rem;
+}
+
+.config-actions button,
+.config-actions .import-label {
+  background: #2a2a2a;
+  color: white;
+  padding: 0.6rem 1.2rem;
+  border-radius: 8px;
+  cursor: pointer;
+  border: none;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.config-actions .import-label {
+  position: relative;
+  overflow: hidden;
+}
+
+.config-actions .import-label input[type="file"] {
+  position: absolute;
+  top: 0;
+  left: 0;
+  opacity: 0;
+  cursor: pointer;
+}
+
+.config-actions button:hover,
+.config-actions .import-label:hover {
+  background: #3a3a3a;
+}
+
+/* ==============================================
+   O footer (com o “Filtro Vermelho” e o slider)
+   Fica ESCONDIDO, exceto quando a aba Configurações estiver ativa
+   ============================================== */
+footer {
+  margin-top: 2rem;
+  padding: 1rem 2rem;
+  background: #1a1a1a;
+  display: none; /* escondido por padrão */
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+footer.active {
+  display: flex !important;
+}
+
+footer label {
+  display: inline-block;
+  font-size: 1rem;
+  margin-right: 0.5rem;
+  cursor: pointer;
+}
+
+footer input[type="checkbox"] {
+  width: auto;
+}
+
+footer input[type="range"] {
+  width: 100%;
+}
+
+/* ==============================================
+   Modal de Adicionar/Ver/Editar Observação
+   ============================================== */
+.modal {
+  display: none;
+  position: fixed;
+  z-index: 999;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0,0,0,0.6);
+  justify-content: center;
+  align-items: center;
+}
+
+.modal.open {
+  display: flex;
+}
+
+.modal-content {
+  background-color: #111;
+  color: #fff;
+  width: 90%;
+  max-width: 500px;
+  max-height: 90vh;        /* Limita altura para permitir scroll interno */
+  border-radius: 8px;
+  padding: 20px;
+  position: relative;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
+  overflow-y: auto;        /* Permite rolagem interna se o conteúdo exceder */
+}
+
+.modal-content .close {
+  position: absolute;
+  top: 12px;
+  right: 16px;
+  font-size: 1.4rem;
+  color: white;
+  cursor: pointer;
+}
+
+.modal-content form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+}
+
+.modal-content form label {
+  display: flex;
+  flex-direction: column;
+  font-size: 0.95rem;
+  color: #ddd;
+}
+
+.modal-content form input[type="text"],
+.modal-content form input[type="date"],
+.modal-content form input[type="number"],
+.modal-content form textarea,
+.modal-content form select,
+.modal-content form input[type="file"] {
+  margin-top: 0.3rem;
+  padding: 0.5rem;
+  border: none;
+  border-radius: 6px;
+  background: #222;
+  color: white;
+  font-size: 0.95rem;
+}
+
+.modal-content form input[type="checkbox"] {
+  margin-right: 0.4rem;
+  width: auto;
+}
+
+.modal-content form textarea {
+  resize: vertical;
+  min-height: 60px;
+}
+
+.modal-buttons {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.6rem;
+  margin-top: 0.6rem;
+}
+
+.modal-content button[type="submit"],
+.modal-content button#cancelAdd {
+  padding: 0.5rem 1rem;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.95rem;
+}
+
+.modal-content button[type="submit"] {
+  background: #7b2cbf;
+  color: white;
+}
+.modal-content button[type="submit"]:hover {
+  background: #9d4edd;
+}
+
+.modal-content button#cancelAdd {
+  background: #333;
+  color: #fff;
+}
+.modal-content button#cancelAdd:hover {
+  background: #444;
+}
+
+.success-msg {
+  color: #4caf50;
+  margin-top: 1rem;
+  font-weight: bold;
+  text-align: center;
+}
+
+/* ==============================================
+   Filtro Vermelho (modo noturno vermelho)
+   ============================================== */
+body.red-filter {
+  background-color: #360700 !important;
+  color: #ff5555 !important;
+}
+
+body.red-filter header {
+  background-color: #360700 !important;
+  background-image: none !important;
+  color: #ff5555 !important;
+}
+
+body.red-filter.intensity-20 { background-color: #240000 !important; }
+body.red-filter.intensity-40 { background-color: #2c0000 !important; }
+body.red-filter.intensity-60 { background-color: #360700 !important; }
+body.red-filter.intensity-80 { background-color: #3e0a00 !important; }
+body.red-filter.intensity-100 { background-color: #4a0d00 !important; }
+
+body.red-filter nav,
+body.red-filter .tab,
+body.red-filter .observation-card,
+body.red-filter .filters button,
+body.red-filter .modal-content,
+body.red-filter form,
+body.red-filter input,
+body.red-filter select,
+body.red-filter textarea {
+  background-color: #2a0500 !important;
+  color: #ff5555 !important;
+  border: 1px solid #550000 !important;
+}
+
+body.red-filter button,
+body.red-filter .dropdown-menu,
+body.red-filter .dropdown-menu div,
+body.red-filter #tab-recursos ul.cards-list li,
+body.red-filter #tab-recursos img,
+body.red-filter #tab-links ul.cards-list li,
+body.red-filter #tab-links img {
+  background-color: #360700 !important;
+  color: #ff5555 !important;
+  border-color: #550000 !important;
+}
+
+body.red-filter .filters button.active,
+body.red-filter nav button.active,
+body.red-filter .config-actions button,
+body.red-filter .modal-content h3,
+body.red-filter .view-btn,
+body.red-filter button:hover {
+  color: #ff8888 !important;
+}
+
+body.red-filter .modal {
+  background-color: rgba(0, 0, 0, 0.85);
+}
+
+body.red-filter input::placeholder,
+body.red-filter textarea::placeholder {
+  color: #A61500 !important;
+}
+
+/* ==============================================
+   Light mode
+   ============================================== */
+body.light {
+  background-color: #f0f0f0;
+  color: #000;
+}
+
+body.light input,
+body.light select,
+body.light textarea {
+  background: #fff;
+  color: #000;
+  border: 1px solid #ccc;
+}
+
+/* ==============================================
+   Dropdown-menu (para filtrar por tipo)
+   ============================================== */
+.dropdown-menu {
+  background-color: #222;
+  color: #fff;
+  border: 1px solid #555;
+  padding: 0.5rem;
+  border-radius: 4px;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.5);
+  font-size: 0.9rem;
+  min-width: 150px;
+  position: absolute;
+}
+
+.dropdown-menu div {
+  padding: 0.4rem 0.6rem;
+  cursor: pointer;
+}
+
+.dropdown-menu div:hover {
+  background-color: #444;
+}
