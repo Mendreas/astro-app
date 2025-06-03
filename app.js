@@ -657,15 +657,11 @@ function renderCalendario() {
   const daysInMonth = new Date(calendarioAno, calendarioMes + 1, 0).getDate();
 
   // Atualiza o título principal <h2>
-  const locale = currentLang === 'pt' ? 'pt-PT' : 'en-US';
-  const nomeMes = new Date(calendarioAno, calendarioMes).toLocaleString(locale, { month: 'long' });
-  const textoMesAno = `${capitalize(nomeMes)} ${calendarioAno}`;
-  title.textContent = textoMesAno;
-
-  // Se quiser mostrar também dentro do header (entre as setas):
-  if (displaySpan) {
-    displaySpan.textContent = textoMesAno;
-  }
+	const locale = currentLang === 'pt' ? 'pt-PT' : 'en-US';
+	const nomeMes = new Date(calendarioAno, calendarioMes).toLocaleString(locale, { month: 'long' });
+	const textoMesAno = `${capitalize(nomeMes)} ${calendarioAno}`;
+	title.textContent = textoMesAno;
+	if (displaySpan) displaySpan.textContent = textoMesAno;
 
   // Conjunto de datas (YYYY-MM-DD) que têm observações
   const diasComObservacoes = new Set(
