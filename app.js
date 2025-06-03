@@ -731,8 +731,26 @@ function renderObservacoes() {
 // =========================
 // Função para visualizar a observação em um modal
 window.viewObservation = function(id) {
-	window.closeModal();
-	console.log("viewObservation chamada com id:", id);
+  window.closeModal(); // fecha qualquer modal aberto
+  console.log("viewObservation chamada com id:", id);
+
+  // MODAL DE TESTE — para depuração
+  const modalTeste = document.createElement('div');
+  modalTeste.className = 'modal';
+  modalTeste.id = 'modal-teste';
+  modalTeste.innerHTML = `
+    <div class="modal-content">
+      <h3>MODAL DE TESTE</h3>
+      <p>Se vês isto, modais estão a ser criados corretamente!</p>
+      <button onclick="closeModalById('modal-teste')">Fechar Modal de Teste</button>
+    </div>
+  `;
+  document.body.appendChild(modalTeste);
+  modalTeste.addEventListener('click', e => {
+    if (e.target === modalTeste) closeModalById('modal-teste');
+  });
+
+  // MODAL REAL (o teu original)
   const obs = observacoes.find(o => o.id === id);
   if (!obs) return;
 
@@ -764,6 +782,7 @@ window.viewObservation = function(id) {
     if (e.target === modal) closeModalById('view-modal');
   });
 };
+
 
 // Função para editar a observação
 window.editObservation = function(id) {
