@@ -270,12 +270,12 @@ document.addEventListener('DOMContentLoaded', async () => {
   updateRedFilterClass();
 
   // ======== MODAL DE ADICIONAR OBSERVAÇÃO ========
-  const addBtn = document.getElementById('addObservationBtn');
-  const modal = document.getElementById('addObservationModal');
+  const addBtn      = document.getElementById('addObservationBtn');
+  const modal       = document.getElementById('addObservationModal');
   const closeModalBtn = document.getElementById('closeAddModal');
-  const cancelBtn = document.getElementById('cancelAdd');
-  const form = document.getElementById('addObservationForm');
-  const successMsg = document.getElementById('addSuccessMsg');
+  const cancelBtn   = document.getElementById('cancelAdd');
+  const form        = document.getElementById('addObservationForm');
+  const successMsg  = document.getElementById('addSuccessMsg');
 
   // Usa a função GLOBAL closeAddForm (definida abaixo) para fechar
   if (closeModalBtn) {
@@ -306,9 +306,9 @@ document.addEventListener('DOMContentLoaded', async () => {
     form.addEventListener('submit', async function (e) {
       e.preventDefault();
       const formData = new FormData(form);
-      const obs = Object.fromEntries(formData.entries());
-      obs.favorito = !!formData.get('favorito');
-      obs.id = Date.now();
+      const obs      = Object.fromEntries(formData.entries());
+      obs.favorito   = !!formData.get('favorito');
+      obs.id         = Date.now();
 
       const file = formData.get('imagem');
       const saveObs = async () => {
@@ -420,15 +420,14 @@ document.addEventListener('DOMContentLoaded', async () => {
     });
   }
   // =======================================================
-
 });
 
 // =========================
 // FUNÇÃO PARA FECHAR O MODAL (ADICIONAR OBSERVAÇÃO)
 // =========================
 function closeAddForm() {
-  const form = document.getElementById('addObservationForm');
-  const modal = document.getElementById('addObservationModal');
+  const form       = document.getElementById('addObservationForm');
+  const modal      = document.getElementById('addObservationModal');
   const successMsg = document.getElementById('addSuccessMsg');
   if (form) form.reset();
   if (modal) modal.style.display = 'none';
@@ -452,7 +451,7 @@ function translateUI() {
   const searchInputElem = document.getElementById('searchInput');
   if (searchInputElem) searchInputElem.placeholder = t.searchPlaceholder;
 
-  const btnTodos = document.querySelector('[data-filter="todos"]');
+  const btnTodos    = document.querySelector('[data-filter="todos"]');
   if (btnTodos) btnTodos.textContent = t.all;
   const btnRecentes = document.querySelector('[data-filter="recentes"]');
   if (btnRecentes) btnRecentes.textContent = t.recent;
@@ -467,7 +466,7 @@ function translateUI() {
   const saveBtn = document.querySelector('button[type="submit"]');
   if (saveBtn) saveBtn.textContent = t.save;
 
-  const redFilterLabel = document.querySelector('footer label:first-child');
+  const redFilterLabel  = document.querySelector('footer label:first-child');
   if (redFilterLabel) redFilterLabel.textContent = t.redFilter;
   const intensityLabel = document.querySelector('footer label:last-of-type');
   if (intensityLabel) intensityLabel.textContent = t.intensity;
@@ -529,11 +528,11 @@ function updateRedFilterClass() {
   if (redToggle?.checked) {
     document.body.classList.add('red-filter');
     const val = parseInt(redSlider.value);
-    if (val > 80) document.body.classList.add('intensity-100');
-    else if (val > 60) document.body.classList.add('intensity-80');
-    else if (val > 40) document.body.classList.add('intensity-60');
-    else if (val > 20) document.body.classList.add('intensity-40');
-    else document.body.classList.add('intensity-20');
+    if (val > 80)       document.body.classList.add('intensity-100');
+    else if (val > 60)  document.body.classList.add('intensity-80');
+    else if (val > 40)  document.body.classList.add('intensity-60');
+    else if (val > 20)  document.body.classList.add('intensity-40');
+    else                document.body.classList.add('intensity-20');
   } else {
     document.body.classList.remove('red-filter');
   }
@@ -546,21 +545,21 @@ redSlider?.addEventListener('input', updateRedFilterClass);
 // RENDERIZAR CALENDÁRIO
 // =========================
 function renderCalendario() {
-  const title = document.getElementById('calendarMonthYear');
+  const title       = document.getElementById('calendarMonthYear');
   const displaySpan = document.getElementById('calendarMonthYearDisplay');
-  const container = document.getElementById('calendarContainer');
-  const results = document.getElementById('calendarResults');
+  const container   = document.getElementById('calendarContainer');
+  const results     = document.getElementById('calendarResults');
   if (!title || !container || !results) return;
 
   container.innerHTML = '';
-  results.innerHTML = '';
+  results.innerHTML   = '';
 
   // Calcula o primeiro dia e quantos dias tem o mês
-  const firstDay = new Date(calendarioAno, calendarioMes, 1).getDay();
+  const firstDay    = new Date(calendarioAno, calendarioMes, 1).getDay();
   const daysInMonth = new Date(calendarioAno, calendarioMes + 1, 0).getDate();
 
   // Atualiza o título principal <h2>
-  const nomeMes = new Date(calendarioAno, calendarioMes).toLocaleString('pt-PT', { month: 'long' });
+  const nomeMes    = new Date(calendarioAno, calendarioMes).toLocaleString('pt-PT', { month: 'long' });
   const textoMesAno = `${capitalize(nomeMes)} ${calendarioAno}`;
   title.textContent = textoMesAno;
 
@@ -584,7 +583,7 @@ function renderCalendario() {
 
   // Cria cada célula do dia (1..daysInMonth)
   for (let d = 1; d <= daysInMonth; d++) {
-    const date = new Date(calendarioAno, calendarioMes, d);
+    const date    = new Date(calendarioAno, calendarioMes, d);
     const dateStr = normalizarDataLocal(date); // "YYYY-MM-DD"
 
     const dayDiv = document.createElement('div');
@@ -603,7 +602,7 @@ function renderCalendario() {
 
 // Ao clicar num dia que tenha observações, listamos abaixo
 function mostrarObservacoesDoDia(dataISO) {
-  const lista = observacoes.filter(o => o.data.startsWith(dataISO));
+  const lista     = observacoes.filter(o => o.data.startsWith(dataISO));
   const container = document.getElementById('calendarResults');
   if (!container) return;
 
@@ -657,10 +656,9 @@ function renderObservacoes() {
 
   // Para cada observação, criamos um card “.observation-card”
   list.forEach(obs => {
-    const card = document.createElement('div');
-    card.className = 'observation-card';
-
-    const icon = getIcon(obs.tipo);
+    const card         = document.createElement('div');
+    card.className     = 'observation-card';
+    const icon         = getIcon(obs.tipo);
     const dataFormatada = new Date(obs.data).toLocaleDateString();
 
     // Se houver imagem, chama openImageModal(...) para mostrar num modal próprio
@@ -668,13 +666,13 @@ function renderObservacoes() {
       ? `<img
            src="${obs.imagem}"
            style="max-width: 100%; max-height: 100px; cursor: pointer;"
-           onclick="openImageModal('${obs.imagem.replace(/'/g, \"\\'\")}')"
+           onclick="openImageModal('${obs.imagem.replace(/'/g, "\\'")}')"
          />`
       : '';
 
     // Agora o “Ver” chama viewObservation(id), “Editar” chama editObservation(id),
     // e “Eliminar” chama deleteObservacaoHandler(id)
-    const viewBtn   = `<button class="view-btn"    onclick="viewObservation(${obs.id})">🔍 ${i18n[currentLang].ver}</button>`;
+    const viewBtn   = `<button class="view-btn" onclick="viewObservation(${obs.id})">🔍 ${i18n[currentLang].ver}</button>`;
     const editBtn   = `<button onclick="editObservation(${obs.id})">✏️ ${i18n[currentLang].edit}</button>`;
     const deleteBtn = `<button onclick="deleteObservacaoHandler(${obs.id})">🗑️ ${i18n[currentLang].delete}</button>`;
 
@@ -715,9 +713,10 @@ window.viewObservation = function(id) {
       <p><strong>Distância:</strong> ${obs.distancia || ''} ${obs.unidadeDistancia || ''}</p>
       <p><strong>Magnitude:</strong> ${obs.magnitude || ''}</p>
       <p><strong>Descrição:</strong> ${obs.descricao || ''}</p>
-      ${obs.imagem ? 
-        `<img src="${obs.imagem}" style="max-width:100%; max-height:200px; margin-top:1rem; cursor:pointer"
-              onclick="openImageModal('${obs.imagem.replace(/'/g, \"\\'\")}')" />`
+      ${obs.imagem ?
+        `<img src="${obs.imagem}"
+              style="max-width:100%; max-height:200px; margin-top:1rem; cursor:pointer"
+              onclick="openImageModal('${obs.imagem.replace(/'/g, "\\'")}')" />`
         : ''}
       <button onclick="closeModal()">${i18n[currentLang].close}</button>
     </div>
@@ -741,7 +740,8 @@ window.openImageModal = function(imgSrc) {
   modal.id = 'image-modal';
   modal.innerHTML = `
     <div class="modal-content">
-      <img src="${imgSrc}" style="max-width:100%; max-height:80vh; display:block; margin: 0 auto 1rem;" />
+      <img src="${imgSrc}"
+           style="max-width:100%; max-height:80vh; display:block; margin: 0 auto 1rem;" />
       <div style="text-align:center">
         <button onclick="closeModalById('image-modal')">${i18n[currentLang].close}</button>
         <button onclick="closeModalById('image-modal'); closeModalById('view-modal')">${i18n[currentLang].close} tudo</button>
@@ -861,9 +861,9 @@ window.editObservation = function(id) {
   const modalForm = modal.querySelector('#modalForm');
   modalForm.addEventListener('submit', async e => {
     e.preventDefault();
-    const data = new FormData(modalForm);
+    const data   = new FormData(modalForm);
     const newObs = Object.fromEntries(data.entries());
-    newObs.id = id;
+    newObs.id    = id;
     newObs.favorito = !!data.get('favorito');
 
     const file = data.get('imagem');
