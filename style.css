@@ -134,6 +134,11 @@ nav button.active {
 
 /* 1) Forçar a aba calendário a alinhar tudo no canto esquerdo */
 #tab-calendario {
+  display: none;
+}
+
+/* 2) Quando a tab-calendario tiver .active, mostramos o calendário em flex, alinhado à esquerda */
+#tab-calendario.active {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
@@ -156,7 +161,7 @@ nav button.active {
   display: grid;
   grid-template-columns: repeat(7, 1fr);
   gap: 0.5rem;
-  max-width: 400px;       /* ou a largura que preferir */
+  max-width: 400px; /* ou a largura que preferir */
   margin-top: 1rem;
   margin-left: 0;
   padding-left: 0;
@@ -168,7 +173,6 @@ nav button.active {
 #tab-calendario * {
   text-align: left !important;
 }
-
 /* 5) Resultados (observações daquele dia) também alinhados à esquerda */
 #calendarResults {
   margin-top: 1rem;
