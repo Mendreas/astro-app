@@ -290,6 +290,7 @@ function setInicioDate() {
     weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'
   });
 }
+window.setInicioDate = setInicioDate;
 
 function setInicioLocation(pos) {
   const locElem = document.getElementById('inicio-location');
@@ -300,6 +301,7 @@ function setInicioLocation(pos) {
   }
   locElem.textContent = `${i18n[currentLang].localizacao}: ${pos.coords.latitude.toFixed(4)}, ${pos.coords.longitude.toFixed(4)}`;
 }
+window.setInicioLocation = setInicioLocation;
 
 // Obter localização
 function refreshLocation() {
@@ -307,6 +309,7 @@ function refreshLocation() {
     setInicioLocation(null);
     return;
   }
+  window.refreshLocation = refreshLocation;
   navigator.geolocation.getCurrentPosition(
     pos => setInicioLocation(pos),
     err => setInicioLocation(null),
@@ -326,6 +329,7 @@ function loadInicioTab() {
   document.getElementById('inicio-events').textContent = i18n[currentLang].eventos + ": ...";
   document.getElementById('inicio-objects').textContent = i18n[currentLang].objetosVisiveis + ": ...";
 }
+window.loadInicioTab = loadInicioTab; // <-- adiciona isto logo a seguir!
 
 // Chama a função sempre que a tab "Início" é ativada
 document.querySelector('button[data-tab="inicio"]').addEventListener('click', loadInicioTab);
