@@ -277,7 +277,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   const form        = document.getElementById('addObservationForm');
   const successMsg  = document.getElementById('addSuccessMsg');
 
-  // Usa a função GLOBAL closeAddForm (definida abaixo) para fechar
+  // Usa a função GLOBAL closeAddForm (definida lá em baixo) para fechar
   if (closeModalBtn) {
     closeModalBtn.addEventListener('click', closeAddForm);
   }
@@ -638,14 +638,14 @@ function renderObservacoes() {
   obsList.innerHTML = '';
   let list = [...observacoes];
 
-  // Aplica filtro “Favoritos” ou “Recentes” se estiver ativo
+  // filtrar “favoritos” ou “recentes”…
   if (currentFilter === 'favoritos') {
     list = list.filter(o => o.favorito);
   } else if (currentFilter === 'recentes') {
     list = list.sort((a, b) => new Date(b.data) - new Date(a.data));
   }
 
-  // Aplica pesquisa textual (por nome, tipo ou local)
+  // pesquisa textual…
   if (searchQuery) {
     list = list.filter(o =>
       o.nome.toLowerCase().includes(searchQuery) ||
@@ -654,24 +654,23 @@ function renderObservacoes() {
     );
   }
 
-  // Para cada observação, criamos um card “.observation-card”
   list.forEach(obs => {
-    const card         = document.createElement('div');
-    card.className     = 'observation-card';
-    const icon         = getIcon(obs.tipo);
+    const card = document.createElement('div');
+    card.className = 'observation-card';
+
+    const icon = getIcon(obs.tipo);
     const dataFormatada = new Date(obs.data).toLocaleDateString();
 
-    // Se houver imagem, chama openImageModal(...) para mostrar num modal próprio
+    // imagem: (já alterámos para window.open)
     const imgHTML = obs.imagem
       ? `<img
            src="${obs.imagem}"
            style="max-width: 100%; max-height: 100px; cursor: pointer;"
-           onclick="openImageModal('${obs.imagem.replace(/'/g, "\\'")}')"
+           onclick="window.open('${obs.imagem.replace(/'/g, "\\'")}', '_blank')"
          />`
       : '';
 
-    // Agora o “Ver” chama viewObservation(id), “Editar” chama editObservation(id),
-    // e “Eliminar” chama deleteObservacaoHandler(id)
+    // Botões “Ver”, “Editar” e “Eliminar”:
     const viewBtn   = `<button class="view-btn" onclick="viewObservation(${obs.id})">🔍 ${i18n[currentLang].ver}</button>`;
     const editBtn   = `<button onclick="editObservation(${obs.id})">✏️ ${i18n[currentLang].edit}</button>`;
     const deleteBtn = `<button onclick="deleteObservacaoHandler(${obs.id})">🗑️ ${i18n[currentLang].delete}</button>`;
@@ -691,6 +690,7 @@ function renderObservacoes() {
     obsList.appendChild(card);
   });
 }
+
 
 // =========================
 // VISUALIZAR OBSERVAÇÃO (modal)
