@@ -444,6 +444,10 @@ document.querySelector('button[data-tab="inicio"]').addEventListener('click', lo
         footer.style.display = (alvo === 'configuracoes') ? 'flex' : 'none';
       }
 
+	  if (alvo === 'inicio') {
+  		loadInicioTab();
+	  }
+  
       // Se a aba for “Calendário”, renderiza o calendário
       if (alvo === 'calendario') {
         renderCalendario();
