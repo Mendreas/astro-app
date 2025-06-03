@@ -302,44 +302,46 @@ document.addEventListener('DOMContentLoaded', async () => {
   }
 
   // Submissão do formulário de adicionar observação
-  if (form) {
-    form.addEventListener('submit', async function (e) {
-      e.preventDefault();
-      const formData = new FormData(form);
-      const obs = Object.fromEntries(formData.entries());
-      obs.favorito = !!formData.get('favorito');
-      obs.id = Date.now();
+// Submissão do formulário de adicionar observação
+if (form) {
+  form.addEventListener('submit', async function (e) {
+    e.preventDefault();
+    const formData = new FormData(form);
+    const obs = Object.fromEntries(formData.entries());
+    obs.favorito = !!formData.get('favorito');
+    obs.id = Date.now();
 
-      const file = formData.get('imagem');
-      const saveObs = async () => {
-        await saveObservacao(obs);
-        observacoes = await getAllObservacoes();
-        renderObservacoes();
-        atualizarBackupJSON();
-        if (successMsg) {
-          successMsg.style.display = 'block';
-          successMsg.textContent = "✔️ Observação adicionada com sucesso";
-        }
-        // Fecha o modal pouco depois de exibir a mensagem de sucesso
-        setTimeout(closeAddForm, 800);
-      };
-
-      if (file && file.name && file.size > 0) {
-        const reader = new FileReader();
-        reader.onload = async () => {
-          obs.imagem = reader.result;
-          await saveObs();
-        };
-        reader.onerror = async () => {
-          alert("Erro ao carregar imagem.");
-          await saveObs();
-        };
-        reader.readAsDataURL(file);
-      } else {
-        await saveObs();
+    const file = formData.get('imagem');
+    const saveObs = async () => {
+      await saveObservacao(obs);
+      observacoes = await getAllObservacoes();
+      renderObservacoes();
+      atualizarBackupJSON();
+      if (successMsg) {
+        successMsg.style.display = 'block';
+        successMsg.textContent = "✔️ Observação adicionada com sucesso";
       }
-    });
-  }
+      // Fecha o modal imediatamente após mostrar a mensagem de sucesso
+      closeAddForm();
+    };
+
+    if (file && file.name && file.size > 0) {
+      const reader = new FileReader();
+      reader.onload = async () => {
+        obs.imagem = reader.result;
+        await saveObs();
+      };
+      reader.onerror = async () => {
+        alert("Erro ao carregar imagem.");
+        await saveObs();
+      };
+      reader.readAsDataURL(file);
+    } else {
+      await saveObs();
+    }
+  });
+}
+
   // ======== FIM DO MODAL DE ADICIONAR OBSERVAÇÃO ========
 
   // … resto do código (“Exportar JSON”, “Importar JSON”, navegação de tabs, calendário, etc.) …
@@ -746,12 +748,8 @@ window.viewObservation = function(id) {
   const obs = observacoes.find(o => o.id === id);
   if (!obs) return;
 
-  // Cria o modal
   const modal = document.createElement('div');
   modal.className = 'modal';
-  modal.id = 'view-modal'; // ASCII hyphen, sem confusão
-
-  // Monta todo o conteúdo com os campos preenchidos
   modal.innerHTML = `
     <div class="modal-content">
       <h3>${obs.nome}</h3>
@@ -763,26 +761,19 @@ window.viewObservation = function(id) {
       <p><strong>Distância:</strong> ${obs.distancia || ''} ${obs.unidadeDistancia || ''}</p>
       <p><strong>Magnitude:</strong> ${obs.magnitude || ''}</p>
       <p><strong>Descrição:</strong> ${obs.descricao || ''}</p>
-      ${obs.imagem 
-        ? `<img 
-             src="${obs.imagem}" 
-             style="max-width:100%; max-height:200px; margin-top:1rem; cursor:pointer" 
-             onclick="window.open('${obs.imagem}', '_blank')" 
-           />`
+      ${obs.imagem ? 
+        `<img src="${obs.imagem}" style="max-width:100%; max-height:200px; margin-top:1rem; cursor:pointer" onclick="window.open('${obs.imagem}', '_blank')" />` 
         : ''}
       <button onclick="closeModal()">${i18n[currentLang].close}</button>
     </div>
   `;
-
   document.body.appendChild(modal);
 
-  // Fecha ao clicar fora do conteúdo
   modal.addEventListener('click', e => {
-    if (e.target === modal) {
-      closeModalById('view-modal');
-    }
+    if (e.target === modal) closeModalById('view‐modal');
   });
 };
+
 
 // =========================
 // EDITAR OBSERVAÇÃO (modal)
@@ -804,12 +795,11 @@ window.editObservation = function(id) {
        </div>`
     : '';
 
-  const modal = document.createElement('div');
-  modal.className = 'modal';
-
   // Para o campo date, usamos apenas YYYY-MM-DD (slice(0,10)), eliminando horas
   const dataParaInput = obs.data.slice(0, 10); // ex. "2025-05-17"
 
+  const modal = document.createElement('div');
+  modal.className = 'modal';
   modal.innerHTML = `
     <div class="modal-content">
       <h3>${i18n[currentLang].edit}</h3>
@@ -866,7 +856,6 @@ window.editObservation = function(id) {
       </form>
     </div>
   `;
-
   document.body.appendChild(modal);
 
   // Fecha o modal se clicar fora do conteúdo
@@ -915,6 +904,7 @@ window.editObservation = function(id) {
   });
 };
 
+
 // =========================
 // EXCLUIR OBSERVAÇÃO (handler)
 // =========================
@@ -935,26 +925,23 @@ window.openImageModal = function(imgSrc) {
   modal.id = 'image-modal';
   modal.innerHTML = `
     <div class="modal-content">
-      <img 
-        src="${imgSrc}"
-        style="max-width:100%; max-height:80vh; display:block; margin: 0 auto 1rem;" 
-      />
+      <img src="${imgSrc}" 
+           style="max-width:100%; max-height:80vh; display:block; margin: 0 auto 1rem;" />
       <div style="text-align:center">
         <button onclick="closeModalById('image-modal')">${i18n[currentLang].close}</button>
-        <button onclick="closeModalById('image-modal'); closeModalById('view-modal')">
-          ${i18n[currentLang].close} tudo
-        </button>
       </div>
     </div>
   `;
   document.body.appendChild(modal);
 
+  // Fecha ao clicar fora do conteúdo
   modal.addEventListener('click', e => {
     if (e.target === modal) {
       closeModalById('image-modal');
     }
   });
 };
+
 
 // =========================
 // FECHAR MODAL POR ID
