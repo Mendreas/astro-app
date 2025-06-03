@@ -302,52 +302,47 @@ document.addEventListener('DOMContentLoaded', async () => {
   }
 
   // Submissão do formulário de adicionar observação
-// Submissão do formulário de adicionar observação
-if (form) {
-  form.addEventListener('submit', async function (e) {
-    e.preventDefault();
-    const formData = new FormData(form);
-    const obs = Object.fromEntries(formData.entries());
-    obs.favorito = !!formData.get('favorito');
-    obs.id = Date.now();
+  if (form) {
+    form.addEventListener('submit', async function (e) {
+      e.preventDefault();
+      const formData = new FormData(form);
+      const obs = Object.fromEntries(formData.entries());
+      obs.favorito = !!formData.get('favorito');
+      obs.id = Date.now();
 
-    const file = formData.get('imagem');
-    const saveObs = async () => {
-      await saveObservacao(obs);
-      observacoes = await getAllObservacoes();
-      renderObservacoes();
-      atualizarBackupJSON();
-      if (successMsg) {
-        successMsg.style.display = 'block';
-        successMsg.textContent = "✔️ Observação adicionada com sucesso";
+      const file = formData.get('imagem');
+      const saveObs = async () => {
+        await saveObservacao(obs);
+        observacoes = await getAllObservacoes();
+        renderObservacoes();
+        atualizarBackupJSON();
+        if (successMsg) {
+          successMsg.style.display = 'block';
+          successMsg.textContent = "✔️ Observação adicionada com sucesso";
+        }
+        // Fecha o modal imediatamente após mostrar a mensagem de sucesso
+        closeAddForm();
+      };
+
+      if (file && file.name && file.size > 0) {
+        const reader = new FileReader();
+        reader.onload = async () => {
+          obs.imagem = reader.result;
+          await saveObs();
+        };
+        reader.onerror = async () => {
+          alert("Erro ao carregar imagem.");
+          await saveObs();
+        };
+        reader.readAsDataURL(file);
+      } else {
+        await saveObs();
       }
-      // Fecha o modal imediatamente após mostrar a mensagem de sucesso
-      closeAddForm();
-    };
-
-    if (file && file.name && file.size > 0) {
-      const reader = new FileReader();
-      reader.onload = async () => {
-        obs.imagem = reader.result;
-        await saveObs();
-      };
-      reader.onerror = async () => {
-        alert("Erro ao carregar imagem.");
-        await saveObs();
-      };
-      reader.readAsDataURL(file);
-    } else {
-      await saveObs();
-    }
-  });
-}
-
+    });
+  }
   // ======== FIM DO MODAL DE ADICIONAR OBSERVAÇÃO ========
 
-  // … resto do código (“Exportar JSON”, “Importar JSON”, navegação de tabs, calendário, etc.) …
-});
-
-  // Botão de download de backup
+  // ======== Botão de download de backup ========
   const backupBtn = document.getElementById('downloadBackup');
   if (backupBtn) {
     backupBtn.addEventListener('click', () => {
@@ -426,7 +421,6 @@ if (form) {
   }
   // =======================================================
 });
-
 // =========================
 // FUNÇÃO PARA FECHAR O MODAL (ADICIONAR OBSERVAÇÃO) – VERSÃO GLOBAL
 // =========================
@@ -438,6 +432,7 @@ function closeAddForm() {
   if (modal) modal.style.display = 'none';
   if (successMsg) successMsg.style.display = 'none';
 }
+
 
 // =========================
 // ATUALIZAR BACKUP NO localStorage (com try…catch)
