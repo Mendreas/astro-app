@@ -660,3 +660,38 @@ body.light textarea {
 .dropdown-menu div:hover {
   background-color: #444;
 }
+
+/* ================================
+   Ajuste para alinhar calendário
+   ================================ */
+#tab-calendario {
+  /* Garante que tudo dentro da aba “Calendário” não fique centralizado por padrão */
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+#calendarHeader {
+  /* Opcional: remove centralização extra, se houver */
+  justify-content: flex-start;
+  gap: 1rem;
+}
+
+#calendarContainer {
+  /* Já era grid de 7 colunas; só precisamos certificar que não haja margem automática */
+  margin-left: 0;    /* força alinhamento à esquerda */
+  padding-left: 0;   /* retira qualquer padding extra */
+  justify-items: start;  /* se quiser, assegura que as “células” comecem na esquerda */
+  display: grid;     
+  grid-template-columns: repeat(7, 1fr);
+  gap: 0.5rem;
+  max-width: 400px;  /* ou largura que você já definiu */
+  margin-top: 1rem;  /* para dar um espaçamento extra abaixo do título, se necessário */
+}
+
+/* Se houver algum wrapper que centralize automaticamente, zere suas margens: */
+#tab-calendario > .content-wrapper,
+#tab-calendario > div {
+  margin: 0;
+  padding: 0;
+}
