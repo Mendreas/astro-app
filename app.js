@@ -771,53 +771,52 @@ window.viewObservation = function(id) {
     if (e.target === modal) closeModalById('view-modal');
   });
 };
+// Atribuindo os eventos aos botões "Ver" e "Editar"
+observacoes.forEach(obs => {
+  const verBtn = document.getElementById(`ver-${obs.id}`);
+  const editarBtn = document.getElementById(`editar-${obs.id}`);
+
+  if (verBtn) {
+    verBtn.addEventListener('click', () => {
+      viewObservation(obs.id);
+    });
+  }
+
+  if (editarBtn) {
+    editarBtn.addEventListener('click', () => {
+      editObservation(obs.id);
+    });
+  }
+});
 
 
 
-// =========================
-// EDITAR OBSERVAÇÃO (modal)
-// =========================
+// Função para editar a observação
 window.editObservation = function(id) {
   const obs = observacoes.find(o => o.id === id);
   if (!obs) return;
-  editId = id;
-
-  // Se já tiver imagem, cria um HTML de miniatura para aparecer acima do input file
-  const imagemAtualHTML = obs.imagem 
-    ? `<div style="margin-bottom:0.8rem;">
-         <p><strong>Imagem Atual:</strong></p>
-         <img 
-           src="${obs.imagem}" 
-           style="max-width:100%; max-height:150px; display:block; margin-bottom:0.5rem; cursor:pointer" 
-           onclick="window.open('${obs.imagem}', '_blank')"
-         />
-       </div>`
-    : '';
-
-  // Para o campo date, usamos apenas YYYY-MM-DD (slice(0,10)), eliminando horas
-  const dataParaInput = obs.data.slice(0, 10); // ex. "2025-05-17"
 
   const modal = document.createElement('div');
   modal.className = 'modal';
   modal.innerHTML = `
     <div class="modal-content">
-      <h3>${i18n[currentLang].edit}</h3>
+      <h3>Editar Observação</h3>
       <form id="modalForm">
         <label>Nome:
           <input name="nome" value="${obs.nome}" required />
         </label>
         <label>Tipo:
           <select name="tipo" required>
-            <option${obs.tipo === 'Estrela' ? ' selected' : ''}>Estrela</option>
-            <option${obs.tipo === 'Galáxia' ? ' selected' : ''}>Galáxia</option>
-            <option${obs.tipo === 'Aglomerado' ? ' selected' : ''}>Aglomerado</option>
-            <option${obs.tipo === 'Nebulosa' ? ' selected' : ''}>Nebulosa</option>
-            <option${obs.tipo === 'Sistema Solar' ? ' selected' : ''}>Sistema Solar</option>
-            <option${obs.tipo === 'Outro' ? ' selected' : ''}>Outro</option>
+            <option ${obs.tipo === 'Estrela' ? 'selected' : ''}>Estrela</option>
+            <option ${obs.tipo === 'Galáxia' ? 'selected' : ''}>Galáxia</option>
+            <option ${obs.tipo === 'Aglomerado' ? 'selected' : ''}>Aglomerado</option>
+            <option ${obs.tipo === 'Nebulosa' ? 'selected' : ''}>Nebulosa</option>
+            <option ${obs.tipo === 'Sistema Solar' ? 'selected' : ''}>Sistema Solar</option>
+            <option ${obs.tipo === 'Outro' ? 'selected' : ''}>Outro</option>
           </select>
         </label>
         <label>Data:
-          <input name="data" type="date" value="${dataParaInput}" required />
+          <input name="data" type="date" value="${obs.data.slice(0, 10)}" required />
         </label>
         <label>Local:
           <input name="local" value="${obs.local || ''}" required />
@@ -831,8 +830,8 @@ window.editObservation = function(id) {
         <label>Distância:
           <input name="distancia" value="${obs.distancia || ''}" />
           <select name="unidadeDistancia">
-            <option${obs.unidadeDistancia === 'ly' ? ' selected' : ''}>ly</option>
-            <option${obs.unidadeDistancia === 'AU' ? ' selected' : ''}>AU</option>
+            <option ${obs.unidadeDistancia === 'ly' ? 'selected' : ''}>ly</option>
+            <option ${obs.unidadeDistancia === 'AU' ? 'selected' : ''}>AU</option>
           </select>
         </label>
         <label>Magnitude:
@@ -841,46 +840,39 @@ window.editObservation = function(id) {
         <label>Descrição:
           <textarea name="descricao">${obs.descricao || ''}</textarea>
         </label>
-        <label style="display:block; margin-top:0.8rem;">
-          <input type="checkbox" name="favorito" ${obs.favorito ? 'checked' : ''}/> Favorito
-        </label>
-        ${imagemAtualHTML}
+        <label><input type="checkbox" name="favorito" ${obs.favorito ? 'checked' : ''}/> Favorito</label>
         <label>Imagem (opcional):
           <input type="file" name="imagem" accept="image/*" />
         </label>
         <div style="margin-top:1rem; display:flex; justify-content:flex-end; gap:0.5rem;">
-          <button type="submit">${i18n[currentLang].save}</button>
-          <button type="button" onclick="closeModal()">${i18n[currentLang].cancel}</button>
+          <button type="submit">Salvar</button>
+          <button type="button" onclick="closeModal()">Cancelar</button>
         </div>
       </form>
     </div>
   `;
   document.body.appendChild(modal);
 
-  // Fecha o modal se clicar fora do conteúdo
   modal.addEventListener('click', e => {
     if (e.target === modal) {
-      modal.remove();
+      closeModal();
     }
   });
 
-  // Submissão do formulário de edição
   const modalForm = modal.querySelector('#modalForm');
   modalForm.addEventListener('submit', async e => {
     e.preventDefault();
-    const data   = new FormData(modalForm);
-    const newObs = Object.fromEntries(data.entries());
-    newObs.id    = id;
-    newObs.favorito = !!data.get('favorito');
+    const data = new FormData(modalForm);
+    const updatedObs = Object.fromEntries(data.entries());
+    updatedObs.id = id;
 
     const file = data.get('imagem');
     const saveEdit = async () => {
       const original = observacoes.find(o => o.id === id);
-      // Se deixarmos o input file vazio, mantemos a foto antiga
-      if (original?.imagem && !newObs.imagem) {
-        newObs.imagem = original.imagem;
+      if (original?.imagem && !updatedObs.imagem) {
+        updatedObs.imagem = original.imagem;
       }
-      await saveObservacao(newObs);
+      await saveObservacao(updatedObs);
       observacoes = await getAllObservacoes();
       renderObservacoes();
       closeModal();
@@ -889,11 +881,11 @@ window.editObservation = function(id) {
     if (file && file.size > 0) {
       const reader = new FileReader();
       reader.onload = async () => {
-        newObs.imagem = reader.result;
+        updatedObs.imagem = reader.result;
         await saveEdit();
       };
       reader.onerror = async () => {
-        alert("Erro ao carregar imagem. A observação será guardada sem imagem nova.");
+        alert("Erro ao carregar imagem.");
         await saveEdit();
       };
       reader.readAsDataURL(file);
@@ -902,6 +894,7 @@ window.editObservation = function(id) {
     }
   });
 };
+
 
 
 // =========================
