@@ -661,37 +661,50 @@ body.light textarea {
   background-color: #444;
 }
 
-/* ================================
-   Ajuste para alinhar calendário
-   ================================ */
+/* ==================================================
+   Ajustes de estilo para “colar” o calendário à esquerda
+   ================================================== */
+
+/* 1) Forçar a aba calendário a alinhar tudo no canto esquerdo */
 #tab-calendario {
-  /* Garante que tudo dentro da aba “Calendário” não fique centralizado por padrão */
   display: flex;
   flex-direction: column;
   align-items: flex-start;
+  padding-left: 0;
+  margin-left: 0;
 }
 
+/* 2) Retira qualquer centralização do header (← Mês / Ano →) */
 #calendarHeader {
-  /* Opcional: remove centralização extra, se houver */
+  display: flex;
   justify-content: flex-start;
-  gap: 1rem;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+  padding-left: 0;
 }
 
+/* 3) “Gruda” o grid dos dias na esquerda, sem margens adicionais */
 #calendarContainer {
-  /* Já era grid de 7 colunas; só precisamos certificar que não haja margem automática */
-  margin-left: 0;    /* força alinhamento à esquerda */
-  padding-left: 0;   /* retira qualquer padding extra */
-  justify-items: start;  /* se quiser, assegura que as “células” comecem na esquerda */
-  display: grid;     
+  display: grid;
   grid-template-columns: repeat(7, 1fr);
   gap: 0.5rem;
-  max-width: 400px;  /* ou largura que você já definiu */
-  margin-top: 1rem;  /* para dar um espaçamento extra abaixo do título, se necessário */
+  max-width: 400px;       /* ou a largura que preferir */
+  margin-top: 1rem;
+  margin-left: 0;
+  padding-left: 0;
+  justify-items: start;
 }
 
-/* Se houver algum wrapper que centralize automaticamente, zere suas margens: */
-#tab-calendario > .content-wrapper,
-#tab-calendario > div {
-  margin: 0;
-  padding: 0;
+/* 4) (Opcional) Garante que nenhum texto fique centralizado por herança */
+#tab-calendario,
+#tab-calendario * {
+  text-align: left !important;
+}
+
+/* 5) Resultados (observações daquele dia) também alinhados à esquerda */
+#calendarResults {
+  margin-top: 1rem;
+  width: 100%;
+  text-align: left;
 }
