@@ -1,5 +1,5 @@
 // ======================================================
-// AstroLog - app.js (versão completa com calendário corrigido)
+// AstroLog - app.js (com todas as correções aplicadas)
 // ======================================================
 
 // =========================
@@ -66,7 +66,7 @@ const i18n = {
 };
 
 // =========================
-// INDEXEDDB
+// INDEXEDDB (conservámos o mesmo nome deleteObservacao aqui)
 // =========================
 const DB_NAME = 'AstroLogDB';
 const DB_VERSION = 1;
@@ -108,7 +108,8 @@ async function saveObservacao(obs) {
   });
 }
 
-async function deleteObservacao(id) {
+// Nota: renomeámos a função de “delete” para não colidir com o handler abaixo
+async function deleteObservacaoFromDB(id) {
   const db = await openDB();
   return new Promise((resolve, reject) => {
     const tx = db.transaction(STORE_NAME, 'readwrite');
@@ -329,8 +330,13 @@ document.addEventListener('DOMContentLoaded', async () => {
         observacoes = await getAllObservacoes();
         renderObservacoes();
         atualizarBackupJSON();
-        if (successMsg) successMsg.style.display = 'block';
-        setTimeout(closeAddForm, 1500);
+        // Mostrar mensagem de sucesso:
+        if (successMsg) {
+          successMsg.style.display = 'block';
+          successMsg.textContent = "✔️ Observação adicionada com sucesso";
+        }
+        // Fechar modal imediatamente após gravar no IndexedDB
+        setTimeout(closeAddForm, 800); // fecha em 0.8s só para mostrar a mensagem
       };
 
       if (file && file.name && file.size > 0) {
@@ -406,6 +412,31 @@ document.addEventListener('DOMContentLoaded', async () => {
     });
   });
   // =========== FIM: LÓGICA DE NAVEGAÇÃO ENTRE TABS ===========
+
+  // ======== CORRIGE: Setas do Calendário não funcionavam ========
+  const prevBtn = document.getElementById('prevMonth');
+  const nextBtn = document.getElementById('nextMonth');
+  if (prevBtn) {
+    prevBtn.addEventListener('click', () => {
+      calendarioMes--;
+      if (calendarioMes < 0) {
+        calendarioMes = 11;
+        calendarioAno--;
+      }
+      renderCalendario();
+    });
+  }
+  if (nextBtn) {
+    nextBtn.addEventListener('click', () => {
+      calendarioMes++;
+      if (calendarioMes > 11) {
+        calendarioMes = 0;
+        calendarioAno++;
+      }
+      renderCalendario();
+    });
+  }
+  // ==================================================================
 });
 
 // =========================
@@ -643,13 +674,17 @@ function renderObservacoes() {
     const icon = getIcon(obs.tipo);
     const dataFormatada = new Date(obs.data).toLocaleDateString();
 
+    // Se houver imagem em Base64 ou URL, clicamos para abrir o modal da imagem
     const imgHTML = obs.imagem
-      ? `<img src="${obs.imagem}" style="max-width: 100%; max-height: 100px; cursor: pointer;" onclick="window.open('${obs.imagem}', '_blank')" />`
+      ? `<img src="${obs.imagem}"
+              style="max-width: 100%; max-height: 100px; cursor: pointer;"
+              onclick="openImageModal('${obs.imagem.replace(/'/g, "\\'")}')" />`
       : '';
 
+    // Botões: “Ver” chama viewObservation(), “Editar” chama editObservation(), “Eliminar” chama deleteObservacaoHandler()
     const viewBtn = `<button class="view-btn" onclick="viewObservation(${obs.id})">🔍 ${i18n[currentLang].ver}</button>`;
     const editBtn = `<button onclick="editObservation(${obs.id})">✏️ ${i18n[currentLang].edit}</button>`;
-    const deleteBtn = `<button onclick="deleteObservacao(${obs.id})">🗑️ ${i18n[currentLang].delete}</button>`;
+    const deleteBtn = `<button onclick="deleteObservacaoHandler(${obs.id})">🗑️ ${i18n[currentLang].delete}</button>`;
 
     card.innerHTML = `
       <div class="title">${icon} ${obs.nome} ${obs.favorito ? '⭐' : ''}</div>
@@ -688,7 +723,10 @@ window.viewObservation = function(id) {
       <p><strong>Distância:</strong> ${obs.distancia || ''} ${obs.unidadeDistancia || ''}</p>
       <p><strong>Magnitude:</strong> ${obs.magnitude || ''}</p>
       <p><strong>Descrição:</strong> ${obs.descricao || ''}</p>
-      ${obs.imagem ? `<img src="${obs.imagem}" style="max-width:100%; max-height:200px; margin-top:1rem; cursor:pointer" onclick="openImageModal('${obs.imagem}')" />` : ''}
+      ${obs.imagem ? 
+        `<img src="${obs.imagem}" style="max-width:100%; max-height:200px; margin-top:1rem; cursor:pointer"
+              onclick="openImageModal('${obs.imagem.replace(/'/g, "\\'")}')" />`
+        : ''}
       <button onclick="closeModal()">${i18n[currentLang].close}</button>
     </div>
   `;
@@ -866,11 +904,11 @@ window.editObservation = function(id) {
 };
 
 // =========================
-// EXCLUIR OBSERVAÇÃO
+// EXCLUIR OBSERVAÇÃO (handler)
 // =========================
-window.deleteObservacao = async function(id) {
+window.deleteObservacaoHandler = async function(id) {
   if (confirm('Eliminar esta observação?')) {
-    await deleteObservacao(id);
+    await deleteObservacaoFromDB(id);
     observacoes = await getAllObservacoes();
     renderObservacoes();
   }
