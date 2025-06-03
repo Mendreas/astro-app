@@ -323,13 +323,11 @@ document.getElementById('btn-location-refresh').addEventListener('click', refres
 // Inicia tab inicio sempre que ativada
 function loadInicioTab() {
   setInicioDate();
-  // assume que já tens pos guardado, senão refresca a localização aqui
-  // refreshLocation(); // opcional
   document.getElementById('inicio-weather').textContent = i18n[currentLang].previsaoTempo + ": ...";
   document.getElementById('inicio-events').textContent = i18n[currentLang].eventos + ": ...";
   document.getElementById('inicio-objects').textContent = i18n[currentLang].objetosVisiveis + ": ...";
 }
-window.loadInicioTab = loadInicioTab; // <-- adiciona isto logo a seguir!
+window.loadInicioTab = loadInicioTab; // <-- Torna global!
 
 // Chama a função sempre que a tab "Início" é ativada
 document.querySelector('button[data-tab="inicio"]').addEventListener('click', loadInicioTab);
