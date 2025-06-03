@@ -744,6 +744,7 @@ window.viewObservation = function(id) {
 
   const modal = document.createElement('div');
   modal.className = 'modal';
+  modal.id = 'view-modal';
   modal.innerHTML = `
     <div class="modal-content">
       <h3>${obs.nome}</h3>
