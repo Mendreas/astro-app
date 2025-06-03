@@ -146,6 +146,11 @@ if (langBtn) {
     langBtn.textContent = currentLang === 'pt' ? 'EN' : 'PT';
     translateUI();
     renderObservacoes();
+    // Atualiza a tab "Início" se estiver ativa
+    const tabInicio = document.getElementById('tab-inicio');
+    if (tabInicio && tabInicio.classList.contains('active')) {
+      loadInicioTab();
+    }
   });
 }
 
