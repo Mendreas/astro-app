@@ -128,6 +128,54 @@ nav button.active {
   display: block;
 }
 
+/* ==================================================
+   Ajustes de estilo para “colar” o calendário à esquerda
+   ================================================== */
+
+/* 1) Forçar a aba calendário a alinhar tudo no canto esquerdo */
+#tab-calendario {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  padding-left: 0;
+  margin-left: 0;
+}
+
+/* 2) Retira qualquer centralização do header (← Mês / Ano →) */
+#calendarHeader {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+  padding-left: 0;
+}
+
+/* 3) “Gruda” o grid dos dias na esquerda, sem margens adicionais */
+#calendarContainer {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 0.5rem;
+  max-width: 400px;       /* ou a largura que preferir */
+  margin-top: 1rem;
+  margin-left: 0;
+  padding-left: 0;
+  justify-items: start;
+}
+
+/* 4) (Opcional) Garante que nenhum texto fique centralizado por herança */
+#tab-calendario,
+#tab-calendario * {
+  text-align: left !important;
+}
+
+/* 5) Resultados (observações daquele dia) também alinhados à esquerda */
+#calendarResults {
+  margin-top: 1rem;
+  width: 100%;
+  text-align: left;
+}
+
 /* ==============================================
    ABA “Objectos”
    ============================================== */
@@ -279,9 +327,8 @@ nav button.active {
   margin-top: 1rem;
 
   /* Limita a largura total a 7 células de ~60px + 6 gaps de 0.5rem (~8px cada) */
-  max-width: calc(7 * 10px + 6 * 0.5rem);
-  margin-left: auto;   /* centraliza horizontalmente */
-  margin-right: auto;
+  max-width: calc(7 * 60px + 6 * 0.5rem);
+  margin-left: 0;    /* alinha à esquerda */
 }
 
 .calendar-day {
@@ -326,11 +373,12 @@ nav button.active {
    ============================================== */
 #calendarHeader {
   display: flex;
-  justify-content: center;
+  justify-content: flex-start;  /* alinha tudo à esquerda */
   align-items: center;
-  gap: 1rem;
+  gap: 0.5rem;
   margin-top: 1rem;
   font-size: 1.2rem;
+  padding-left: 0;
 }
 
 #calendarHeader button {
@@ -347,13 +395,11 @@ nav button.active {
   background: #4a4a4a;
 }
 
+/* Título “Mês Ano” dentro do próprio <h2> */
 #calendarMonthYear {
   font-weight: bold;
-  min-width: 140px;
-  text-align: center;
+  text-align: left;  /* alinhado à esquerda */
 }
-
-
 
 /* ==============================================
    ABA “Configurações”
@@ -476,7 +522,6 @@ footer input[type="range"] {
   cursor: pointer;
 }
 
-/* Layout interno do formulário do modal */
 .modal-content form {
   display: flex;
   flex-direction: column;
@@ -515,7 +560,6 @@ footer input[type="range"] {
   min-height: 60px;
 }
 
-/* Botões “Guardar” e “Cancelar” dentro do modal */
 .modal-buttons {
   display: flex;
   justify-content: flex-end;
@@ -548,14 +592,12 @@ footer input[type="range"] {
   background: #444;
 }
 
-/* Mensagem de sucesso dentro do modal */
 .success-msg {
   color: #4caf50;
   margin-top: 1rem;
   font-weight: bold;
   text-align: center;
 }
-
 
 /* ==============================================
    Filtro Vermelho (modo noturno vermelho)

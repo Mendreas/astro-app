@@ -254,19 +254,22 @@
 </section>
 
 	<!-- ==================================
-     ABA “Calendario”
+     ABA “Calendário”
      ================================== -->
+<section id="tab-calendario" class="tab">
+  <!-- Apenas um elemento com id="calendarMonthYear" -->
+  <h2 id="calendarMonthYear">Mês Ano</h2>
 
-  <section id="tab-calendario" class="tab">
-    <h2 id="calendarMonthYear">Mês Ano</h2>
-    <div id="calendarHeader">
-      <button id="prevMonth">←</button>
-      <span id="calendarMonthYear"></span>
-      <button id="nextMonth">→</button>
-    </div>
-    <div id="calendarContainer"></div>
-    <div id="calendarResults"></div>
-  </section>
+  <div id="calendarHeader">
+    <button id="prevMonth">←</button>
+    <!-- Removemos o segundo <span id="calendarMonthYear"> -->
+    <span id="calendarMonthYearDisplay"></span>
+    <button id="nextMonth">→</button>
+  </div>
+
+  <div id="calendarContainer"></div>
+  <div id="calendarResults" style="margin-top: 1rem;"></div>
+</section>
 		
 	<!-- ==================================
      ABA “Configurações”
