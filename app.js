@@ -677,7 +677,6 @@ function translateUI() {
       }
     });
   }
-}
 
   // Traduzir botões "Ver" das observações
   document.querySelectorAll(".observation-card button.view-btn").forEach(btn => {
