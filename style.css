@@ -238,11 +238,11 @@ nav button.active {
   width: 100%;
 }
 
-/* ==============================================
-   Botões “Ver / Editar / Eliminar” dentro de .observation-card
-   ============================================== */
+/* ===========================================
+   BOTÕES “VER / EDITAR / ELIMINAR” DENTRO DE .observation-card
+   =========================================== */
 .observation-card button {
-  background: #333;            /* cinzento escuro */
+  background: #333;            /* fundo cinza-escuro */
   color: #fff;                 /* texto branco */
   border: none;
   border-radius: 6px;
@@ -254,8 +254,18 @@ nav button.active {
 }
 
 .observation-card button:hover {
-  background: #4a4a4a;         /* leve clareamento ao passar o rato */
+  background: #4a4a4a;         /* ligeiro clareamento ao passar o rato */
 }
+
+/* Remove qualquer estilo “branco” herdado que possa estar a aparecer */
+.observation-card button,
+.observation-card .view-btn,
+.observation-card .edit-btn,
+.observation-card .delete-btn {
+  background-color: #333 !important;
+  color: #fff !important;
+}
+
 
 
 /* ==============================================

@@ -270,14 +270,14 @@ document.addEventListener('DOMContentLoaded', async () => {
   updateRedFilterClass();
 
   // ======== MODAL DE ADICIONAR OBSERVAÇÃO ========
-  const addBtn      = document.getElementById('addObservationBtn');
-  const modal       = document.getElementById('addObservationModal');
+  const addBtn = document.getElementById('addObservationBtn');
+  const modal = document.getElementById('addObservationModal');
   const closeModalBtn = document.getElementById('closeAddModal');
-  const cancelBtn   = document.getElementById('cancelAdd');
-  const form        = document.getElementById('addObservationForm');
-  const successMsg  = document.getElementById('addSuccessMsg');
+  const cancelBtn = document.getElementById('cancelAdd');
+  const form = document.getElementById('addObservationForm');
+  const successMsg = document.getElementById('addSuccessMsg');
 
-  // Usa a função GLOBAL closeAddForm (definida lá em baixo) para fechar
+  // Usa a função GLOBAL closeAddForm para fechar (definida lá em baixo)
   if (closeModalBtn) {
     closeModalBtn.addEventListener('click', closeAddForm);
   }
@@ -285,7 +285,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     cancelBtn.addEventListener('click', closeAddForm);
   }
 
-  // Abre o modal ao clicar no botão "+"
+  // Abre o modal ao clicar no botão “＋”
   if (addBtn) {
     addBtn.addEventListener('click', () => {
       if (modal) modal.style.display = 'flex';
@@ -306,9 +306,9 @@ document.addEventListener('DOMContentLoaded', async () => {
     form.addEventListener('submit', async function (e) {
       e.preventDefault();
       const formData = new FormData(form);
-      const obs      = Object.fromEntries(formData.entries());
-      obs.favorito   = !!formData.get('favorito');
-      obs.id         = Date.now();
+      const obs = Object.fromEntries(formData.entries());
+      obs.favorito = !!formData.get('favorito');
+      obs.id = Date.now();
 
       const file = formData.get('imagem');
       const saveObs = async () => {
@@ -341,6 +341,9 @@ document.addEventListener('DOMContentLoaded', async () => {
     });
   }
   // ======== FIM DO MODAL DE ADICIONAR OBSERVAÇÃO ========
+
+  // … resto do código (“Exportar JSON”, “Importar JSON”, navegação de tabs, calendário, etc.) …
+});
 
   // Botão de download de backup
   const backupBtn = document.getElementById('downloadBackup');
@@ -423,11 +426,11 @@ document.addEventListener('DOMContentLoaded', async () => {
 });
 
 // =========================
-// FUNÇÃO PARA FECHAR O MODAL (ADICIONAR OBSERVAÇÃO)
+// FUNÇÃO PARA FECHAR O MODAL (ADICIONAR OBSERVAÇÃO) – VERSÃO GLOBAL
 // =========================
 function closeAddForm() {
-  const form       = document.getElementById('addObservationForm');
-  const modal      = document.getElementById('addObservationModal');
+  const form = document.getElementById('addObservationForm');
+  const modal = document.getElementById('addObservationModal');
   const successMsg = document.getElementById('addSuccessMsg');
   if (form) form.reset();
   if (modal) modal.style.display = 'none';
@@ -435,11 +438,17 @@ function closeAddForm() {
 }
 
 // =========================
-// FUNÇÃO PARA ATUALIZAR BACKUP NO localStorage
+// ATUALIZAR BACKUP NO localStorage (com try…catch)
 // =========================
 function atualizarBackupJSON() {
   const json = JSON.stringify(observacoes, null, 2);
-  localStorage.setItem('backupAstroLog', json);
+  try {
+    localStorage.setItem('backupAstroLog', json);
+  } catch (err) {
+    console.warn("Não foi possível gravar o backup em localStorage (quota exceeded).");
+    // opcional: eliminar o backup anterior para liberar espaço
+    // localStorage.removeItem('backupAstroLog');
+  }
 }
 
 // =========================
@@ -638,14 +647,14 @@ function renderObservacoes() {
   obsList.innerHTML = '';
   let list = [...observacoes];
 
-  // 1) Filtro “Favoritos” / “Recentes”
+  // 1) FILTROS “FAVORITOS” / “RECENTES”
   if (currentFilter === 'favoritos') {
     list = list.filter(o => o.favorito);
   } else if (currentFilter === 'recentes') {
     list = list.sort((a, b) => new Date(b.data) - new Date(a.data));
   }
 
-  // 2) Pesquisa textual (por nome, tipo ou local)
+  // 2) PESQUISA TEXTUAL (por nome, tipo ou local)
   if (searchQuery) {
     list = list.filter(o =>
       o.nome.toLowerCase().includes(searchQuery) ||
@@ -654,49 +663,48 @@ function renderObservacoes() {
     );
   }
 
-  // 3) Para cada observação, criar dinamicamente o card
+  // 3) PARA CADA OBSERVAÇÃO, CRIAR O CARTÃO (DIV) VIA DOM API
   list.forEach(obs => {
     // Container principal do cartão
     const card = document.createElement('div');
-    card.className = 'observation‐card';
+    card.className = 'observation-card';
 
-    // *** Título (ícone + nome + estrela, se for favorito) ***
+    // --- TÍTULO (ícone + nome + ⭐ se for favorito) ---
     const titleDiv = document.createElement('div');
     titleDiv.className = 'title';
-    // getIcon(obs.tipo) retorna um símbolo com base no tipo (e.g. '⭐', '🌌', etc.)
     titleDiv.textContent = `${getIcon(obs.tipo)} ${obs.nome} ${obs.favorito ? '⭐' : ''}`;
     card.appendChild(titleDiv);
 
-    // *** Tipo (em fonte menor) ***
+    // --- TIPO (pequeno) ---
     const tipoSmall = document.createElement('div');
     tipoSmall.innerHTML = `<small>${obs.tipo}</small>`;
     card.appendChild(tipoSmall);
 
-    // *** Data + Localização (em fonte menor) ***
+    // --- DATA + LOCAL (pequeno) ---
     const dateLocal = document.createElement('div');
     const dataFormatada = new Date(obs.data).toLocaleDateString();
     dateLocal.innerHTML = `<small>${dataFormatada} – ${obs.local || ''}</small>`;
     card.appendChild(dateLocal);
 
-    // *** Miniatura da imagem (se existir) ***
+    // --- MINIATURA DA IMAGEM (se existir) ---
     if (obs.imagem) {
       const img = document.createElement('img');
-      img.src = obs.imagem; // obs.imagem já é um data URL (ou URL) válido
+      img.src = obs.imagem; // obs.imagem deve ser data URL ou URL válido
       img.style.maxWidth = '100%';
       img.style.maxHeight = '100px';
       img.style.cursor = 'pointer';
-      // Quando o utilizador clica na miniatura, abre nova aba/janela com a imagem completa
+      // Ao clicar na miniatura, abre nova aba com a imagem completa
       img.addEventListener('click', () => {
         window.open(obs.imagem, '_blank');
       });
       card.appendChild(img);
     }
 
-    // *** Container de botões (“Ver”, “Editar” e “Eliminar”) ***
+    // --- DIV DE BOTÕES (“Ver”, “Editar”, “Eliminar”) ---
     const buttonsDiv = document.createElement('div');
     buttonsDiv.style.marginTop = '0.5rem';
 
-    // – Botão “Ver”
+    // Botão “Ver”
     const viewBtn = document.createElement('button');
     viewBtn.className = 'view-btn';
     viewBtn.textContent = `🔍 ${i18n[currentLang].ver}`;
@@ -705,16 +713,18 @@ function renderObservacoes() {
     });
     buttonsDiv.appendChild(viewBtn);
 
-    // – Botão “Editar”
+    // Botão “Editar”
     const editBtn = document.createElement('button');
+    editBtn.className = 'edit-btn';
     editBtn.textContent = `✏️ ${i18n[currentLang].edit}`;
     editBtn.addEventListener('click', () => {
       editObservation(obs.id);
     });
     buttonsDiv.appendChild(editBtn);
 
-    // – Botão “Eliminar”
+    // Botão “Eliminar”
     const deleteBtn = document.createElement('button');
+    deleteBtn.className = 'delete-btn';
     deleteBtn.textContent = `🗑️ ${i18n[currentLang].delete}`;
     deleteBtn.addEventListener('click', () => {
       deleteObservacaoHandler(obs.id);
@@ -723,26 +733,25 @@ function renderObservacoes() {
 
     card.appendChild(buttonsDiv);
 
-    // Acrescenta o card completo à lista
+    // Acrescenta o cartão completo ao contêiner
     obsList.appendChild(card);
   });
 }
+
 
 // =========================
 // VISUALIZAR OBSERVAÇÃO (modal)
 // =========================
 window.viewObservation = function(id) {
-  // Encontra a observação pelo id
   const obs = observacoes.find(o => o.id === id);
   if (!obs) return;
 
-  // Cria o container do modal
+  // Cria o modal
   const modal = document.createElement('div');
   modal.className = 'modal';
-  // Atenção: use ASCII hyphen (“-”), não “view‐modal” com hífen Unicode
-  modal.id = 'view-modal';
+  modal.id = 'view-modal'; // ASCII hyphen, sem confusão
 
-  // Conteúdo do modal com todos os campos preenchidos
+  // Monta todo o conteúdo com os campos preenchidos
   modal.innerHTML = `
     <div class="modal-content">
       <h3>${obs.nome}</h3>
@@ -765,10 +774,9 @@ window.viewObservation = function(id) {
     </div>
   `;
 
-  // Adiciona o modal ao body
   document.body.appendChild(modal);
 
-  // Fecha ao clicar fora (no fundo escuro)
+  // Fecha ao clicar fora do conteúdo
   modal.addEventListener('click', e => {
     if (e.target === modal) {
       closeModalById('view-modal');
@@ -780,16 +788,11 @@ window.viewObservation = function(id) {
 // EDITAR OBSERVAÇÃO (modal)
 // =========================
 window.editObservation = function(id) {
-  // Encontra a observação pelo id
   const obs = observacoes.find(o => o.id === id);
   if (!obs) return;
   editId = id;
 
-  // Cria o container do modal
-  const modal = document.createElement('div');
-  modal.className = 'modal';
-
-  // Se já existir imagem, mostramos uma miniatura antes do campo “Imagem (opcional)”
+  // Se já tiver imagem, cria um HTML de miniatura para aparecer acima do input file
   const imagemAtualHTML = obs.imagem 
     ? `<div style="margin-bottom:0.8rem;">
          <p><strong>Imagem Atual:</strong></p>
@@ -801,7 +804,12 @@ window.editObservation = function(id) {
        </div>`
     : '';
 
-  // Construção do innerHTML do modal de edição
+  const modal = document.createElement('div');
+  modal.className = 'modal';
+
+  // Para o campo date, usamos apenas YYYY-MM-DD (slice(0,10)), eliminando horas
+  const dataParaInput = obs.data.slice(0, 10); // ex. "2025-05-17"
+
   modal.innerHTML = `
     <div class="modal-content">
       <h3>${i18n[currentLang].edit}</h3>
@@ -820,7 +828,7 @@ window.editObservation = function(id) {
           </select>
         </label>
         <label>Data:
-          <input name="data" type="date" value="${obs.data}" required />
+          <input name="data" type="date" value="${dataParaInput}" required />
         </label>
         <label>Local:
           <input name="local" value="${obs.local || ''}" required />
@@ -861,7 +869,7 @@ window.editObservation = function(id) {
 
   document.body.appendChild(modal);
 
-  // Fecha ao clicar fora do conteúdo
+  // Fecha o modal se clicar fora do conteúdo
   modal.addEventListener('click', e => {
     if (e.target === modal) {
       modal.remove();
@@ -880,7 +888,7 @@ window.editObservation = function(id) {
     const file = data.get('imagem');
     const saveEdit = async () => {
       const original = observacoes.find(o => o.id === id);
-      // Se o utilizador não escolheu nova imagem, mantemos a anterior
+      // Se deixarmos o input file vazio, mantemos a foto antiga
       if (original?.imagem && !newObs.imagem) {
         newObs.imagem = original.imagem;
       }
@@ -919,7 +927,7 @@ window.deleteObservacaoHandler = async function(id) {
 };
 
 // =========================
-// VISUALIZAR IMAGEM EM MODAL
+// VISUALIZAR IMAGEM EM MODAL (caso ainda uses essa função em alguma parte)
 // =========================
 window.openImageModal = function(imgSrc) {
   const modal = document.createElement('div');
@@ -941,7 +949,6 @@ window.openImageModal = function(imgSrc) {
   `;
   document.body.appendChild(modal);
 
-  // Fecha ao clicar fora do conteúdo
   modal.addEventListener('click', e => {
     if (e.target === modal) {
       closeModalById('image-modal');
