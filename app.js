@@ -52,6 +52,20 @@ const i18n = {
     importObservations: "Importar Observações",
     downloadBackup: "Descarregar Backup",
     calendarTitle: "Calendário de Observações",
+	addObsTitle: "Adicionar Observação",
+    nomeObjeto: "Nome do objeto",
+    tipo: "Tipo",
+    dataObs: "Data da observação",
+    localizacao: "Localização",
+    ra: "RA",
+    dec: "DEC",
+    magnitude: "Magnitude",
+    distancia: "Distância",
+    descricao: "Descrição",
+    favorito: "Favorito",
+    imagem: "Imagem",
+    save: "Guardar",
+    cancel: "Cancelar"
   },
   en: {
     inicio: "Home",
@@ -86,6 +100,20 @@ const i18n = {
     importObservations: "Import Observations",
     downloadBackup: "Download Backup",
     calendarTitle: "Observation Calendar",
+	addObsTitle: "Add Observation",
+    nomeObjeto: "Object name",
+    tipo: "Type",
+    dataObs: "Observation date",
+    localizacao: "Location",
+    ra: "RA",
+    dec: "DEC",
+    magnitude: "Magnitude",
+    distancia: "Distance",
+    descricao: "Description",
+    favorito: "Favorite",
+    imagem: "Image",
+    save: "Save",
+    cancel: "Cancel"
   }
 };
 
@@ -576,6 +604,80 @@ function translateUI() {
       btn.textContent = t[key];
     }
   });
+  
+    // ========== MODAL ADICIONAR OBSERVAÇÃO ==========
+  const addObsTitle = document.getElementById('addObsTitle');
+  if (addObsTitle) addObsTitle.textContent = t.addObsTitle;
+
+  const labelNomeObj = document.getElementById('labelNomeObj');
+  if (labelNomeObj) labelNomeObj.textContent = t.nomeObjeto;
+
+  const inputNomeObj = document.getElementById('inputNomeObj');
+  if (inputNomeObj) inputNomeObj.placeholder = t.nomeObjeto;
+
+  const labelTipo = document.getElementById('labelTipo');
+  if (labelTipo) labelTipo.textContent = t.tipo;
+
+  const labelData = document.getElementById('labelData');
+  if (labelData) labelData.textContent = t.dataObs;
+
+  const inputData = document.getElementById('inputData');
+  if (inputData) inputData.placeholder = currentLang === 'pt' ? "dd / mm / aaaa" : "mm / dd / yyyy";
+
+  const labelLocalizacao = document.getElementById('labelLocalizacao');
+  if (labelLocalizacao) labelLocalizacao.textContent = t.localizacao;
+
+  const labelRA = document.getElementById('labelRA');
+  if (labelRA) labelRA.textContent = t.ra;
+
+  const labelDEC = document.getElementById('labelDEC');
+  if (labelDEC) labelDEC.textContent = t.dec;
+
+  const labelMagnitude = document.getElementById('labelMagnitude');
+  if (labelMagnitude) labelMagnitude.textContent = t.magnitude;
+
+  const labelDistancia = document.getElementById('labelDistancia');
+  if (labelDistancia) labelDistancia.textContent = t.distancia;
+
+  const labelDescricao = document.getElementById('labelDescricao');
+  if (labelDescricao) labelDescricao.textContent = t.descricao;
+
+  const labelFavorito = document.getElementById('labelFavorito');
+  if (labelFavorito) labelFavorito.textContent = t.favorito;
+
+  const labelImagem = document.getElementById('labelImagem');
+  if (labelImagem) labelImagem.textContent = t.imagem;
+
+  // Botões
+  const btnSave = document.getElementById('btnSave');
+  if (btnSave) btnSave.textContent = t.save;
+
+  const btnCancel = document.getElementById('btnCancel');
+  if (btnCancel) btnCancel.textContent = t.cancel;
+
+  // ========== FIM MODAL ==========
+
+  // Traduzir opções do SELECT "Tipo"
+  const selectTipo = document.getElementById('inputTipo');
+  if (selectTipo) {
+    Array.from(selectTipo.options).forEach(option => {
+      switch(option.value) {
+        case "Estrela":
+          option.textContent = currentLang === 'pt' ? 'Estrela' : 'Star'; break;
+        case "Galáxia":
+          option.textContent = currentLang === 'pt' ? 'Galáxia' : 'Galaxy'; break;
+        case "Aglomerado":
+          option.textContent = currentLang === 'pt' ? 'Aglomerado' : 'Cluster'; break;
+        case "Nebulosa":
+          option.textContent = currentLang === 'pt' ? 'Nebulosa' : 'Nebula'; break;
+        case "Sistema Solar":
+          option.textContent = currentLang === 'pt' ? 'Sistema Solar' : 'Solar System'; break;
+        case "Outro":
+          option.textContent = currentLang === 'pt' ? 'Outro' : 'Other'; break;
+      }
+    });
+  }
+}
 
   // Traduzir botões "Ver" das observações
   document.querySelectorAll(".observation-card button.view-btn").forEach(btn => {
