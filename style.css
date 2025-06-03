@@ -128,6 +128,54 @@ nav button.active {
   display: block;
 }
 
+/* ==================================================
+   Ajustes de estilo para “colar” o calendário à esquerda
+   ================================================== */
+
+/* 1) Forçar a aba calendário a alinhar tudo no canto esquerdo */
+#tab-calendario {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  padding-left: 0;
+  margin-left: 0;
+}
+
+/* 2) Retira qualquer centralização do header (← Mês / Ano →) */
+#calendarHeader {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+  padding-left: 0;
+}
+
+/* 3) “Gruda” o grid dos dias na esquerda, sem margens adicionais */
+#calendarContainer {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 0.5rem;
+  max-width: 400px;       /* ou a largura que preferir */
+  margin-top: 1rem;
+  margin-left: 0;
+  padding-left: 0;
+  justify-items: start;
+}
+
+/* 4) (Opcional) Garante que nenhum texto fique centralizado por herança */
+#tab-calendario,
+#tab-calendario * {
+  text-align: left !important;
+}
+
+/* 5) Resultados (observações daquele dia) também alinhados à esquerda */
+#calendarResults {
+  margin-top: 1rem;
+  width: 100%;
+  text-align: left;
+}
+
 /* ==============================================
    ABA “Objectos”
    ============================================== */
@@ -661,50 +709,4 @@ body.light textarea {
   background-color: #444;
 }
 
-/* ==================================================
-   Ajustes de estilo para “colar” o calendário à esquerda
-   ================================================== */
 
-/* 1) Forçar a aba calendário a alinhar tudo no canto esquerdo */
-#tab-calendario {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  padding-left: 0;
-  margin-left: 0;
-}
-
-/* 2) Retira qualquer centralização do header (← Mês / Ano →) */
-#calendarHeader {
-  display: flex;
-  justify-content: flex-start;
-  align-items: center;
-  gap: 0.5rem;
-  margin-top: 0.5rem;
-  padding-left: 0;
-}
-
-/* 3) “Gruda” o grid dos dias na esquerda, sem margens adicionais */
-#calendarContainer {
-  display: grid;
-  grid-template-columns: repeat(7, 1fr);
-  gap: 0.5rem;
-  max-width: 400px;       /* ou a largura que preferir */
-  margin-top: 1rem;
-  margin-left: 0;
-  padding-left: 0;
-  justify-items: start;
-}
-
-/* 4) (Opcional) Garante que nenhum texto fique centralizado por herança */
-#tab-calendario,
-#tab-calendario * {
-  text-align: left !important;
-}
-
-/* 5) Resultados (observações daquele dia) também alinhados à esquerda */
-#calendarResults {
-  margin-top: 1rem;
-  width: 100%;
-  text-align: left;
-}

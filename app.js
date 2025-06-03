@@ -563,7 +563,7 @@ function renderCalendario() {
   // Preenche os "espaços vazios" até a primeira coluna do mês
   for (let i = 0; i < firstDay; i++) {
     const vazio = document.createElement('div');
-    vazio.className = 'calendar-day'; // mantém mesma classe, mas ficará vazio
+    vazio.className = 'calendar-day';
     vazio.textContent = '';
     container.appendChild(vazio);
   }
@@ -652,7 +652,7 @@ function renderObservacoes() {
 
     const viewBtn = `<button class="view-btn" onclick="viewObservation(${obs.id})">🔍 ${i18n[currentLang].ver}</button>`;
     const editBtn = `<button onclick="editObservation(${obs.id})">✏️ ${i18n[currentLang].edit}</button>`;
-    const deleteBtn = `<button onclick="deleteObservation(${obs.id})">🗑️ ${i18n[currentLang].delete}</button>`;
+    const deleteBtn = `<button onclick="deleteObservacao(${obs.id})">🗑️ ${i18n[currentLang].delete}</button>`;
 
     card.innerHTML = `
       <div class="title">${icon} ${obs.nome} ${obs.favorito ? '⭐' : ''}</div>
