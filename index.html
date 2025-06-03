@@ -20,16 +20,31 @@
   </header>
 
   <main>
-    <nav>
-      <button class="active" data-tab="objectos">Objectos</button>
-      <button data-tab="recursos">Recursos</button>
-      <button data-tab="links">Links Úteis</button>
-      <button data-tab="calendario">Calendário</button>
-      <button data-tab="configuracoes">Configurações</button>
-    </nav>
+<nav>
+  <button data-tab="inicio" id="inicioTabBtn">Início</button>
+  <button class="active" data-tab="objectos">Objectos</button>
+  <button data-tab="recursos">Recursos</button>
+  <button data-tab="links">Links Úteis</button>
+  <button data-tab="calendario">Calendário</button>
+  <button data-tab="configuracoes">Configurações</button>
+</nav>
 
     <div class="content">
-	
+
+	<!-- =========================
+     ABA “Início”
+     ========================= -->
+<section id="tab-inicio" class="tab">
+  <div class="inicio-header">
+    <span id="inicio-date"></span>
+    <span id="inicio-location"></span>
+    <button id="btn-location-refresh" title="Atualizar localização">🔄</button>
+  </div>
+  <div id="inicio-weather" class="inicio-card"></div>
+  <div id="inicio-events" class="inicio-card"></div>
+  <div id="inicio-objects" class="inicio-card"></div>
+</section>
+
 	<!-- ==================================
      ABA “Objectos”
      ================================== -->
