@@ -787,14 +787,14 @@ window.editObservation = function(id) {
           <input name="nome" value="${obs.nome}" required />
         </label>
         <label>Tipo:
-          <select name="tipo" required>
-            <option ${obs.tipo === 'Estrela' ? 'selected' : ''}>Estrela</option>
-            <option ${obs.tipo === 'Galáxia' ? 'selected' : ''}>Galáxia</option>
-            <option ${obs.tipo === 'Aglomerado' ? 'selected' : ''}>Aglomerado</option>
-            <option ${obs.tipo === 'Nebulosa' ? 'selected' : ''}>Nebulosa</option>
-            <option ${obs.tipo === 'Sistema Solar' ? 'selected' : ''}>Sistema Solar</option>
-            <option ${obs.tipo === 'Outro' ? 'selected' : ''}>Outro</option>
-          </select>
+			<select name="tipo" required>
+			  <option ${obs.tipo === 'Estrela' ? 'selected' : ''}>Estrela</option>
+			  <option ${obs.tipo === 'Galáxia' ? 'selected' : ''}>Galáxia</option>
+			  <option ${obs.tipo === 'Aglomerado' ? 'selected' : ''}>Aglomerado</option>
+			  <option ${obs.tipo === 'Nebulosa' ? 'selected' : ''}>Nebulosa</option>
+			  <option ${obs.tipo === 'Sistema Solar' ? 'selected' : ''}>Sistema Solar</option>
+			  <option ${obs.tipo === 'Outro' ? 'selected' : ''}>Outro</option>
+			</select>
         </label>
         <label>Data:
           <input name="data" type="date" value="${obs.data.slice(0, 10)}" required />
