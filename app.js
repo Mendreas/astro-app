@@ -281,11 +281,12 @@ document.addEventListener('DOMContentLoaded', async () => {
 
 	// ==== Lógica para tab INÍCIO ====
 
-async function setInicioDate() {
+function setInicioDate() {
   const dateElem = document.getElementById('inicio-date');
   if (!dateElem) return;
   const now = new Date();
-  dateElem.textContent = now.toLocaleDateString(currentLang === 'pt' ? 'pt-PT' : 'en-US', {
+  const locale = currentLang === 'pt' ? 'pt-PT' : 'en-US';
+  dateElem.textContent = now.toLocaleDateString(locale, {
     weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'
   });
 }
@@ -319,8 +320,8 @@ document.getElementById('btn-location-refresh').addEventListener('click', refres
 // Inicia tab inicio sempre que ativada
 function loadInicioTab() {
   setInicioDate();
-  refreshLocation();
-  // Aqui podes depois chamar funções que vão buscar previsão de tempo, eventos, etc
+  // assume que já tens pos guardado, senão refresca a localização aqui
+  // refreshLocation(); // opcional
   document.getElementById('inicio-weather').textContent = i18n[currentLang].previsaoTempo + ": ...";
   document.getElementById('inicio-events').textContent = i18n[currentLang].eventos + ": ...";
   document.getElementById('inicio-objects').textContent = i18n[currentLang].objetosVisiveis + ": ...";
