@@ -20,7 +20,14 @@ const obsList = document.getElementById('observationsList');
 // =========================
 const i18n = {
   pt: {
-    searchPlaceholder: "Pesquisar observações...",
+    inicio: "Início",
+    data: "Data",
+    localizacao: "Localização",
+    previsaoTempo: "Previsão de tempo",
+    eventos: "Eventos astronómicos",
+    objetosVisiveis: "Objectos visíveis",
+    atualizar: "Atualizar localização",
+	searchPlaceholder: "Pesquisar observações...",
     all: "Todos",
     recent: "Recentes",
     favorites: "Favoritos",
@@ -42,7 +49,14 @@ const i18n = {
     ver: "Ver",
   },
   en: {
-    searchPlaceholder: "Search observations...",
+    inicio: "Home",
+    data: "Date",
+    localizacao: "Location",
+    previsaoTempo: "Weather forecast",
+    eventos: "Astronomical events",
+    objetosVisiveis: "Visible objects",
+    atualizar: "Refresh location",
+	searchPlaceholder: "Search observations...",
     all: "All",
     recent: "Recent",
     favorites: "Favorites",
@@ -260,6 +274,57 @@ document.addEventListener('DOMContentLoaded', async () => {
   translateUI();
   updateRedFilterClass();
 
+	// ==== Lógica para tab INÍCIO ====
+
+async function setInicioDate() {
+  const dateElem = document.getElementById('inicio-date');
+  if (!dateElem) return;
+  const now = new Date();
+  dateElem.textContent = now.toLocaleDateString(currentLang === 'pt' ? 'pt-PT' : 'en-US', {
+    weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'
+  });
+}
+
+function setInicioLocation(pos) {
+  const locElem = document.getElementById('inicio-location');
+  if (!locElem) return;
+  if (!pos) {
+    locElem.textContent = i18n[currentLang].localizacao + ": ?";
+    return;
+  }
+  locElem.textContent = `${i18n[currentLang].localizacao}: ${pos.coords.latitude.toFixed(4)}, ${pos.coords.longitude.toFixed(4)}`;
+}
+
+// Obter localização
+function refreshLocation() {
+  if (!navigator.geolocation) {
+    setInicioLocation(null);
+    return;
+  }
+  navigator.geolocation.getCurrentPosition(
+    pos => setInicioLocation(pos),
+    err => setInicioLocation(null),
+    { enableHighAccuracy: true }
+  );
+}
+
+// Evento no botão de refresh
+document.getElementById('btn-location-refresh').addEventListener('click', refreshLocation);
+
+// Inicia tab inicio sempre que ativada
+function loadInicioTab() {
+  setInicioDate();
+  refreshLocation();
+  // Aqui podes depois chamar funções que vão buscar previsão de tempo, eventos, etc
+  document.getElementById('inicio-weather').textContent = i18n[currentLang].previsaoTempo + ": ...";
+  document.getElementById('inicio-events').textContent = i18n[currentLang].eventos + ": ...";
+  document.getElementById('inicio-objects').textContent = i18n[currentLang].objetosVisiveis + ": ...";
+}
+
+// Chama a função sempre que a tab "Início" é ativada
+document.querySelector('button[data-tab="inicio"]').addEventListener('click', loadInicioTab);
+
+	
   // ======== MODAL DE ADICIONAR OBSERVAÇÃO ========
   const addBtn = document.getElementById('addObservationBtn');
   const modal = document.getElementById('addObservationModal');
