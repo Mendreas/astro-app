@@ -403,45 +403,61 @@ document.querySelector('button[data-tab="inicio"]').addEventListener('click', lo
     });
   }
 
-  // Submissão do formulário de adicionar observação
-  if (form) {
-    form.addEventListener('submit', async function (e) {
-      e.preventDefault();
-      const formData = new FormData(form);
-      const obs = Object.fromEntries(formData.entries());
-      obs.favorito = !!formData.get('favorito');
-      obs.id = Date.now();
+// Submissão do formulário de adicionar observação
+const form = document.getElementById('addObservationForm');
+if (form) {
+  form.addEventListener('submit', async function (e) {
+    e.preventDefault();
+    const formData = new FormData(form);
 
-      const file = formData.get('imagem');
-      const saveObs = async () => {
-        await saveObservacao(obs);
-        observacoes = await getAllObservacoes();
-        renderObservacoes();
-        atualizarBackupJSON();
-        if (successMsg) {
-          successMsg.style.display = 'block';
-          successMsg.textContent = "✔️ Observação adicionada com sucesso";
-        }
-        // Fecha o modal imediatamente após mostrar a mensagem de sucesso
-        closeAddForm();
-      };
+    // Recolha manual dos campos, usando os names definidos no HTML
+    const obs = {
+      id: Date.now(),
+      nome: formData.get('nome'),
+      tipo: formData.get('tipo'),
+      data: formData.get('data'),
+      local: formData.get('local'),
+      ra: formData.get('ra'),
+      dec: formData.get('dec'),
+      magnitude: formData.get('magnitude'),
+      distancia: formData.get('distancia'),
+      unidadeDistancia: formData.get('unidadeDistancia'),
+      descricao: formData.get('descricao'),
+      favorito: !!formData.get('favorito')
+      // Imagem é tratada mais abaixo
+    };
 
-      if (file && file.name && file.size > 0) {
-        const reader = new FileReader();
-        reader.onload = async () => {
-          obs.imagem = reader.result;
-          await saveObs();
-        };
-        reader.onerror = async () => {
-          alert("Erro ao carregar imagem.");
-          await saveObs();
-        };
-        reader.readAsDataURL(file);
-      } else {
-        await saveObs();
+    const file = formData.get('imagem');
+    const saveObs = async () => {
+      await saveObservacao(obs);
+      observacoes = await getAllObservacoes();
+      renderObservacoes();
+      atualizarBackupJSON();
+      if (successMsg) {
+        successMsg.style.display = 'block';
+        successMsg.textContent = "✔️ Observação adicionada com sucesso";
       }
-    });
-  }
+      // Fecha o modal imediatamente após mostrar a mensagem de sucesso
+      closeAddForm();
+    };
+
+    if (file && file.name && file.size > 0) {
+      const reader = new FileReader();
+      reader.onload = async () => {
+        obs.imagem = reader.result;
+        await saveObs();
+      };
+      reader.onerror = async () => {
+        alert("Erro ao carregar imagem.");
+        await saveObs();
+      };
+      reader.readAsDataURL(file);
+    } else {
+      await saveObs();
+    }
+  });
+}
+
   // ======== FIM DO MODAL DE ADICIONAR OBSERVAÇÃO ========
 
   // ======== Botão de download de backup ========
