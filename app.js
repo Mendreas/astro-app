@@ -171,7 +171,7 @@ if (filterBtn) {
       menu.appendChild(item);
     });
 
-    // Adiciona opção “Todos”
+    // Adiciona opção "Todos"
     const allItem = document.createElement('div');
     allItem.textContent = i18n[currentLang].all;
     allItem.addEventListener('click', () => {
@@ -406,7 +406,6 @@ document.addEventListener('DOMContentLoaded', async () => {
     });
   });
   // =========== FIM: LÓGICA DE NAVEGAÇÃO ENTRE TABS ===========
-
 });
 
 // =========================
@@ -441,7 +440,7 @@ function translateUI() {
   const btnRecentes = document.querySelector('[data-filter="recentes"]');
   if (btnRecentes) btnRecentes.textContent = t.recent;
   const btnFavoritos = document.querySelector('[data-filter="favoritos"]');
-  if (btnFavoritos) btnFavoritos.textContent = t.favorites; 
+  if (btnFavoritos) btnFavoritos.textContent = t.favorites;
 
   const filterBtnElem = document.getElementById('filterByType');
   if (filterBtnElem) filterBtnElem.textContent = t.filterType;
@@ -501,11 +500,9 @@ redButton?.addEventListener('click', () => {
   redToggle.checked = !redToggle.checked;
   applyRedFilter(redToggle.checked);
 });
-
 redToggle?.addEventListener('change', () => {
   applyRedFilter(redToggle.checked);
 });
-
 redSlider?.addEventListener('input', () => {
   if (redToggle.checked) applyRedFilter(true);
 });
@@ -550,7 +547,7 @@ function renderCalendario() {
   const textoMesAno = `${capitalize(nomeMes)} ${calendarioAno}`;
   title.textContent = textoMesAno;
 
-  // (Opcional) se quiser mostrar também dentro do header (entre as setas):
+  // Se quiser mostrar também dentro do header (entre as setas):
   if (displaySpan) {
     displaySpan.textContent = textoMesAno;
   }
