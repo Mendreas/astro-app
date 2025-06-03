@@ -263,35 +263,36 @@
   </ul>
 </section>
 
-	<!-- ==================================
+<!-- ==================================
      ABA “Calendário”
      ================================== -->
-      <section id="tab-calendario" class="tab">
-        <h2 id="calendarMonthYear">Mês Ano</h2>
-        <div id="calendarHeader">
-          <button id="prevMonth">←</button>
-          <span id="calendarMonthYearDisplay"></span>
-          <button id="nextMonth">→</button>
-        </div>
-        <div id="calendarContainer"></div>
-        <div id="calendarResults" style="margin-top: 1rem;"></div>
-      </section>
-		
-	<!-- ==================================
+<section id="tab-calendario" class="tab">
+  <h2 id="calendarMonthYear">Mês Ano</h2>
+  <div id="calendarHeader">
+    <button id="prevMonth">←</button>
+    <span id="calendarMonthYearDisplay"></span>
+    <button id="nextMonth">→</button>
+  </div>
+  <div id="calendarContainer"></div>
+  <div id="calendarResults" style="margin-top: 1rem;"></div>
+</section>
+
+<!-- ==================================
      ABA “Configurações”
      ================================== -->
-		
-      <section id="tab-configuracoes" class="tab">
-        <p>Ajustes e configurações da aplicação.</p>
-        <div class="config-actions">
-          <button id="exportJson">📤 Exportar Observações</button>
-          <label for="importJson" class="import-label">
-            📥 Importar Observações
-            <input type="file" id="importJson" accept=".json" style="display: none;" />
-          </label>
-          <button id="downloadBackup">💾 Descarregar Backup</button>
-        </div>
-      </section>
+
+<section id="tab-configuracoes" class="tab">
+  <p id="settings-title">Ajustes e configurações da aplicação.</p>
+  <div class="config-actions">
+    <button id="exportJson">📤 Exportar Observações</button>
+    <label for="importJson" id="importLabel" class="import-label">
+      📥 <span id="importText">Importar Observações</span>
+      <input type="file" id="importJson" accept=".json" style="display: none;" />
+    </label>
+    <button id="downloadBackup">💾 Descarregar Backup</button>
+  </div>
+</section>
+
     </div>
   </main>
   
