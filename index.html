@@ -305,62 +305,72 @@
 
 <!-- MODAL DE ADICIONAR OBSERVAÇÃO -->
   <div id="addObservationModal" class="modal">
-    <div class="modal-content dark-modal">
-      <span class="close" id="closeAddModal">&times;</span>
-      <h2>Adicionar Observação</h2>
-      <form id="addObservationForm">
-        <label>Nome do objeto
-          <input type="text" name="nome" required>
-        </label>
-		<label>Tipo
-		  <select name="tipo">
-		    <option value="Estrela">Estrela</option>
-		    <option value="Galáxia">Galáxia</option>
-		    <option value="Aglomerado">Aglomerado</option>
-		    <option value="Nebulosa">Nebulosa</option>
-		    <option value="Sistema Solar">Sistema Solar</option>
-		    <option value="Outro">Outro</option>
-		  </select>
-		</label>
-        <label>Data da observação
-          <input type="date" name="data" required>
-        </label>
-        <label>Localização
-          <input type="text" name="local">
-        </label>
-        <label>RA
-          <input type="text" name="ra">
-        </label>
-        <label>DEC
-          <input type="text" name="dec">
-        </label>
-        <label>Magnitude
-          <input type="number" name="magnitude" step="0.1">
-        </label>
-        <label>Distância
-          <input type="text" name="distancia">
-          <select name="unidadeDistancia">
-            <option value="ly">ly</option>
-            <option value="AU">AU</option>
-          </select>
-        </label>
-        <label>Descrição
-          <textarea name="descricao"></textarea>
-        </label>
-        <label>
-          <input type="checkbox" name="favorito"> Favorito
-        </label>
-        <label>Imagem
-          <input type="file" name="imagem">
-        </label>
-        <div class="modal-buttons">
-          <button type="submit">Guardar</button>
-          <button type="button" id="cancelAdd">Cancelar</button>
-        </div>
-      </form>
-      <p id="addSuccessMsg" class="success-msg" style="display: none">✔️ Observação adicionada com sucesso</p>
-    </div>
+  <div class="modal-content dark-modal">
+    <span class="close" id="closeAddModal">&times;</span>
+    <h2 id="addObsTitle">Adicionar Observação</h2>
+    <form id="addObservationForm">
+      <label id="labelNomeObj" for="inputNomeObj">
+        Nome do objeto
+        <input id="inputNomeObj" type="text" name="nome" required>
+      </label>
+      <label id="labelTipo" for="inputTipo">
+        Tipo
+        <select id="inputTipo" name="tipo" required>
+          <option value="Estrela">Estrela</option>
+          <option value="Galáxia">Galáxia</option>
+          <option value="Aglomerado">Aglomerado</option>
+          <option value="Nebulosa">Nebulosa</option>
+          <option value="Sistema Solar">Sistema Solar</option>
+          <option value="Outro">Outro</option>
+        </select>
+      </label>
+      <label id="labelData" for="inputData">
+        Data da observação
+        <input id="inputData" type="date" name="data" required>
+      </label>
+      <label id="labelLocalizacao" for="inputLocalizacao">
+        Localização
+        <input id="inputLocalizacao" type="text" name="local">
+      </label>
+      <label id="labelRA" for="inputRA">
+        RA
+        <input id="inputRA" type="text" name="ra">
+      </label>
+      <label id="labelDEC" for="inputDEC">
+        DEC
+        <input id="inputDEC" type="text" name="dec">
+      </label>
+      <label id="labelMagnitude" for="inputMagnitude">
+        Magnitude
+        <input id="inputMagnitude" type="number" name="magnitude" step="0.1">
+      </label>
+      <label id="labelDistancia" for="inputDistancia">
+        Distância
+        <input id="inputDistancia" type="text" name="distancia" style="width: 65%;">
+        <select id="inputUnidadeDistancia" name="unidadeDistancia" style="width: 32%;">
+          <option value="ly">ly</option>
+          <option value="AU">AU</option>
+        </select>
+      </label>
+      <label id="labelDescricao" for="inputDescricao">
+        Descrição
+        <textarea id="inputDescricao" name="descricao"></textarea>
+      </label>
+      <label id="labelFavorito" for="inputFavorito">
+        <input id="inputFavorito" type="checkbox" name="favorito"> Favorito
+      </label>
+      <label id="labelImagem" for="inputImagem">
+        Imagem
+        <input id="inputImagem" type="file" name="imagem" accept="image/*">
+      </label>
+      <div class="modal-buttons">
+        <button type="submit" id="btnSave">Guardar</button>
+        <button type="button" id="btnCancel">Cancelar</button>
+      </div>
+    </form>
+    <p id="addSuccessMsg" class="success-msg" style="display: none">✔️ Observação adicionada com sucesso</p>
   </div>
+</div>
 
   <script defer src="app.js"></script>
 </body>
