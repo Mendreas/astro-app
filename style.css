@@ -238,10 +238,12 @@ nav button.active {
   width: 100%;
 }
 
-/* ←←← NOVO: Estilo para os botões “Ver / Editar / Eliminar” dentro de cada card */
+/* ==============================================
+   Botões “Ver / Editar / Eliminar” dentro de .observation-card
+   ============================================== */
 .observation-card button {
-  background: #333;
-  color: #fff;
+  background: #333;            /* cinzento escuro */
+  color: #fff;                 /* texto branco */
   border: none;
   border-radius: 6px;
   padding: 0.4rem 0.8rem;
@@ -252,8 +254,9 @@ nav button.active {
 }
 
 .observation-card button:hover {
-  background: #4a4a4a;
+  background: #4a4a4a;         /* leve clareamento ao passar o rato */
 }
+
 
 /* ==============================================
    ABA “Recursos” e “Links Úteis”

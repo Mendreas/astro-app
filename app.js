@@ -1,5 +1,5 @@
 // ======================================================
-// AstroLog - app.js (versão completa com todas as correções)
+// AstroLog - app.js (versão completa, revisada e sem duplicações)
 // ======================================================
 
 // =========================
@@ -108,7 +108,7 @@ async function saveObservacao(obs) {
   });
 }
 
-// Nota importante: esta função só trata de apagar do IndexedDB
+// Apenas para apagar do IndexedDB (não mexe no DOM)
 async function deleteObservacaoFromDB(id) {
   const db = await openDB();
   return new Promise((resolve, reject) => {
@@ -130,7 +130,7 @@ async function loadObservacoes() {
 loadObservacoes();
 
 // =========================
-// EVENTOS DE INTERFACE
+// EVENTOS DE INTERFACE (fora do DOMContentLoaded)
 // =========================
 
 // Alternar idioma
@@ -261,7 +261,7 @@ if (importInput) {
 }
 
 // =========================
-// EVENTOS E INICIALIZAÇÃO
+// EVENTOS E INICIALIZAÇÃO (DOMContentLoaded)
 // =========================
 document.addEventListener('DOMContentLoaded', async () => {
   observacoes = await getAllObservacoes();
@@ -273,40 +273,23 @@ document.addEventListener('DOMContentLoaded', async () => {
   const addBtn = document.getElementById('addObservationBtn');
   const modal = document.getElementById('addObservationModal');
   const closeModalBtn = document.getElementById('closeAddModal');
-  if (closeModalBtn) {
-    closeModalBtn.addEventListener('click', closeAddForm);
-  }
   const cancelBtn = document.getElementById('cancelAdd');
   const form = document.getElementById('addObservationForm');
   const successMsg = document.getElementById('addSuccessMsg');
 
-  // Função para abrir o modal
-  function openModal() {
-    if (modal) {
-      modal.style.display = 'flex'; // exibe como flex para centrar
-    }
+  // Usa a função GLOBAL closeAddForm (definida abaixo) para fechar
+  if (closeModalBtn) {
+    closeModalBtn.addEventListener('click', closeAddForm);
   }
-
-  // Função para fechar o modal e resetar o form
-  function closeAddForm() {
-    if (form) form.reset();
-    if (modal) modal.style.display = 'none';
-    if (successMsg) successMsg.style.display = 'none';
+  if (cancelBtn) {
+    cancelBtn.addEventListener('click', closeAddForm);
   }
 
   // Abre o modal ao clicar no botão "+"
   if (addBtn) {
-    addBtn.addEventListener('click', openModal);
-  }
-
-  // Fecha o modal ao clicar no "×"
-  if (closeModalBtn) {
-    closeModalBtn.addEventListener('click', closeAddForm);
-  }
-
-  // Fecha o modal ao clicar em "Cancelar"
-  if (cancelBtn) {
-    cancelBtn.addEventListener('click', closeAddForm);
+    addBtn.addEventListener('click', () => {
+      if (modal) modal.style.display = 'flex';
+    });
   }
 
   // Fecha o modal se clicar fora da .modal-content
@@ -329,17 +312,17 @@ document.addEventListener('DOMContentLoaded', async () => {
 
       const file = formData.get('imagem');
       const saveObs = async () => {
-	    await saveObservacao(obs);
-	    observacoes = await getAllObservacoes();
-	    renderObservacoes();
-	    atualizarBackupJSON();
-	    if (successMsg) {
-	      successMsg.style.display = 'block';
-	      successMsg.textContent = "✔️ Observação adicionada com sucesso";
-	    }
-	    // Fecha quase imediatamente após mostrar a mensagem:
-	    setTimeout(closeAddForm, 800);
-	  };
+        await saveObservacao(obs);
+        observacoes = await getAllObservacoes();
+        renderObservacoes();
+        atualizarBackupJSON();
+        if (successMsg) {
+          successMsg.style.display = 'block';
+          successMsg.textContent = "✔️ Observação adicionada com sucesso";
+        }
+        // Fecha o modal pouco depois de exibir a mensagem de sucesso
+        setTimeout(closeAddForm, 800);
+      };
 
       if (file && file.name && file.size > 0) {
         const reader = new FileReader();
@@ -380,7 +363,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     });
   }
 
-  // ========== LÓGICA DE NAVEGAÇÃO ENTRE TABS ==========
+  // ========== NAVEGAÇÃO ENTRE TABS ==========
   const navButtons = document.querySelectorAll('nav button[data-tab]');
   const tabSections = document.querySelectorAll('.tab');
 
@@ -388,34 +371,32 @@ document.addEventListener('DOMContentLoaded', async () => {
     btn.addEventListener('click', () => {
       const alvo = btn.dataset.tab;
 
-      // Remover a classe 'active' de TODOS os botões
+      // Ativa o botão selecionado e desativa os outros
       navButtons.forEach(b => b.classList.remove('active'));
-      // Adicionar 'active' apenas ao botão clicado
       btn.classList.add('active');
 
-      // Remover 'active' de todas as seções
+      // Mostra apenas a seção correta
       tabSections.forEach(sec => sec.classList.remove('active'));
-      // Adicionar 'active' apenas à seção cujo id seja `tab-${alvo}`
       const sectionAlvo = document.getElementById(`tab-${alvo}`);
       if (sectionAlvo) {
         sectionAlvo.classList.add('active');
       }
 
-      // Se a aba selecionada for 'configuracoes', mostra o footer; senão, esconde
+      // Exibe o footer somente em “Configurações”
       const footer = document.querySelector('footer');
       if (footer) {
         footer.style.display = (alvo === 'configuracoes') ? 'flex' : 'none';
       }
 
-      // Se a aba selecionada for 'calendario', renderiza o calendário
+      // Se a aba for “Calendário”, renderiza o calendário
       if (alvo === 'calendario') {
         renderCalendario();
       }
     });
   });
-  // ====================================================
+  // ==========================================
 
-  // ======== Corrige: Setas do Calendário agora funcionam ========
+  // ======== Setas do Calendário (agora funcionam) ========
   const prevBtn = document.getElementById('prevMonth');
   const nextBtn = document.getElementById('nextMonth');
   if (prevBtn) {
@@ -438,11 +419,13 @@ document.addEventListener('DOMContentLoaded', async () => {
       renderCalendario();
     });
   }
-  // ====================================================
+  // =======================================================
+
 });
 
 // =========================
-// FUNÇÃO PARA FECHAR O MODAL (fora do DOMContentLoaded)
+// FUNÇÃO PARA FECHAR O MODAL (ADICIONAR OBSERVAÇÃO)
+// =========================
 function closeAddForm() {
   const form = document.getElementById('addObservationForm');
   const modal = document.getElementById('addObservationModal');
@@ -454,6 +437,7 @@ function closeAddForm() {
 
 // =========================
 // FUNÇÃO PARA ATUALIZAR BACKUP NO localStorage
+// =========================
 function atualizarBackupJSON() {
   const json = JSON.stringify(observacoes, null, 2);
   localStorage.setItem('backupAstroLog', json);
@@ -655,12 +639,14 @@ function renderObservacoes() {
   obsList.innerHTML = '';
   let list = [...observacoes];
 
+  // Aplica filtro “Favoritos” ou “Recentes” se estiver ativo
   if (currentFilter === 'favoritos') {
     list = list.filter(o => o.favorito);
   } else if (currentFilter === 'recentes') {
     list = list.sort((a, b) => new Date(b.data) - new Date(a.data));
   }
 
+  // Aplica pesquisa textual (por nome, tipo ou local)
   if (searchQuery) {
     list = list.filter(o =>
       o.nome.toLowerCase().includes(searchQuery) ||
@@ -669,6 +655,7 @@ function renderObservacoes() {
     );
   }
 
+  // Para cada observação, criamos um card “.observation-card”
   list.forEach(obs => {
     const card = document.createElement('div');
     card.className = 'observation-card';
@@ -676,7 +663,7 @@ function renderObservacoes() {
     const icon = getIcon(obs.tipo);
     const dataFormatada = new Date(obs.data).toLocaleDateString();
 
-    // Se houver imagem, chamamos openImageModal(…) para abrir o modal da própria imagem
+    // Se houver imagem, chama openImageModal(...) para mostrar num modal próprio
     const imgHTML = obs.imagem
       ? `<img
            src="${obs.imagem}"
@@ -685,16 +672,16 @@ function renderObservacoes() {
          />`
       : '';
 
-    // “Ver” chama viewObservation(id), “Editar” chama editObservation(id),
-    // “Eliminar” chama deleteObservacaoHandler(id)
-    const viewBtn = `<button class="view-btn" onclick="viewObservation(${obs.id})">🔍 ${i18n[currentLang].ver}</button>`;
-    const editBtn = `<button onclick="editObservation(${obs.id})">✏️ ${i18n[currentLang].edit}</button>`;
+    // Agora o “Ver” chama viewObservation(id), “Editar” chama editObservation(id),
+    // e “Eliminar” chama deleteObservacaoHandler(id)
+    const viewBtn   = `<button class="view-btn"    onclick="viewObservation(${obs.id})">🔍 ${i18n[currentLang].ver}</button>`;
+    const editBtn   = `<button onclick="editObservation(${obs.id})">✏️ ${i18n[currentLang].edit}</button>`;
     const deleteBtn = `<button onclick="deleteObservacaoHandler(${obs.id})">🗑️ ${i18n[currentLang].delete}</button>`;
 
     card.innerHTML = `
       <div class="title">${icon} ${obs.nome} ${obs.favorito ? '⭐' : ''}</div>
       <div><small>${obs.tipo}</small></div>
-      <div><small>${dataFormatada} - ${obs.local || ''}</small></div>
+      <div><small>${dataFormatada} – ${obs.local || ''}</small></div>
       ${imgHTML}
       <div style="margin-top: 0.5rem">
         ${viewBtn}
@@ -706,7 +693,6 @@ function renderObservacoes() {
     obsList.appendChild(card);
   });
 }
-
 
 // =========================
 // VISUALIZAR OBSERVAÇÃO (modal)
@@ -731,7 +717,7 @@ window.viewObservation = function(id) {
       <p><strong>Descrição:</strong> ${obs.descricao || ''}</p>
       ${obs.imagem ? 
         `<img src="${obs.imagem}" style="max-width:100%; max-height:200px; margin-top:1rem; cursor:pointer"
-              onclick="openImageModal('${obs.imagem.replace(/'/g, "\\'")}')" />`
+              onclick="openImageModal('${obs.imagem.replace(/'/g, \"\\'\")}')" />`
         : ''}
       <button onclick="closeModal()">${i18n[currentLang].close}</button>
     </div>
@@ -781,7 +767,7 @@ window.closeModalById = function(id) {
 };
 
 // =========================
-// FECHAR MODAL QUALQUER
+// FECHAR TODOS OS MODAIS
 // =========================
 window.closeModal = function() {
   document.querySelectorAll('.modal').forEach(m => m.remove());
