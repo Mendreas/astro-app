@@ -273,6 +273,9 @@ document.addEventListener('DOMContentLoaded', async () => {
   const addBtn = document.getElementById('addObservationBtn');
   const modal = document.getElementById('addObservationModal');
   const closeModalBtn = document.getElementById('closeAddModal');
+  if (closeModalBtn) {
+    closeModalBtn.addEventListener('click', closeAddForm);
+  }
   const cancelBtn = document.getElementById('cancelAdd');
   const form = document.getElementById('addObservationForm');
   const successMsg = document.getElementById('addSuccessMsg');
@@ -326,18 +329,17 @@ document.addEventListener('DOMContentLoaded', async () => {
 
       const file = formData.get('imagem');
       const saveObs = async () => {
-        await saveObservacao(obs);
-        observacoes = await getAllObservacoes();
-        renderObservacoes();
-        atualizarBackupJSON();
-        // Mostrar mensagem de sucesso:
-        if (successMsg) {
-          successMsg.style.display = 'block';
-          successMsg.textContent = "✔️ Observação adicionada com sucesso";
-        }
-        // Fechar modal em 0.8s só para mostrar a mensagem
-        setTimeout(closeAddForm, 800);
-      };
+	    await saveObservacao(obs);
+	    observacoes = await getAllObservacoes();
+	    renderObservacoes();
+	    atualizarBackupJSON();
+	    if (successMsg) {
+	      successMsg.style.display = 'block';
+	      successMsg.textContent = "✔️ Observação adicionada com sucesso";
+	    }
+	    // Fecha quase imediatamente após mostrar a mensagem:
+	    setTimeout(closeAddForm, 800);
+	  };
 
       if (file && file.name && file.size > 0) {
         const reader = new FileReader();
@@ -674,14 +676,17 @@ function renderObservacoes() {
     const icon = getIcon(obs.tipo);
     const dataFormatada = new Date(obs.data).toLocaleDateString();
 
-    // Se houver imagem em Base64 ou URL, clicamos para abrir o modal da imagem
+    // Se houver imagem, chamamos openImageModal(…) para abrir o modal da própria imagem
     const imgHTML = obs.imagem
-      ? `<img src="${obs.imagem}"
-              style="max-width: 100%; max-height: 100px; cursor: pointer;"
-              onclick="openImageModal('${obs.imagem.replace(/'/g, "\\'")}')" />`
+      ? `<img
+           src="${obs.imagem}"
+           style="max-width: 100%; max-height: 100px; cursor: pointer;"
+           onclick="openImageModal('${obs.imagem.replace(/'/g, \"\\'\")}')"
+         />`
       : '';
 
-    // Botões: “Ver” chama viewObservation(), “Editar” chama editObservation(), “Eliminar” chama deleteObservacaoHandler()
+    // “Ver” chama viewObservation(id), “Editar” chama editObservation(id),
+    // “Eliminar” chama deleteObservacaoHandler(id)
     const viewBtn = `<button class="view-btn" onclick="viewObservation(${obs.id})">🔍 ${i18n[currentLang].ver}</button>`;
     const editBtn = `<button onclick="editObservation(${obs.id})">✏️ ${i18n[currentLang].edit}</button>`;
     const deleteBtn = `<button onclick="deleteObservacaoHandler(${obs.id})">🗑️ ${i18n[currentLang].delete}</button>`;
@@ -701,6 +706,7 @@ function renderObservacoes() {
     obsList.appendChild(card);
   });
 }
+
 
 // =========================
 // VISUALIZAR OBSERVAÇÃO (modal)
