@@ -47,6 +47,11 @@ const i18n = {
     configuracoes: "Configurações",
     links: "Links Úteis",
     ver: "Ver",
+	settingsTitle: "Ajustes e configurações da aplicação.",
+    exportObservations: "Exportar Observações",
+    importObservations: "Importar Observações",
+    downloadBackup: "Descarregar Backup",
+    calendarTitle: "Calendário de Observações",
   },
   en: {
     inicio: "Home",
@@ -76,6 +81,11 @@ const i18n = {
     configuracoes: "Settings",
     links: "Useful Links",
     ver: "View",
+	settingsTitle: "Application settings and configuration.",
+    exportObservations: "Export Observations",
+    importObservations: "Import Observations",
+    downloadBackup: "Download Backup",
+    calendarTitle: "Observation Calendar",
   }
 };
 
@@ -521,6 +531,21 @@ function atualizarBackupJSON() {
 function translateUI() {
   const t = i18n[currentLang];
 
+  const settingsTitle = document.getElementById('settings-title');
+  if (settingsTitle) settingsTitle.textContent = t.settingsTitle;
+
+  const exportBtn = document.getElementById('exportJson');
+  if (exportBtn) exportBtn.textContent = t.exportObservations;
+
+  const importBtn = document.getElementById('importJsonBtn');
+  if (importBtn) importBtn.textContent = t.importObservations;
+
+  const downloadBtn = document.getElementById('downloadBackup');
+  if (downloadBtn) downloadBtn.textContent = t.downloadBackup;
+
+  const calendarTitle = document.getElementById('calendarMonthYear');
+  if (calendarTitle) calendarTitle.textContent = t.calendarTitle;
+	
   const searchInputElem = document.getElementById('searchInput');
   if (searchInputElem) searchInputElem.placeholder = t.searchPlaceholder;
 
