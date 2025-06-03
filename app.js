@@ -771,25 +771,6 @@ window.viewObservation = function(id) {
     if (e.target === modal) closeModalById('view-modal');
   });
 };
-// Atribuindo os eventos aos botões "Ver" e "Editar"
-observacoes.forEach(obs => {
-  const verBtn = document.getElementById(`ver-${obs.id}`);
-  const editarBtn = document.getElementById(`editar-${obs.id}`);
-
-  if (verBtn) {
-    verBtn.addEventListener('click', () => {
-      viewObservation(obs.id);
-    });
-  }
-
-  if (editarBtn) {
-    editarBtn.addEventListener('click', () => {
-      editObservation(obs.id);
-    });
-  }
-});
-
-
 
 // Função para editar a observação
 window.editObservation = function(id) {
@@ -948,17 +929,6 @@ window.closeModalById = function(id) {
 // =========================
 window.closeModal = function() {
   document.querySelectorAll('.modal').forEach(m => m.remove());
-};
-
-// =========================
-// EXCLUIR OBSERVAÇÃO (handler)
-// =========================
-window.deleteObservacaoHandler = async function(id) {
-  if (confirm('Eliminar esta observação?')) {
-    await deleteObservacaoFromDB(id);
-    observacoes = await getAllObservacoes();
-    renderObservacoes();
-  }
 };
 
 // =========================
