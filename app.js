@@ -121,15 +121,6 @@ async function deleteObservacaoFromDB(id) {
 }
 
 // =========================
-// CARREGAR OBSERVAÇÕES AO INICIAR
-// =========================
-async function loadObservacoes() {
-  observacoes = await getAllObservacoes();
-  renderObservacoes();
-}
-loadObservacoes();
-
-// =========================
 // EVENTOS DE INTERFACE (fora do DOMContentLoaded)
 // =========================
 
@@ -740,6 +731,8 @@ function renderObservacoes() {
 // =========================
 // Função para visualizar a observação em um modal
 window.viewObservation = function(id) {
+	window.closeModal();
+	console.log("viewObservation chamada com id:", id);
   const obs = observacoes.find(o => o.id === id);
   if (!obs) return;
 
@@ -774,6 +767,8 @@ window.viewObservation = function(id) {
 
 // Função para editar a observação
 window.editObservation = function(id) {
+	window.closeModal();
+	  console.log("editObservation chamada com id:", id);
   const obs = observacoes.find(o => o.id === id);
   if (!obs) return;
 
