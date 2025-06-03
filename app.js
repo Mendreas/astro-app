@@ -738,6 +738,7 @@ function renderObservacoes() {
 // =========================
 // VISUALIZAR OBSERVAÇÃO (modal)
 // =========================
+// Função para visualizar a observação em um modal
 window.viewObservation = function(id) {
   const obs = observacoes.find(o => o.id === id);
   if (!obs) return;
@@ -756,18 +757,21 @@ window.viewObservation = function(id) {
       <p><strong>Distância:</strong> ${obs.distancia || ''} ${obs.unidadeDistancia || ''}</p>
       <p><strong>Magnitude:</strong> ${obs.magnitude || ''}</p>
       <p><strong>Descrição:</strong> ${obs.descricao || ''}</p>
-      ${obs.imagem ? 
-        `<img src="${obs.imagem}" style="max-width:100%; max-height:200px; margin-top:1rem; cursor:pointer" onclick="window.open('${obs.imagem}', '_blank')" />` 
-        : ''}
-      <button onclick="closeModal()">${i18n[currentLang].close}</button>
+      ${obs.imagem ? `
+        <img src="${obs.imagem}" 
+             style="max-width:100%; max-height:200px; margin-top:1rem; cursor:pointer" 
+             onclick="window.open('${obs.imagem}', '_blank')" />
+      ` : ''}
+      <button onclick="closeModalById('view-modal')">Fechar</button>
     </div>
   `;
   document.body.appendChild(modal);
 
   modal.addEventListener('click', e => {
-    if (e.target === modal) closeModalById('view‐modal');
+    if (e.target === modal) closeModalById('view-modal');
   });
 };
+
 
 
 // =========================
