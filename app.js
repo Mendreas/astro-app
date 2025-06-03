@@ -657,7 +657,8 @@ function renderCalendario() {
   const daysInMonth = new Date(calendarioAno, calendarioMes + 1, 0).getDate();
 
   // Atualiza o título principal <h2>
-  const nomeMes    = new Date(calendarioAno, calendarioMes).toLocaleString('pt-PT', { month: 'long' });
+  const locale = currentLang === 'pt' ? 'pt-PT' : 'en-US';
+  const nomeMes = new Date(calendarioAno, calendarioMes).toLocaleString(locale, { month: 'long' });
   const textoMesAno = `${capitalize(nomeMes)} ${calendarioAno}`;
   title.textContent = textoMesAno;
 
