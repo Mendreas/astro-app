@@ -35,29 +35,47 @@
      ABA “Inicio”
      ================================== -->
 	
-	<section id="tab-inicio" class="tab active">
-    <div id="inicio-header">
-      <span id="inicio-date"></span>
-      <input type="date" id="inicio-date-input" style="display:none">
-      <button id="inicio-edit-date">🗓️</button>
-    </div>
-    <div id="inicio-location">
-      <span id="inicio-location-label"></span>
-      <input type="text" id="inicio-location-input" placeholder="Latitude, Longitude" style="display:none;">
-      <button id="inicio-edit-location">📍</button>
-    </div>
-    <div id="inicio-weather">
-      <!-- Previsão do tempo aqui -->
-    </div>
-    <div id="inicio-events">
-      <h3 id="inicio-events-title"></h3>
-      <ul id="inicio-events-list"></ul>
-    </div>
-    <div id="inicio-objects">
-      <h3 id="inicio-objects-title"></h3>
-      <ul id="inicio-objects-list"></ul>
-    </div>
-  </section>
+	<div id="tab-inicio" class="tab active">
+	  <h2>🌠 <span id="inicio-titulo"></span></h2>
+	
+	  <!-- Data -->
+	  <div class="inicio-row">
+	    <span id="inicio-date-label"></span>
+	    <span id="inicio-date"></span>
+	    <button id="inicio-edit-date" class="inicio-small-btn" title="Editar Data">✏️</button>
+	    <input type="date" id="inicio-date-input" style="display:none;" />
+	  </div>
+	
+	  <!-- Localização -->
+	  <div class="inicio-row">
+	    <span id="inicio-location-label"></span>
+	    <span id="inicio-localidade"></span>
+	    <button id="btn-alterar-local" class="inicio-small-btn"></button>
+	  </div>
+	
+	  <!-- Autocomplete Manual -->
+	  <div id="local-autocomplete-wrapper" style="display:none; position:relative;">
+	    <input id="local-autocomplete" autocomplete="off" placeholder="Pesquisar localidade..." />
+	    <div id="autocomplete-results" class="autocomplete-dropdown"></div>
+	  </div>
+	
+	  <!-- Previsão Tempo -->
+	  <div id="inicio-previsao" class="inicio-section"></div>
+	
+	  <!-- Eventos astronómicos -->
+	  <div class="inicio-section">
+	    <h3 id="inicio-eventos-title"></h3>
+	    <ul id="eventos-list"></ul>
+	  </div>
+	
+	  <!-- Objetos visíveis -->
+	  <div class="inicio-section">
+	    <h3 id="inicio-objetos-title"></h3>
+	    <ul id="objetos-list"></ul>
+	  </div>
+	</div>
+
+		</section>
 	
 	<!-- ==================================
      ABA “Objectos”

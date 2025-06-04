@@ -28,14 +28,20 @@ const i18n = {
     editarData: "Editar Data",
     editarLocal: "Alterar localização",
     usarGeo: "Obter localização atual",
+	alterarLocal: "Alterar",
+    pesquisarLocal: "Pesquisar localidade...",
     previsao: "Previsão do tempo",
     eventos: "Eventos astronómicos",
     objetos: "Objetos visíveis",
+	nuvens: "Nuvens",
+    bortle: "Índice Bortle",
     latitude: "Latitude",
     longitude: "Longitude",
     buscarTempo: "A obter previsão...",
     semEventos: "Nenhum evento encontrado.",
     semObjetos: "Nenhum objeto visível encontrado.",
+	erroGeo: "Não foi possível obter a localização.",
+    selecionar: "Selecionar",
 	searchPlaceholder: "Pesquisar observações...",
     all: "Todos",
     recent: "Recentes",
@@ -88,17 +94,23 @@ const i18n = {
     hoje: "Today",
     data: "Date",
     localizacao: "Location",
+	alterarLocal: "Change",
+    pesquisarLocal: "Search location...",
     editarData: "Edit Date",
     editarLocal: "Change location",
     usarGeo: "Use current location",
     previsao: "Weather forecast",
     eventos: "Astronomical events",
     objetos: "Visible objects",
+	nuvens: "Clouds",
+    bortle: "Bortle Index",
     latitude: "Latitude",
     longitude: "Longitude",
     buscarTempo: "Getting forecast...",
     semEventos: "No events found.",
     semObjetos: "No visible objects found.",
+	erroGeo: "Could not get location.",
+    selecionar: "Select",
 	searchPlaceholder: "Search observations...",
     all: "All",
     recent: "Recent",
@@ -428,6 +440,207 @@ async function atualizarTabInicio() {
 window.mostrarDetalheObjeto = function(nome) {
   alert(`Detalhes de ${nome} (mock).`);
 }
+
+// ======== Estado Global ========
+let localState = {
+  coords: null,
+  city: null,
+  country: null
+};
+let autocompleteResults = [];
+
+// ========== Inicialização ==========
+async function atualizarTabInicio() {
+  const t = i18n[currentLang];
+
+  // Data
+  const now = new Date();
+  document.getElementById('inicio-date').textContent = now.toLocaleDateString(currentLang, {
+    weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'
+  });
+
+  // Localização
+  if (!localState.coords) {
+    await obterLocalizacao();
+  } else {
+    atualizarLocalLabel();
+  }
+
+  // Previsão do tempo
+  if (localState.coords) {
+    await mostrarPrevisaoTempo(localState.coords);
+  } else {
+    document.getElementById('inicio-previsao').innerHTML = `<span>${t.erroGeo}</span>`;
+  }
+
+  // Eventos astronómicos
+  mostrarEventosAstronomicos();
+
+  // Objetos visíveis
+  mostrarObjetosVisiveis();
+}
+
+// ========== Localização Automática e Manual ==========
+async function obterLocalizacao() {
+  const t = i18n[currentLang];
+  // Tenta geolocalização do browser
+  return new Promise(resolve => {
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(async pos => {
+        localState.coords = { lat: pos.coords.latitude, lon: pos.coords.longitude };
+        await reverseGeocode(localState.coords.lat, localState.coords.lon);
+        atualizarLocalLabel();
+        resolve();
+      }, () => {
+        document.getElementById('inicio-localidade').textContent = t.erroGeo;
+        resolve();
+      });
+    } else {
+      document.getElementById('inicio-localidade').textContent = t.erroGeo;
+      resolve();
+    }
+  });
+}
+
+// Inverte coordenadas para cidade/país (usando Nominatim)
+async function reverseGeocode(lat, lon) {
+  try {
+    const r = await fetch(`https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lon}&format=json`);
+    const data = await r.json();
+    localState.city = data.address.city || data.address.town || data.address.village || data.address.hamlet || "";
+    localState.country = data.address.country || "";
+  } catch {
+    localState.city = "";
+    localState.country = "";
+  }
+}
+
+// Mostra a label da localização
+function atualizarLocalLabel() {
+  const t = i18n[currentLang];
+  const span = document.getElementById('inicio-localidade');
+  let texto = localState.city ? `${localState.city}, ${localState.country}` : `${t.erroGeo}`;
+  span.textContent = texto;
+  document.getElementById('btn-alterar-local').textContent = t.alterarLocal;
+}
+
+// ========== Autocomplete de Localização (Nominatim) ==========
+document.getElementById('btn-alterar-local').onclick = () => {
+  const t = i18n[currentLang];
+  document.getElementById('local-autocomplete-wrapper').style.display = 'block';
+  document.getElementById('local-autocomplete').placeholder = t.pesquisarLocal;
+  document.getElementById('local-autocomplete').value = "";
+  document.getElementById('autocomplete-results').innerHTML = "";
+  document.getElementById('local-autocomplete').focus();
+};
+
+document.getElementById('local-autocomplete').oninput = async (e) => {
+  const query = e.target.value;
+  const t = i18n[currentLang];
+  if (query.length < 3) {
+    document.getElementById('autocomplete-results').innerHTML = "";
+    return;
+  }
+  const r = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}&addressdetails=1&limit=5`);
+  autocompleteResults = await r.json();
+  const resultsDiv = document.getElementById('autocomplete-results');
+  resultsDiv.innerHTML = "";
+  if (!autocompleteResults.length) {
+    resultsDiv.innerHTML = `<div>${t.erroGeo}</div>`;
+    return;
+  }
+  autocompleteResults.forEach((item, idx) => {
+    const loc =
+      (item.address.city || item.address.town || item.address.village || item.address.hamlet || item.display_name);
+    const ctry = item.address.country || "";
+    const el = document.createElement('div');
+    el.textContent = `${loc}, ${ctry}`;
+    el.onclick = () => {
+      localState.coords = { lat: +item.lat, lon: +item.lon };
+      localState.city = loc;
+      localState.country = ctry;
+      atualizarLocalLabel();
+      document.getElementById('local-autocomplete-wrapper').style.display = 'none';
+      atualizarTabInicio();
+    };
+    resultsDiv.appendChild(el);
+  });
+};
+
+// Fecha o autocomplete ao clicar fora
+document.addEventListener('click', function (e) {
+  const wrapper = document.getElementById('local-autocomplete-wrapper');
+  if (!wrapper.contains(e.target) && e.target.id !== 'btn-alterar-local') {
+    wrapper.style.display = 'none';
+  }
+});
+
+// ========== Previsão do tempo (Open-Meteo) ==========
+async function mostrarPrevisaoTempo(coords) {
+  const t = i18n[currentLang];
+  let html = `<h3>${t.previsao}</h3>`;
+  try {
+    const res = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${coords.lat}&longitude=${coords.lon}&hourly=cloudcover&timezone=auto`);
+    const data = await res.json();
+    // Calcula nuvens médias do pôr ao nascer do sol
+    const agora = new Date();
+    const horas = agora.getHours();
+    // Só um exemplo simples: média entre 21h e 6h
+    let nuvensNoite = [];
+    data.hourly.time.forEach((h, idx) => {
+      const dt = new Date(h);
+      if (dt.getHours() >= 21 || dt.getHours() <= 6) nuvensNoite.push(data.hourly.cloudcover[idx]);
+    });
+    const mediaNuvens = nuvensNoite.length ? (nuvensNoite.reduce((a, b) => a + b, 0) / nuvensNoite.length) : 0;
+    // Bortle fake (só para layout)
+    const bortle = mediaNuvens < 30 ? "3" : mediaNuvens < 60 ? "5" : "7";
+    html += `<div>${t.nuvens}: ${mediaNuvens.toFixed(0)}%</div>`;
+    html += `<div>${t.bortle}: ${bortle}</div>`;
+  } catch {
+    html += `<div>${t.erroGeo}</div>`;
+  }
+  document.getElementById('inicio-previsao').innerHTML = html;
+}
+
+// ========== Eventos Astronómicos ==========
+function mostrarEventosAstronomicos() {
+  const t = i18n[currentLang];
+  document.getElementById('inicio-eventos-title').textContent = t.eventos;
+  const lista = document.getElementById('eventos-list');
+  // Dummy - podes trocar por API real no futuro
+  lista.innerHTML = `
+    <li>🌠 <b>Chuva de meteoros Perseidas</b>: 23:00-03:00</li>
+    <li>🌑 <b>Lua Nova</b>: 01:34</li>
+  `;
+}
+
+// ========== Objetos Visíveis ==========
+function mostrarObjetosVisiveis() {
+  const t = i18n[currentLang];
+  document.getElementById('inicio-objetos-title').textContent = t.objetos;
+  const lista = document.getElementById('objetos-list');
+  // Dummy - troca por API real/filtros depois
+  lista.innerHTML = `
+    <li>🪐 <b>Saturno</b> (19:00-02:30)</li>
+    <li>🌕 <b>Lua</b> (20:00-04:30)</li>
+    <li>✨ <b>M31</b> Andrómeda (00:00-06:00)</li>
+  `;
+}
+
+// ========== Integração com mudança de língua ==========
+function traduzirTabInicio() {
+  // Chama isto depois de mudar currentLang!
+  atualizarTabInicio();
+  document.getElementById('btn-alterar-local').textContent = i18n[currentLang].alterarLocal;
+  document.getElementById('local-autocomplete').placeholder = i18n[currentLang].pesquisarLocal;
+  document.getElementById('inicio-eventos-title').textContent = i18n[currentLang].eventos;
+  document.getElementById('inicio-objetos-title').textContent = i18n[currentLang].objetos;
+}
+
+// Chama atualizarTabInicio() ao abrir a tab, e também após mudar de língua!
+
+
+
 
 // =========================
 // EVENTOS E INICIALIZAÇÃO (DOMContentLoaded)
