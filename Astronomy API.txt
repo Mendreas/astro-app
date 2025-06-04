@@ -1,0 +1,11 @@
+astronomyapi.com
+
+Application ID
+
+e75ca076-7139-4f4b-9bfe-b23c3ae2a70e
+
+Application Secret
+
+d8aa2fcb08d16a43b7aef292f6e4d5a1e5fb25001224b166102c12910101251eb954e305b1680dab5581feb38e02dcc131f3dadcb6035081a2145d428c9be7591a053ed34007a10cb54dbd1fd712579e635515b42f4fa940f7a9ffbd1b3ddc8973bcbaede7fddd0346ac7d6702b48061
+
+Please note down these credentials somewhere safe, because there's no way to retrieve them after you navigate away.

@@ -567,7 +567,6 @@ document.getElementById('local-autocomplete').oninput = async (e) => {
       atualizarLocalLabel();
       document.getElementById('local-autocomplete-wrapper').style.display = 'none';
       atualizarTabInicio();
-	  await atualizarAstroApiSection();
     };
     resultsDiv.appendChild(el);
   });
@@ -637,7 +636,6 @@ function mostrarObjetosVisiveis() {
 function traduzirTabInicio() {
   // Chama isto depois de mudar currentLang!
   atualizarTabInicio();
-  await atualizarAstroApiSection();
   document.getElementById('btn-alterar-local').textContent = i18n[currentLang].alterarLocal;
   document.getElementById('local-autocomplete').placeholder = i18n[currentLang].pesquisarLocal;
   document.getElementById('inicio-eventos-title').textContent = i18n[currentLang].eventos;
@@ -669,7 +667,6 @@ document.addEventListener('DOMContentLoaded', async () => {
     document.getElementById("inicio-date-input").style.display = "none";
     document.getElementById("inicio-date").style.display = "inline";
     atualizarTabInicio();
-	  await atualizarAstroApiSection();
   };
 });
 
@@ -689,7 +686,6 @@ document.addEventListener("DOMContentLoaded", () => {
       inicioCoords = coords;
     }
     atualizarTabInicio();
-	await atualizarAstroApiSection();
   });
 });
 
@@ -824,7 +820,6 @@ navButtons.forEach(btn => {
     }
 
     if (alvo === 'inicio') atualizarTabInicio();
-	await atualizarAstroApiSection();
 
     // Exibe o footer somente em “Configurações”
     const footer = document.querySelector('footer');
@@ -995,7 +990,6 @@ document.querySelectorAll('.dropdown-menu > div').forEach((item, i) => {
 
 	// Chama fora do ciclo, só uma vez se quiseres atualizar a tab Inicio
 	atualizarTabInicio();
-  await atualizarAstroApiSection();
 }
 
 
