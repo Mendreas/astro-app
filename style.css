@@ -734,3 +734,25 @@ body.light textarea {
 .dropdown-menu div:hover {
   background-color: #444;
 }
+
+#addObservationModal input,
+#addObservationModal select,
+#addObservationModal textarea {
+  display: block;
+  width: 100%;
+  background: #181818;
+  color: #fff;
+  border: 1px solid #333;
+  padding: 0.5em;
+  margin: 0.25em 0 1em 0;
+  border-radius: 6px;
+  box-sizing: border-box;
+  font-size: 1em;
+}
+
+#addObservationModal label {
+  display: block;
+  margin-bottom: 0.5em;
+  font-weight: 400;
+  color: #fff;
+}
