@@ -609,39 +609,41 @@ if (form) {
     });
   }
 
-  // ========== NAVEGAÇÃO ENTRE TABS ==========
-  const navButtons = document.querySelectorAll('nav button[data-tab]');
-  const tabSections = document.querySelectorAll('.tab');
+// ========== NAVEGAÇÃO ENTRE TABS ==========
+const navButtons = document.querySelectorAll('nav button[data-tab]');
+const tabSections = document.querySelectorAll('.tab');
 
-  navButtons.forEach(btn => {
-    btn.addEventListener('click', () => {
-      const alvo = btn.dataset.tab;
+navButtons.forEach(btn => {
+  btn.addEventListener('click', () => {
+    const alvo = btn.dataset.tab;
 
-      // Ativa o botão selecionado e desativa os outros
-      navButtons.forEach(b => b.classList.remove('active'));
-      btn.classList.add('active');
+    // Ativa o botão selecionado e desativa os outros
+    navButtons.forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
 
-      // Mostra apenas a seção correta
-      tabSections.forEach(sec => sec.classList.remove('active'));
-      const sectionAlvo = document.getElementById(`tab-${alvo}`);
-      if (sectionAlvo) {
-        sectionAlvo.classList.add('active');
-      }
+    // Mostra apenas a seção correta
+    tabSections.forEach(sec => sec.classList.remove('active'));
+    const sectionAlvo = document.getElementById(`tab-${alvo}`);
+    if (sectionAlvo) {
+      sectionAlvo.classList.add('active');
+    }
 
-	  if (alvo === 'inicio') atualizarTabInicio();
-	  
-      // Exibe o footer somente em “Configurações”
-      const footer = document.querySelector('footer');
-      if (footer) {
-        footer.style.display = (alvo === 'configuracoes') ? 'flex' : 'none';
-      }
+    if (alvo === 'inicio') atualizarTabInicio();
 
-      // Se a aba for “Calendário”, renderiza o calendário
-      if (alvo === 'calendario') {
-        renderCalendario();
-      }
-    });
+    // Exibe o footer somente em “Configurações”
+    const footer = document.querySelector('footer');
+    if (footer) {
+      footer.style.display = (alvo === 'configuracoes') ? 'flex' : 'none';
+    }
+
+    // Se a aba for “Calendário”, renderiza o calendário
+    if (alvo === 'calendario') {
+      renderCalendario();
+    }
   });
+});
+
+  
   // ==========================================
 
   // ======== Setas do Calendário (agora funcionam) ========
@@ -668,6 +670,7 @@ if (form) {
     });
   }
 });
+		
 // =========================
 // FUNÇÃO PARA FECHAR O MODAL (ADICIONAR OBSERVAÇÃO) – VERSÃO GLOBAL
 // =========================
