@@ -629,8 +629,6 @@ if (form) {
       }
 
 	  if (alvo === 'inicio') atualizarTabInicio();
-  });
-});
 	  
       // Exibe o footer somente em “Configurações”
       const footer = document.querySelector('footer');
