@@ -40,7 +40,7 @@ const i18n = {
     configuracoes: "Configurações",
     links: "Links Úteis",
     ver: "Ver",
-	addObsTitle: "Adicionar Observação",
+    addObsTitle: "Adicionar Observação",
     nomeObj: "Nome do objeto",
     tipo: "Tipo",
     dataObs: "Data da observação",
@@ -64,7 +64,8 @@ const i18n = {
       "Nebulosa": "Nebulosa",
       "Sistema Solar": "Sistema Solar",
       "Outro": "Outro"
-  },
+    }
+  }, // <--- VÍRGULA ENTRE OS OBJETOS!
   en: {
     searchPlaceholder: "Search observations...",
     all: "All",
@@ -86,7 +87,7 @@ const i18n = {
     configuracoes: "Settings",
     links: "Useful Links",
     ver: "View",
-	addObsTitle: "Add Observation",
+    addObsTitle: "Add Observation",
     nomeObj: "Object Name",
     tipo: "Type",
     dataObs: "Observation Date",
@@ -110,8 +111,9 @@ const i18n = {
       "Nebulosa": "Nebula",
       "Sistema Solar": "Solar System",
       "Outro": "Other"
+    }
   }
-};
+}; // <--- FECHA O OBJETO PRINCIPAL
 
 // =========================
 // INDEXEDDB
