@@ -20,7 +20,9 @@ const obsList = document.getElementById('observationsList');
 // =========================
 const i18n = {
   pt: {
-    inicio: "Início",
+    faseLua: "Fase da Lua",
+    mapaCeu: "Mapa do céu",
+	inicio: "Início",
     home: "Início",
     hoje: "Hoje",
     data: "Data",
@@ -89,7 +91,9 @@ const i18n = {
     }
   }, // <--- VÍRGULA ENTRE OS OBJETOS!
   en: {
-    inicio: "Home",
+    faseLua: "Moon Phase",
+    mapaCeu: "Sky Map",
+	inicio: "Home",
     home: "Home",
     hoje: "Today",
     data: "Date",
@@ -165,6 +169,23 @@ const i18n = {
 const DB_NAME = 'AstroLogDB';
 const DB_VERSION = 1;
 const STORE_NAME = 'observacoes';
+const APP_ID = 'e75ca076-7139-4f4b-9bfe-b23c3ae2a70e';
+const APP_SECRET = 'd8aa2fcb08d16a43b7aef292f6e4d5a1e5fb25001224b166102c12910101251eb954e305b1680dab5581feb38e02dcc131f3dadcb6035081a2145d428c9be7591a053ed34007a10cb54dbd1fd712579e635515b42f4fa940f7a9ffbd1b3ddc8973bcbaede7fddd0346ac7d6702b48061';
+const AUTH_STRING = btoa(`${APP_ID}:${APP_SECRET}`);
+
+async function astronomyApi(endpoint, body) {
+  const res = await fetch(`https://api.astronomyapi.com/api/v2/${endpoint}`, {
+    method: 'POST',
+    headers: {
+      'Authorization': `Basic ${AUTH_STRING}`,
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify(body)
+  });
+  if (!res.ok) throw new Error('Erro ao chamar AstronomyAPI');
+  return res.json();
+}
+
 
 function openDB() {
   return new Promise((resolve, reject) => {
@@ -381,7 +402,62 @@ let autocompleteResults = [];
 // ========== Inicialização ==========
 async function atualizarTabInicio() {
   const t = i18n[currentLang];
+  const sec = document.getElementById('inicio-astroapi');
+  const dadosDiv = document.getElementById('astroapi-dados');
+  const skyDiv = document.getElementById('astroapi-skymap');
+  if (!localState.coords) {
+    dadosDiv.innerHTML = `<span>${t.erroGeo}</span>`;
+    skyDiv.innerHTML = '';
+    return;
+  }
+  dadosDiv.innerHTML = t.buscarTempo;
+    
+try {
+    const observer = {
+      latitude: localState.coords.lat,
+      longitude: localState.coords.lon,
+      date: inicioData.toISOString().slice(0, 10)
+    };
 
+    // 1. Fase da Lua
+    const moonPhaseData = await astronomyApi('bodies/phase', { format: 'json', observer });
+    const fase = moonPhaseData.data.phase.name;
+    const iluminacao = moonPhaseData.data.phase.illumination * 100;
+
+    // 2. Posições Sol/Lua
+    const posData = await astronomyApi('bodies/positions', {
+      bodies: ['sun', 'moon'],
+      observer,
+      view: 'horizontal'
+    });
+    const sol = posData.data.table.rows.find(r => r.entry.name.toLowerCase() === 'sun');
+    const lua = posData.data.table.rows.find(r => r.entry.name.toLowerCase() === 'moon');
+
+    // 3. Gerar HTML
+    dadosDiv.innerHTML = `
+      <div>🌙 <b>${t.faseLua || 'Fase da Lua'}:</b> ${fase} (${iluminacao.toFixed(1)}%)</div>
+      <div>☀️ <b>Sol:</b> Az ${sol.cells[0].position.azimuth.degrees.toFixed(1)}°, Alt ${sol.cells[0].position.altitude.degrees.toFixed(1)}°</div>
+      <div>🌙 <b>Lua:</b> Az ${lua.cells[0].position.azimuth.degrees.toFixed(1)}°, Alt ${lua.cells[0].position.altitude.degrees.toFixed(1)}°</div>
+    `;
+
+    // 4. (Opcional) Sky Chart
+    skyDiv.innerHTML = t.buscarTempo + " (sky chart)...";
+    const skyRes = await astronomyApi('studio/star-chart', {
+      observer,
+      style: 'inverted',
+      view: { type: 'area', parameters: { position: { equatorial: { rightAscension: 10, declination: 10 } }, zoom: 2 } }
+    });
+    if (skyRes.data && skyRes.data.imageUrl) {
+      skyDiv.innerHTML = `<img src="${skyRes.data.imageUrl}" alt="Sky chart" style="max-width:100%; border-radius:10px; box-shadow:0 2px 8px #000;">`;
+    } else {
+      skyDiv.innerHTML = t.erroGeo;
+    }
+  } catch (err) {
+    dadosDiv.innerHTML = '<span style="color:#f55">Erro a obter dados astronómicos.</span>';
+    skyDiv.innerHTML = '';
+  }
+}
+	
   // Data
   const now = new Date();
   document.getElementById('inicio-date').textContent = now.toLocaleDateString(currentLang, {
@@ -491,6 +567,7 @@ document.getElementById('local-autocomplete').oninput = async (e) => {
       atualizarLocalLabel();
       document.getElementById('local-autocomplete-wrapper').style.display = 'none';
       atualizarTabInicio();
+	  await atualizarAstroApiSection();
     };
     resultsDiv.appendChild(el);
   });
@@ -560,6 +637,7 @@ function mostrarObjetosVisiveis() {
 function traduzirTabInicio() {
   // Chama isto depois de mudar currentLang!
   atualizarTabInicio();
+  await atualizarAstroApiSection();
   document.getElementById('btn-alterar-local').textContent = i18n[currentLang].alterarLocal;
   document.getElementById('local-autocomplete').placeholder = i18n[currentLang].pesquisarLocal;
   document.getElementById('inicio-eventos-title').textContent = i18n[currentLang].eventos;
@@ -591,6 +669,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     document.getElementById("inicio-date-input").style.display = "none";
     document.getElementById("inicio-date").style.display = "inline";
     atualizarTabInicio();
+	  await atualizarAstroApiSection();
   };
 });
 
@@ -610,6 +689,7 @@ document.addEventListener("DOMContentLoaded", () => {
       inicioCoords = coords;
     }
     atualizarTabInicio();
+	await atualizarAstroApiSection();
   });
 });
 
@@ -744,6 +824,7 @@ navButtons.forEach(btn => {
     }
 
     if (alvo === 'inicio') atualizarTabInicio();
+	await atualizarAstroApiSection();
 
     // Exibe o footer somente em “Configurações”
     const footer = document.querySelector('footer');
@@ -815,6 +896,8 @@ function atualizarBackupJSON() {
 function translateUI() {
   const t = i18n[currentLang];
 
+	document.getElementById('inicio-astroapi-title').textContent = i18n[currentLang].mapaCeu;
+	
   // Header + filtros rápidos
   document.getElementById('searchInput').placeholder = t.searchPlaceholder;
   document.querySelector('[data-filter="todos"]').textContent = t.all;
@@ -912,6 +995,7 @@ document.querySelectorAll('.dropdown-menu > div').forEach((item, i) => {
 
 	// Chama fora do ciclo, só uma vez se quiseres atualizar a tab Inicio
 	atualizarTabInicio();
+  await atualizarAstroApiSection();
 }
 
 
