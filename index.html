@@ -21,7 +21,8 @@
 
   <main>
     <nav>
-      <button class="active" data-tab="objectos">Objectos</button>
+      <button class="active" data-tab="inicio">Início</button>
+	  <button data-tab="objectos">Objectos</button>
       <button data-tab="recursos">Recursos</button>
       <button data-tab="links">Links Úteis</button>
       <button data-tab="calendario">Calendário</button>
@@ -30,11 +31,39 @@
 
     <div class="content">
 	
+     <!-- ==================================
+     ABA “Inicio”
+     ================================== -->
+	
+	<section id="tab-inicio" class="tab active">
+    <div id="inicio-header">
+      <span id="inicio-date"></span>
+      <input type="date" id="inicio-date-input" style="display:none">
+      <button id="inicio-edit-date">🗓️</button>
+    </div>
+    <div id="inicio-location">
+      <span id="inicio-location-label"></span>
+      <input type="text" id="inicio-location-input" placeholder="Latitude, Longitude" style="display:none;">
+      <button id="inicio-edit-location">📍</button>
+    </div>
+    <div id="inicio-weather">
+      <!-- Previsão do tempo aqui -->
+    </div>
+    <div id="inicio-events">
+      <h3 id="inicio-events-title"></h3>
+      <ul id="inicio-events-list"></ul>
+    </div>
+    <div id="inicio-objects">
+      <h3 id="inicio-objects-title"></h3>
+      <ul id="inicio-objects-list"></ul>
+    </div>
+  </section>
+	
 	<!-- ==================================
      ABA “Objectos”
      ================================== -->
 	
-      <section id="tab-objectos" class="tab active">
+      <section id="tab-objectos" class="tab">
         <div class="filters">
           <button data-filter="todos">Todos</button>
           <button data-filter="recentes">Recentes</button>

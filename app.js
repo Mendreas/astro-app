@@ -20,7 +20,23 @@ const obsList = document.getElementById('observationsList');
 // =========================
 const i18n = {
   pt: {
-    searchPlaceholder: "Pesquisar observações...",
+    inicio: "Início",
+    home: "Início",
+    hoje: "Hoje",
+    data: "Data",
+    localizacao: "Localização",
+    editarData: "Editar Data",
+    editarLocal: "Alterar localização",
+    usarGeo: "Obter localização atual",
+    previsao: "Previsão do tempo",
+    eventos: "Eventos astronómicos",
+    objetos: "Objetos visíveis",
+    latitude: "Latitude",
+    longitude: "Longitude",
+    buscarTempo: "A obter previsão...",
+    semEventos: "Nenhum evento encontrado.",
+    semObjetos: "Nenhum objeto visível encontrado.",
+	searchPlaceholder: "Pesquisar observações...",
     all: "Todos",
     recent: "Recentes",
     favorites: "Favoritos",
@@ -67,7 +83,23 @@ const i18n = {
     }
   }, // <--- VÍRGULA ENTRE OS OBJETOS!
   en: {
-    searchPlaceholder: "Search observations...",
+    inicio: "Home",
+    home: "Home",
+    hoje: "Today",
+    data: "Date",
+    localizacao: "Location",
+    editarData: "Edit Date",
+    editarLocal: "Change location",
+    usarGeo: "Use current location",
+    previsao: "Weather forecast",
+    eventos: "Astronomical events",
+    objetos: "Visible objects",
+    latitude: "Latitude",
+    longitude: "Longitude",
+    buscarTempo: "Getting forecast...",
+    semEventos: "No events found.",
+    semObjetos: "No visible objects found.",
+	searchPlaceholder: "Search observations...",
     all: "All",
     recent: "Recent",
     favorites: "Favorites",
@@ -302,6 +334,102 @@ if (importInput) {
 }
 
 // =========================
+// INÍCIO: Estado e Funções
+// =========================
+let inicioData = new Date();
+let inicioCoords = null; // { lat, lon }
+let inicioLocManual = "";
+
+// ============ Função para obter localização via browser ===========
+function pedirGeolocalizacao(callback) {
+  if (navigator.geolocation) {
+    navigator.geolocation.getCurrentPosition(
+      pos => {
+        callback({ lat: pos.coords.latitude, lon: pos.coords.longitude });
+      },
+      err => {
+        alert("Não foi possível obter localização automática.");
+        callback(null);
+      }
+    );
+  } else {
+    alert("Geolocalização não suportada.");
+    callback(null);
+  }
+}
+
+// ============ Função para atualizar todos os campos da aba Início ===========
+async function atualizarTabInicio() {
+  const t = i18n[currentLang];
+  // Data
+  const dateLabel = document.getElementById("inicio-date-label");
+  const dateSpan = document.getElementById("inicio-date");
+  if (dateLabel) dateLabel.textContent = t.data + ":";
+  if (dateSpan) dateSpan.textContent = inicioData.toLocaleDateString(currentLang === "pt" ? "pt-PT" : "en-US", { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+
+  // Localização
+  const locLabel = document.getElementById("inicio-location-label");
+  const locSpan = document.getElementById("inicio-location");
+  if (locLabel) locLabel.textContent = t.localizacao + ":";
+  if (locSpan) {
+    if (inicioCoords) {
+      locSpan.textContent = `${inicioCoords.lat.toFixed(3)}, ${inicioCoords.lon.toFixed(3)}`;
+    } else if (inicioLocManual) {
+      locSpan.textContent = inicioLocManual;
+    } else {
+      locSpan.textContent = "—";
+    }
+  }
+
+  // Previsão do tempo (mock até integração real)
+  const previsaoDiv = document.getElementById("inicio-weather");
+  if (previsaoDiv) {
+    previsaoDiv.innerHTML = `<b>${t.previsao}:</b> <span id="weather-data">${t.buscarTempo}</span>`;
+    // Chamar Open-Meteo se tivermos coords
+    if (inicioCoords) {
+      fetch(`https://api.open-meteo.com/v1/forecast?latitude=${inicioCoords.lat}&longitude=${inicioCoords.lon}&hourly=cloudcover&current_weather=true`)
+        .then(r => r.json()).then(data => {
+          const now = new Date();
+          const hour = now.getHours();
+          let cloud = data.hourly?.cloudcover?.[hour] ?? "?";
+          document.getElementById("weather-data").textContent =
+            `Nuvens: ${cloud}%` + (data.current_weather ? `, ${data.current_weather.temperature}ºC` : '');
+        });
+    }
+  }
+
+  // Eventos Astronómicos (mock)
+  document.getElementById("inicio-events-title").textContent = t.eventos;
+  const eventsList = document.getElementById("inicio-events-list");
+  eventsList.innerHTML = `
+    <li>
+      <b>Chuva de meteoros</b>: Perseidas ativa, melhor hora 2:00-4:00 UTC.
+    </li>
+    <li>
+      <b>Quarto crescente da Lua</b>: 22:00 UTC
+    </li>
+  `;
+
+  // Objetos visíveis (mock, exemplo)
+  document.getElementById("inicio-objects-title").textContent = t.objetos;
+  const objList = document.getElementById("inicio-objects-list");
+  objList.innerHTML = `
+    <li>
+      <b>Júpiter</b> — 21:30–04:00 | RA: 22h | DEC: -12º | Mag: -2.5 | Dist: 627M km
+      <button onclick="mostrarDetalheObjeto('Júpiter')">ℹ️</button>
+    </li>
+    <li>
+      <b>Saturno</b> — 22:00–03:30 | RA: 18h | DEC: -22º | Mag: 0.3 | Dist: 1343M km
+      <button onclick="mostrarDetalheObjeto('Saturno')">ℹ️</button>
+    </li>
+  `;
+}
+// ========= Mostra detalhe ao clicar em objeto (mock) ==========
+window.mostrarDetalheObjeto = function(nome) {
+  alert(`Detalhes de ${nome} (mock).`);
+}
+
+// =========================
 // EVENTOS E INICIALIZAÇÃO (DOMContentLoaded)
 // =========================
 document.addEventListener('DOMContentLoaded', async () => {
@@ -309,6 +437,66 @@ document.addEventListener('DOMContentLoaded', async () => {
   renderObservacoes();
   translateUI();
   updateRedFilterClass();
+
+	  // Data: editar
+  document.getElementById("inicio-edit-date").onclick = () => {
+    document.getElementById("inicio-date-input").style.display = "inline";
+    document.getElementById("inicio-date-input").value = inicioData.toISOString().slice(0, 10);
+    document.getElementById("inicio-date").style.display = "none";
+  };
+  document.getElementById("inicio-date-input").onchange = (e) => {
+    inicioData = new Date(e.target.value);
+    document.getElementById("inicio-date-input").style.display = "none";
+    document.getElementById("inicio-date").style.display = "inline";
+    atualizarTabInicio();
+  };
+
+  // Localização: editar manual
+  document.getElementById("inicio-edit-location").onclick = () => {
+    document.getElementById("inicio-location-input").style.display = "inline";
+    document.getElementById("inicio-location").style.display = "none";
+  };
+  document.getElementById("inicio-location-input").onchange = (e) => {
+    const parts = e.target.value.split(",");
+    if (parts.length === 2) {
+      inicioCoords = { lat: parseFloat(parts[0]), lon: parseFloat(parts[1]) };
+      inicioLocManual = e.target.value;
+    }
+    document.getElementById("inicio-location-input").style.display = "none";
+    document.getElementById("inicio-location").style.display = "inline";
+    atualizarTabInicio();
+  };
+
+  // Localização: geolocalização automática
+  document.getElementById("inicio-use-geoloc").onclick = () => {
+    pedirGeolocalizacao(coords => {
+      if (coords) {
+        inicioCoords = coords;
+        inicioLocManual = "";
+        atualizarTabInicio();
+      }
+    });
+  };
+});
+
+// ============ Inicializar tab Início por defeito ===========
+document.addEventListener("DOMContentLoaded", () => {
+  // Marcar tab “Início” como ativa por defeito
+  document.querySelectorAll("nav button[data-tab]").forEach(btn => {
+    btn.classList.remove("active");
+    if (btn.getAttribute("data-tab") === "inicio") btn.classList.add("active");
+  });
+  document.querySelectorAll(".tab").forEach(sec => sec.classList.remove("active"));
+  document.getElementById("tab-inicio").classList.add("active");
+
+  // Pedir localização ao carregar
+  pedirGeolocalizacao(coords => {
+    if (coords) {
+      inicioCoords = coords;
+    }
+    atualizarTabInicio();
+  });
+});
 
   // ======== MODAL DE ADICIONAR OBSERVAÇÃO ========
   const addBtn = document.getElementById('addObservationBtn');
@@ -440,6 +628,10 @@ if (form) {
         sectionAlvo.classList.add('active');
       }
 
+	  if (alvo === 'inicio') atualizarTabInicio();
+  });
+});
+	  
       // Exibe o footer somente em “Configurações”
       const footer = document.querySelector('footer');
       if (footer) {
@@ -604,6 +796,8 @@ function translateUI() {
       // tenta traduzir pelo valor reverso
       item.textContent = t.tipos[tipoKey] || tipoKey;
     }
+	  atualizarTabInicio();
+	}
   });
 }
 
