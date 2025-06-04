@@ -461,7 +461,6 @@ try {
   const now = new Date();
   document.getElementById('inicio-date').textContent = now.toLocaleDateString(currentLang, {
     weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'
-  });
 
   // Localização
   if (!localState.coords) {
