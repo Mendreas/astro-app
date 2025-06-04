@@ -169,8 +169,8 @@ const i18n = {
 const DB_NAME = 'AstroLogDB';
 const DB_VERSION = 1;
 const STORE_NAME = 'observacoes';
-const APP_ID = 'e75ca076-7139-4f4b-9bfe-b23c3ae2a70e';
-const APP_SECRET = 'd8aa2fcb08d16a43b7aef292f6e4d5a1e5fb25001224b166102c12910101251eb954e305b1680dab5581feb38e02dcc131f3dadcb6035081a2145d428c9be7591a053ed34007a10cb54dbd1fd712579e635515b42f4fa940f7a9ffbd1b3ddc8973bcbaede7fddd0346ac7d6702b48061';
+const APP_ID = '6108e60e-8f00-4765-af3f-05deda74df85';
+const APP_SECRET = 'd8aa2fcb08d16a43b7aef292f6e4d5a1e5fb25001224b166102c12910101251eb954e305b1680dab5581feb38e02dcc131f3dadcb6035081a2145d428c9be759cafda9e6e2d12d69238ecf9e5372a3b2c9fa4c220f71347f4fe52915787bb66e9dc03c0b80ee95d985c2b0a27f15d3ce';
 const AUTH_STRING = btoa(`${APP_ID}:${APP_SECRET}`);
 
 async function astronomyApi(endpoint, body) {
