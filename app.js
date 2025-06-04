@@ -509,98 +509,102 @@ function atualizarBackupJSON() {
 function translateUI() {
   const t = i18n[currentLang];
 
-  const searchInputElem = document.getElementById('searchInput');
-  if (searchInputElem) searchInputElem.placeholder = t.searchPlaceholder;
+  // Header + filtros rápidos
+  document.getElementById('searchInput').placeholder = t.searchPlaceholder;
+  document.querySelector('[data-filter="todos"]').textContent = t.all;
+  document.querySelector('[data-filter="recentes"]').textContent = t.recent;
+  document.querySelector('[data-filter="favoritos"]').textContent = t.favorites;
+  document.getElementById('filterByType').textContent = t.filterType;
+  document.getElementById('toggleLanguage').textContent = currentLang === 'pt' ? 'EN' : 'PT';
 
-  const btnTodos    = document.querySelector('[data-filter="todos"]');
-  if (btnTodos) btnTodos.textContent = t.all;
-  const btnRecentes = document.querySelector('[data-filter="recentes"]');
-  if (btnRecentes) btnRecentes.textContent = t.recent;
-  const btnFavoritos = document.querySelector('[data-filter="favoritos"]');
-  if (btnFavoritos) btnFavoritos.textContent = t.favorites;
+  // Modal Adicionar Observação
+  document.getElementById('addObsTitle').textContent = t.addObsTitle;
+  document.getElementById('labelNomeObj').textContent = t.nomeObj;
+  document.getElementById('labelTipo').textContent = t.tipo;
+  document.getElementById('labelData').textContent = t.dataObs;
+  document.getElementById('labelLocalizacao').textContent = t.localizacao;
+  document.getElementById('labelRA').textContent = t.ra;
+  document.getElementById('labelDEC').textContent = t.dec;
+  document.getElementById('labelMagnitude').textContent = t.magnitude;
+  document.getElementById('labelDistancia').textContent = t.distancia;
+  document.getElementById('labelDescricao').textContent = t.descricao;
+  document.getElementById('labelFavorito').lastChild.textContent = " " + t.favorito;
+  document.getElementById('labelImagem').textContent = t.imagem;
+  document.getElementById('btnSave').textContent = t.save;
+  document.getElementById('btnCancel').textContent = t.cancel;
+  document.getElementById('addSuccessMsg').textContent = t.saveSuccess;
 
-  const filterBtnElem = document.getElementById('filterByType');
-  if (filterBtnElem) filterBtnElem.textContent = t.filterType;
-
-  const cancelBtn = document.querySelector('button[type="reset"]');
-  if (cancelBtn) cancelBtn.textContent = t.cancel;
-  const saveBtn = document.querySelector('button[type="submit"]');
-  if (saveBtn) saveBtn.textContent = t.save;
-
-  const redFilterLabel  = document.querySelector('footer label:first-child');
-  if (redFilterLabel) redFilterLabel.textContent = t.redFilter;
-  const intensityLabel = document.querySelector('footer label:last-of-type');
-  if (intensityLabel) intensityLabel.textContent = t.intensity;
-  
-    const modalTitle = document.getElementById('addObsTitle');
-  if (modalTitle) modalTitle.textContent = t.addObsTitle;
-  const nomeObj = document.getElementById('labelNomeObj');
-  if (nomeObj) nomeObj.textContent = t.nomeObj;
-  const tipo = document.getElementById('labelTipo');
-  if (tipo) tipo.textContent = t.tipo;
-  const dataObs = document.getElementById('labelData');
-  if (dataObs) dataObs.textContent = t.dataObs;
-  const localizacao = document.getElementById('labelLocalizacao');
-  if (localizacao) localizacao.textContent = t.localizacao;
-  const ra = document.getElementById('labelRA');
-  if (ra) ra.textContent = t.ra;
-  const dec = document.getElementById('labelDEC');
-  if (dec) dec.textContent = t.dec;
-  const magnitude = document.getElementById('labelMagnitude');
-  if (magnitude) magnitude.textContent = t.magnitude;
-  const distancia = document.getElementById('labelDistancia');
-  if (distancia) distancia.textContent = t.distancia;
+  // Opções do select Tipo no modal (sempre na ordem do array!)
+  const tipoSelect = document.getElementById('inputTipo');
+  if (tipoSelect) {
+    Array.from(tipoSelect.options).forEach((opt, i) => {
+      const val = opt.value;
+      opt.textContent = t.tipos[val] || val;
+    });
+  }
+  // Unidade de distância no formulário
   const unidade = document.getElementById('inputUnidadeDistancia');
   if (unidade) {
     unidade.options[0].text = "ly";
     unidade.options[1].text = "AU";
   }
-  const descricao = document.getElementById('labelDescricao');
-  if (descricao) descricao.textContent = t.descricao;
-  const favorito = document.getElementById('labelFavorito');
-  if (favorito) favorito.childNodes[1].textContent = " " + t.favorito;
-  const imagem = document.getElementById('labelImagem');
-  if (imagem) imagem.textContent = t.imagem;
 
-    // Botões do modal
-  const saveBtn = document.getElementById('btnSave');
-  if (saveBtn) saveBtn.textContent = t.save;
-  const cancelBtn = document.getElementById('btnCancel');
-  if (cancelBtn) cancelBtn.textContent = t.cancel;
-
-  // Mensagem de sucesso
-  const successMsg = document.getElementById('addSuccessMsg');
-  if (successMsg) successMsg.textContent = t.saveSuccess;
-
-  // Traduzir "Editar" e "Eliminar" dos cartões
-  document.querySelectorAll(".observation-card button.edit-btn").forEach(btn => {
-    btn.textContent = `✏️ ${t.edit}`;
-  });
-  document.querySelectorAll(".observation-card button.delete-btn").forEach(btn => {
-    btn.textContent = `🗑️ ${t.delete}`;
-  });
-
-  // Traduzir nomes das tabs
+  // Tradução dos botões das tabs
   document.querySelectorAll("nav button[data-tab]").forEach(btn => {
     const key = btn.getAttribute("data-tab");
-    if (t[key]) {
-      btn.textContent = t[key];
-    }
+    if (t[key]) btn.textContent = t[key];
   });
 
-  // Traduzir botões "Ver" das observações
-  document.querySelectorAll(".observation-card button.view-btn").forEach(btn => {
-    btn.textContent = `🔍 ${t.ver}`;
-  });
+  // Traduzir secção configurações
+  if (document.getElementById('tab-configuracoes')) {
+    document.querySelector('#tab-configuracoes p').textContent =
+      currentLang === 'pt'
+        ? "Ajustes e configurações da aplicação."
+        : "Application settings and adjustments.";
+    document.getElementById('exportJson').textContent = "📤 " + (currentLang === 'pt' ? "Exportar Observações" : "Export Observations");
+    // Label do input
+    const importLabel = document.querySelector('label.import-label');
+    if (importLabel) importLabel.childNodes[1].textContent = currentLang === 'pt' ? " Importar Observações" : " Import Observations";
+    document.getElementById('downloadBackup').textContent = currentLang === 'pt' ? "💾 Descarregar Backup" : "💾 Download Backup";
+  }
 
-  // Atualizar título do calendário se estiver visível
-  const calendarioVisivel = document.getElementById('tab-calendario')?.classList.contains('active');
-  if (calendarioVisivel) {
-    const tituloCalendario = document.getElementById('calendarMonthYear');
-    if (tituloCalendario) tituloCalendario.textContent = t.calendarTitle;
+  // Footer
+  document.querySelector('footer label:first-child').textContent = t.redFilter;
+  document.querySelector('footer label:last-of-type').textContent = t.intensity;
+
+  // Botões das observações
+  document.querySelectorAll(".observation-card button.view-btn").forEach(btn => btn.textContent = `🔍 ${t.ver}`);
+  document.querySelectorAll(".observation-card button.edit-btn").forEach(btn => btn.textContent = `✏️ ${t.edit}`);
+  document.querySelectorAll(".observation-card button.delete-btn").forEach(btn => btn.textContent = `🗑️ ${t.delete}`);
+
+  // Atualiza o título do calendário e os meses
+  const title = document.getElementById('calendarMonthYear');
+  const span = document.getElementById('calendarMonthYearDisplay');
+  if (title && span) {
+    const nomeMes = t.monthNames[calendarioMes];
+    const textoMesAno = `${capitalize(nomeMes)} ${calendarioAno}`;
+    title.textContent = textoMesAno;
+    span.textContent = textoMesAno;
+  }
+  // Se o calendário está ativo, força rerender
+  if (document.getElementById('tab-calendario')?.classList.contains('active')) {
     renderCalendario();
   }
+
+  // Corrige tipos traduzidos do dropdown de filtro por tipo, se estiver aberto
+  document.querySelectorAll('.dropdown-menu > div').forEach((item, i) => {
+    // "Todos" está sempre no fim
+    if (item.textContent.trim() === i18n.pt.all || item.textContent.trim() === i18n.en.all) {
+      item.textContent = t.all;
+    } else if (i < Object.keys(i18n.pt.tipos).length) {
+      // outros tipos
+      const tipoKey = item.textContent.trim();
+      // tenta traduzir pelo valor reverso
+      item.textContent = t.tipos[tipoKey] || tipoKey;
+    }
+  });
 }
+
 
 // =========================
 // FILTRO VERMELHO
@@ -716,17 +720,18 @@ function mostrarObservacoesDoDia(dataISO) {
   const container = document.getElementById('calendarResults');
   if (!container) return;
 
+  const t = i18n[currentLang];
   if (!lista.length) {
-    container.innerHTML = `<p>Sem observações para ${dataISO}</p>`;
+    container.innerHTML = `<p>${currentLang === 'pt' ? "Sem observações para" : "No observations for"} ${dataISO}</p>`;
     return;
   }
-
   container.innerHTML = `
-    <h3>Observações em ${dataISO}:</h3>
+    <h3>${currentLang === 'pt' ? "Observações em" : "Observations on"} ${dataISO}:</h3>
     <ul>
       ${lista.map(o => `<li>${getIcon(o.tipo)} ${o.nome}</li>`).join('')}
     </ul>`;
 }
+
 
 function getIcon(tipo) {
   const icons = {
