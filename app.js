@@ -109,7 +109,7 @@ const i18n = {
       "Aglomerado": "Cluster",
       "Nebulosa": "Nebula",
       "Sistema Solar": "Solar System",
-      "Outro": "Other",
+      "Outro": "Other"
   }
 };
 
