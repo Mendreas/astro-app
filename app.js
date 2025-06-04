@@ -169,22 +169,55 @@ const i18n = {
 const DB_NAME = 'AstroLogDB';
 const DB_VERSION = 1;
 const STORE_NAME = 'observacoes';
-const APP_ID = '6108e60e-8f00-4765-af3f-05deda74df85';
-const APP_SECRET = 'd8aa2fcb08d16a43b7aef292f6e4d5a1e5fb25001224b166102c12910101251eb954e305b1680dab5581feb38e02dcc131f3dadcb6035081a2145d428c9be759cafda9e6e2d12d69238ecf9e5372a3b2c9fa4c220f71347f4fe52915787bb66e9dc03c0b80ee95d985c2b0a27f15d3ce';
-const AUTH_STRING = btoa(`${APP_ID}:${APP_SECRET}`);
 
+// Chaves da API Astronomy
+const applicationId = '6108e60e-8f00-4765-af3f-05deda74df85';
+const applicationSecret = 'd8aa2fcb08d16a43b7aef292f6e4d5a1e5fb25001224b166102c12910101251eb954e305b1680dab5581feb38e02dcc131f3dadcb6035081a2145d428c9be759cafda9e6e2d12d69238ecf9e5372a3b2c9fa4c220f71347f4fe52915787bb66e9dc03c0b80ee95d985c2b0a27f15d3ce';
+
+// Codificando a string de autenticação
+const authString = btoa(`${applicationId}:${applicationSecret}`);
+
+// Função para fazer as requisições à AstronomyAPI
 async function astronomyApi(endpoint, body) {
-  const res = await fetch(`https://api.astronomyapi.com/api/v2/${endpoint}`, {
+  const response = await fetch(`https://api.astronomyapi.com/api/v2/${endpoint}`, {
     method: 'POST',
     headers: {
-      'Authorization': `Basic ${AUTH_STRING}`,
-      'Content-Type': 'application/json'
+      'Authorization': `Basic ${authString}`,
+      'Content-Type': 'application/json',
     },
-    body: JSON.stringify(body)
+    body: JSON.stringify(body),
   });
-  if (!res.ok) throw new Error('Erro ao chamar AstronomyAPI');
-  return res.json();
+
+  if (!response.ok) {
+    throw new Error(`Erro ao obter dados: ${response.statusText}`);
+  }
+
+  return response.json();
 }
+
+// Exemplo de como chamar a função astronomyApi para posições do Sol e da Lua
+async function getSunAndMoonPositions() {
+  const observer = {
+    latitude: 40.7128, // Latitude de Nova Iorque
+    longitude: -74.0060, // Longitude de Nova Iorque
+    date: new Date().toISOString().slice(0, 10), // Data atual
+  };
+
+  try {
+    const data = await astronomyApi('bodies/positions', {
+      bodies: ['sun', 'moon'],
+      observer,
+      view: 'horizontal',
+    });
+
+    console.log(data); // Dados da API (posições do Sol e da Lua)
+  } catch (error) {
+    console.error('Erro ao obter dados da AstronomyAPI:', error);
+  }
+}
+
+// Chamada para obter a posição do Sol e da Lua
+getSunAndMoonPositions();
 
 
 function openDB() {
