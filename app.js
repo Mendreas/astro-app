@@ -643,9 +643,6 @@ navButtons.forEach(btn => {
   });
 });
 
-  
-  // ==========================================
-
   // ======== Setas do Calendário (agora funcionam) ========
   const prevBtn = document.getElementById('prevMonth');
   const nextBtn = document.getElementById('nextMonth');
@@ -669,7 +666,6 @@ navButtons.forEach(btn => {
       renderCalendario();
     });
   }
-});
 		
 // =========================
 // FUNÇÃO PARA FECHAR O MODAL (ADICIONAR OBSERVAÇÃO) – VERSÃO GLOBAL
