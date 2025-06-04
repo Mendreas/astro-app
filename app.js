@@ -20,14 +20,7 @@ const obsList = document.getElementById('observationsList');
 // =========================
 const i18n = {
   pt: {
-    inicio: "Início",
-    data: "Data",
-    localizacao: "Localização",
-    previsaoTempo: "Previsão de tempo",
-    eventos: "Eventos astronómicos",
-    objetosVisiveis: "Objectos visíveis",
-    atualizar: "Atualizar localização",
-	searchPlaceholder: "Pesquisar observações...",
+    searchPlaceholder: "Pesquisar observações...",
     all: "Todos",
     recent: "Recentes",
     favorites: "Favoritos",
@@ -47,35 +40,9 @@ const i18n = {
     configuracoes: "Configurações",
     links: "Links Úteis",
     ver: "Ver",
-	settingsTitle: "Ajustes e configurações da aplicação.",
-    exportObservations: "Exportar Observações",
-    importObservations: "Importar Observações",
-    downloadBackup: "Descarregar Backup",
-    calendarTitle: "Calendário de Observações",
-	addObsTitle: "Adicionar Observação",
-    nomeObjeto: "Nome do objeto",
-    tipo: "Tipo",
-    dataObs: "Data da observação",
-    localizacao: "Localização",
-    ra: "RA",
-    dec: "DEC",
-    magnitude: "Magnitude",
-    distancia: "Distância",
-    descricao: "Descrição",
-    favorito: "Favorito",
-    imagem: "Imagem",
-    save: "Guardar",
-    cancel: "Cancelar"
   },
   en: {
-    inicio: "Home",
-    data: "Date",
-    localizacao: "Location",
-    previsaoTempo: "Weather forecast",
-    eventos: "Astronomical events",
-    objetosVisiveis: "Visible objects",
-    atualizar: "Refresh location",
-	searchPlaceholder: "Search observations...",
+    searchPlaceholder: "Search observations...",
     all: "All",
     recent: "Recent",
     favorites: "Favorites",
@@ -95,25 +62,6 @@ const i18n = {
     configuracoes: "Settings",
     links: "Useful Links",
     ver: "View",
-	settingsTitle: "Application settings and configuration.",
-    exportObservations: "Export Observations",
-    importObservations: "Import Observations",
-    downloadBackup: "Download Backup",
-    calendarTitle: "Observation Calendar",
-	addObsTitle: "Add Observation",
-    nomeObjeto: "Object name",
-    tipo: "Type",
-    dataObs: "Observation date",
-    localizacao: "Location",
-    ra: "RA",
-    dec: "DEC",
-    magnitude: "Magnitude",
-    distancia: "Distance",
-    descricao: "Description",
-    favorito: "Favorite",
-    imagem: "Image",
-    save: "Save",
-    cancel: "Cancel"
   }
 };
 
@@ -184,11 +132,6 @@ if (langBtn) {
     langBtn.textContent = currentLang === 'pt' ? 'EN' : 'PT';
     translateUI();
     renderObservacoes();
-    // Atualiza a tab "Início" se estiver ativa
-    const tabInicio = document.getElementById('tab-inicio');
-    if (tabInicio && tabInicio.classList.contains('active')) {
-      loadInicioTab();
-    }
   });
 }
 
@@ -317,60 +260,6 @@ document.addEventListener('DOMContentLoaded', async () => {
   translateUI();
   updateRedFilterClass();
 
-	// ==== Lógica para tab INÍCIO ====
-
-function setInicioDate() {
-  const dateElem = document.getElementById('inicio-date');
-  if (!dateElem) return;
-  const now = new Date();
-  const locale = currentLang === 'pt' ? 'pt-PT' : 'en-US';
-  dateElem.textContent = now.toLocaleDateString(locale, {
-    weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'
-  });
-}
-window.setInicioDate = setInicioDate;
-
-function setInicioLocation(pos) {
-  const locElem = document.getElementById('inicio-location');
-  if (!locElem) return;
-  if (!pos) {
-    locElem.textContent = i18n[currentLang].localizacao + ": ?";
-    return;
-  }
-  locElem.textContent = `${i18n[currentLang].localizacao}: ${pos.coords.latitude.toFixed(4)}, ${pos.coords.longitude.toFixed(4)}`;
-}
-window.setInicioLocation = setInicioLocation;
-
-// Obter localização
-function refreshLocation() {
-  if (!navigator.geolocation) {
-    setInicioLocation(null);
-    return;
-  }
-  window.refreshLocation = refreshLocation;
-  navigator.geolocation.getCurrentPosition(
-    pos => setInicioLocation(pos),
-    err => setInicioLocation(null),
-    { enableHighAccuracy: true }
-  );
-}
-
-// Evento no botão de refresh
-document.getElementById('btn-location-refresh').addEventListener('click', refreshLocation);
-
-// Inicia tab inicio sempre que ativada
-function loadInicioTab() {
-  setInicioDate();
-  document.getElementById('inicio-weather').textContent = i18n[currentLang].previsaoTempo + ": ...";
-  document.getElementById('inicio-events').textContent = i18n[currentLang].eventos + ": ...";
-  document.getElementById('inicio-objects').textContent = i18n[currentLang].objetosVisiveis + ": ...";
-}
-window.loadInicioTab = loadInicioTab; // <-- Torna global!
-
-// Chama a função sempre que a tab "Início" é ativada
-document.querySelector('button[data-tab="inicio"]').addEventListener('click', loadInicioTab);
-
-	
   // ======== MODAL DE ADICIONAR OBSERVAÇÃO ========
   const addBtn = document.getElementById('addObservationBtn');
   const modal = document.getElementById('addObservationModal');
@@ -403,7 +292,8 @@ document.querySelector('button[data-tab="inicio"]').addEventListener('click', lo
     });
   }
 
-// Submissão do formulário de adicionar observação
+  // Submissão do formulário de adicionar observação
+  // Submissão do formulário de adicionar observação
 const form = document.getElementById('addObservationForm');
 if (form) {
   form.addEventListener('submit', async function (e) {
@@ -506,10 +396,6 @@ if (form) {
         footer.style.display = (alvo === 'configuracoes') ? 'flex' : 'none';
       }
 
-	  if (alvo === 'inicio') {
-  		loadInicioTab();
-	  }
-  
       // Se a aba for “Calendário”, renderiza o calendário
       if (alvo === 'calendario') {
         renderCalendario();
@@ -575,21 +461,6 @@ function atualizarBackupJSON() {
 function translateUI() {
   const t = i18n[currentLang];
 
-  const settingsTitle = document.getElementById('settings-title');
-  if (settingsTitle) settingsTitle.textContent = t.settingsTitle;
-
-  const exportBtn = document.getElementById('exportJson');
-  if (exportBtn) exportBtn.textContent = t.exportObservations;
-
-  const importBtn = document.getElementById('importJsonBtn');
-  if (importBtn) importBtn.textContent = t.importObservations;
-
-  const downloadBtn = document.getElementById('downloadBackup');
-  if (downloadBtn) downloadBtn.textContent = t.downloadBackup;
-
-  const calendarTitle = document.getElementById('calendarMonthYear');
-  if (calendarTitle) calendarTitle.textContent = t.calendarTitle;
-	
   const searchInputElem = document.getElementById('searchInput');
   if (searchInputElem) searchInputElem.placeholder = t.searchPlaceholder;
 
@@ -620,79 +491,6 @@ function translateUI() {
       btn.textContent = t[key];
     }
   });
-  
-    // ========== MODAL ADICIONAR OBSERVAÇÃO ==========
-  const addObsTitle = document.getElementById('addObsTitle');
-  if (addObsTitle) addObsTitle.textContent = t.addObsTitle;
-
-  const labelNomeObj = document.getElementById('labelNomeObj');
-  if (labelNomeObj) labelNomeObj.textContent = t.nomeObjeto;
-
-  const inputNomeObj = document.getElementById('inputNomeObj');
-  if (inputNomeObj) inputNomeObj.placeholder = t.nomeObjeto;
-
-  const labelTipo = document.getElementById('labelTipo');
-  if (labelTipo) labelTipo.textContent = t.tipo;
-
-  const labelData = document.getElementById('labelData');
-  if (labelData) labelData.textContent = t.dataObs;
-
-  const inputData = document.getElementById('inputData');
-  if (inputData) inputData.placeholder = currentLang === 'pt' ? "dd / mm / aaaa" : "mm / dd / yyyy";
-
-  const labelLocalizacao = document.getElementById('labelLocalizacao');
-  if (labelLocalizacao) labelLocalizacao.textContent = t.localizacao;
-
-  const labelRA = document.getElementById('labelRA');
-  if (labelRA) labelRA.textContent = t.ra;
-
-  const labelDEC = document.getElementById('labelDEC');
-  if (labelDEC) labelDEC.textContent = t.dec;
-
-  const labelMagnitude = document.getElementById('labelMagnitude');
-  if (labelMagnitude) labelMagnitude.textContent = t.magnitude;
-
-  const labelDistancia = document.getElementById('labelDistancia');
-  if (labelDistancia) labelDistancia.textContent = t.distancia;
-
-  const labelDescricao = document.getElementById('labelDescricao');
-  if (labelDescricao) labelDescricao.textContent = t.descricao;
-
-  const labelFavorito = document.getElementById('labelFavorito');
-  if (labelFavorito) labelFavorito.textContent = t.favorito;
-
-  const labelImagem = document.getElementById('labelImagem');
-  if (labelImagem) labelImagem.textContent = t.imagem;
-
-  // Botões
-  const btnSave = document.getElementById('btnSave');
-  if (btnSave) btnSave.textContent = t.save;
-
-  const btnCancel = document.getElementById('btnCancel');
-  if (btnCancel) btnCancel.textContent = t.cancel;
-
-  // ========== FIM MODAL ==========
-
-  // Traduzir opções do SELECT "Tipo"
-  const selectTipo = document.getElementById('inputTipo');
-  if (selectTipo) {
-    Array.from(selectTipo.options).forEach(option => {
-      switch(option.value) {
-        case "Estrela":
-          option.textContent = currentLang === 'pt' ? 'Estrela' : 'Star'; break;
-        case "Galáxia":
-          option.textContent = currentLang === 'pt' ? 'Galáxia' : 'Galaxy'; break;
-        case "Aglomerado":
-          option.textContent = currentLang === 'pt' ? 'Aglomerado' : 'Cluster'; break;
-        case "Nebulosa":
-          option.textContent = currentLang === 'pt' ? 'Nebulosa' : 'Nebula'; break;
-        case "Sistema Solar":
-          option.textContent = currentLang === 'pt' ? 'Sistema Solar' : 'Solar System'; break;
-        case "Outro":
-          option.textContent = currentLang === 'pt' ? 'Outro' : 'Other'; break;
-      }
-    });
-  }
 
   // Traduzir botões "Ver" das observações
   document.querySelectorAll(".observation-card button.view-btn").forEach(btn => {
@@ -774,11 +572,14 @@ function renderCalendario() {
   const daysInMonth = new Date(calendarioAno, calendarioMes + 1, 0).getDate();
 
   // Atualiza o título principal <h2>
-	const locale = currentLang === 'pt' ? 'pt-PT' : 'en-US';
-	const nomeMes = new Date(calendarioAno, calendarioMes).toLocaleString(locale, { month: 'long' });
-	const textoMesAno = `${capitalize(nomeMes)} ${calendarioAno}`;
-	title.textContent = textoMesAno;
-	if (displaySpan) displaySpan.textContent = textoMesAno;
+  const nomeMes    = new Date(calendarioAno, calendarioMes).toLocaleString('pt-PT', { month: 'long' });
+  const textoMesAno = `${capitalize(nomeMes)} ${calendarioAno}`;
+  title.textContent = textoMesAno;
+
+  // Se quiser mostrar também dentro do header (entre as setas):
+  if (displaySpan) {
+    displaySpan.textContent = textoMesAno;
+  }
 
   // Conjunto de datas (YYYY-MM-DD) que têm observações
   const diasComObservacoes = new Set(
