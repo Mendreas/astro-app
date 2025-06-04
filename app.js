@@ -456,8 +456,7 @@ try {
     dadosDiv.innerHTML = '<span style="color:#f55">Erro a obter dados astronómicos.</span>';
     skyDiv.innerHTML = '';
   }
-}
-	
+
   // Data
   const now = new Date();
   document.getElementById('inicio-date').textContent = now.toLocaleDateString(currentLang, {
