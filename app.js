@@ -592,33 +592,6 @@ document.addEventListener('DOMContentLoaded', async () => {
     document.getElementById("inicio-date").style.display = "inline";
     atualizarTabInicio();
   };
-
-  // Localização: editar manual
-  //document.getElementById("inicio-edit-location").onclick = () => {
-  //  document.getElementById("inicio-location-input").style.display = "inline";
-    //document.getElementById("inicio-location").style.display = "none";
-  //};
-  //document.getElementById("inicio-location-input").onchange = (e) => {
-    //const parts = e.target.value.split(",");
-    //if (parts.length === 2) {
-      //inicioCoords = { lat: parseFloat(parts[0]), lon: parseFloat(parts[1]) };
-      //inicioLocManual = e.target.value;
-    //}
-    //document.getElementById("inicio-location-input").style.display = "none";
-    //document.getElementById("inicio-location").style.display = "inline";
-    //atualizarTabInicio();
-  //};
-
-  // Localização: geolocalização automática
-  //document.getElementById("inicio-use-geoloc").onclick = () => {
-    //pedirGeolocalizacao(coords => {
-      //if (coords) {
-        //inicioCoords = coords;
-        //inicioLocManual = "";
-        //atualizarTabInicio();
-      //}
-    //});
-  //};
 });
 
 // ============ Inicializar tab Início por defeito ===========
