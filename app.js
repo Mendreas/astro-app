@@ -63,7 +63,7 @@ const i18n = {
       "Aglomerado": "Aglomerado",
       "Nebulosa": "Nebulosa",
       "Sistema Solar": "Sistema Solar",
-      "Outro": "Outro,
+      "Outro": "Outro"
   },
   en: {
     searchPlaceholder: "Search observations...",
@@ -109,7 +109,7 @@ const i18n = {
       "Aglomerado": "Cluster",
       "Nebulosa": "Nebula",
       "Sistema Solar": "Solar System",
-      "Outro": "Other",
+      "Outro": "Other"
   }
 };
 
