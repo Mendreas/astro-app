@@ -293,14 +293,14 @@ document.addEventListener('DOMContentLoaded', async () => {
   }
 
   // Submissão do formulário de adicionar observação
-  // Submissão do formulário de adicionar observação
-const form = document.getElementById('addObservationForm');
+
+
 if (form) {
   form.addEventListener('submit', async function (e) {
     e.preventDefault();
     const formData = new FormData(form);
 
-    // Recolha manual dos campos, usando os names definidos no HTML
+    // Cria o objeto com os nomes/IDs corretos
     const obs = {
       id: Date.now(),
       nome: formData.get('nome'),
@@ -314,7 +314,7 @@ if (form) {
       unidadeDistancia: formData.get('unidadeDistancia'),
       descricao: formData.get('descricao'),
       favorito: !!formData.get('favorito')
-      // Imagem é tratada mais abaixo
+      // imagem: será tratada abaixo
     };
 
     const file = formData.get('imagem');
@@ -331,7 +331,7 @@ if (form) {
       closeAddForm();
     };
 
-    if (file && file.name && file.size > 0) {
+    if (file && file.size > 0) {
       const reader = new FileReader();
       reader.onload = async () => {
         obs.imagem = reader.result;
