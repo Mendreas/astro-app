@@ -64,7 +64,8 @@ const i18n = {
       "Nebulosa": "Nebulosa",
       "Sistema Solar": "Sistema Solar",
       "Outro": "Outro
-  },
+   }
+},
   en: {
     searchPlaceholder: "Search observations...",
     all: "All",
