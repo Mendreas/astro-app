@@ -40,6 +40,30 @@ const i18n = {
     configuracoes: "Configurações",
     links: "Links Úteis",
     ver: "Ver",
+	addObsTitle: "Adicionar Observação",
+    nomeObj: "Nome do objeto",
+    tipo: "Tipo",
+    dataObs: "Data da observação",
+    localizacao: "Localização",
+    ra: "RA",
+    dec: "DEC",
+    magnitude: "Magnitude",
+    distancia: "Distância",
+    unidadeDist: "Unidade",
+    descricao: "Descrição",
+    favorito: "Favorito",
+    imagem: "Imagem",
+    saveSuccess: "✔️ Observação adicionada com sucesso",
+    monthNames: [
+      "Janeiro","Fevereiro","Março","Abril","Maio","Junho","Julho","Agosto","Setembro","Outubro","Novembro","Dezembro"
+    ],
+    tipos: {
+      "Estrela": "Estrela",
+      "Galáxia": "Galáxia",
+      "Aglomerado": "Aglomerado",
+      "Nebulosa": "Nebulosa",
+      "Sistema Solar": "Sistema Solar",
+      "Outro": "Outro
   },
   en: {
     searchPlaceholder: "Search observations...",
@@ -62,6 +86,30 @@ const i18n = {
     configuracoes: "Settings",
     links: "Useful Links",
     ver: "View",
+	addObsTitle: "Add Observation",
+    nomeObj: "Object Name",
+    tipo: "Type",
+    dataObs: "Observation Date",
+    localizacao: "Location",
+    ra: "RA",
+    dec: "DEC",
+    magnitude: "Magnitude",
+    distancia: "Distance",
+    unidadeDist: "Unit",
+    descricao: "Description",
+    favorito: "Favorite",
+    imagem: "Image",
+    saveSuccess: "✔️ Observation successfully added",
+    monthNames: [
+      "January","February","March","April","May","June","July","August","September","October","November","December"
+    ],
+    tipos: {
+      "Estrela": "Star",
+      "Galáxia": "Galaxy",
+      "Aglomerado": "Cluster",
+      "Nebulosa": "Nebula",
+      "Sistema Solar": "Solar System",
+      "Outro": "Other"
   }
 };
 
@@ -151,17 +199,17 @@ if (filterBtn) {
     const menu = document.createElement('div');
     menu.className = 'dropdown-menu';
 
-    tipos.forEach(tipo => {
-      const item = document.createElement('div');
-      item.textContent = tipo;
-      item.addEventListener('click', () => {
-        currentFilter = 'tipo';
-        searchQuery = tipo.toLowerCase();
-        renderObservacoes();
-        menu.remove();
-      });
-      menu.appendChild(item);
-    });
+	tipos.forEach(tipo => {
+	  const item = document.createElement('div');
+	  item.textContent = i18n[currentLang].tipos[tipo] || tipo;
+	  item.addEventListener('click', () => {
+	    currentFilter = 'tipo';
+	    searchQuery = tipo.toLowerCase();
+	    renderObservacoes();
+	    menu.remove();
+	  });
+	  menu.appendChild(item);
+	});
 
     // Adiciona opção "Todos"
     const allItem = document.createElement('div');
@@ -483,6 +531,54 @@ function translateUI() {
   if (redFilterLabel) redFilterLabel.textContent = t.redFilter;
   const intensityLabel = document.querySelector('footer label:last-of-type');
   if (intensityLabel) intensityLabel.textContent = t.intensity;
+  
+    const modalTitle = document.getElementById('addObsTitle');
+  if (modalTitle) modalTitle.textContent = t.addObsTitle;
+  const nomeObj = document.getElementById('labelNomeObj');
+  if (nomeObj) nomeObj.textContent = t.nomeObj;
+  const tipo = document.getElementById('labelTipo');
+  if (tipo) tipo.textContent = t.tipo;
+  const dataObs = document.getElementById('labelData');
+  if (dataObs) dataObs.textContent = t.dataObs;
+  const localizacao = document.getElementById('labelLocalizacao');
+  if (localizacao) localizacao.textContent = t.localizacao;
+  const ra = document.getElementById('labelRA');
+  if (ra) ra.textContent = t.ra;
+  const dec = document.getElementById('labelDEC');
+  if (dec) dec.textContent = t.dec;
+  const magnitude = document.getElementById('labelMagnitude');
+  if (magnitude) magnitude.textContent = t.magnitude;
+  const distancia = document.getElementById('labelDistancia');
+  if (distancia) distancia.textContent = t.distancia;
+  const unidade = document.getElementById('inputUnidadeDistancia');
+  if (unidade) {
+    unidade.options[0].text = "ly";
+    unidade.options[1].text = "AU";
+  }
+  const descricao = document.getElementById('labelDescricao');
+  if (descricao) descricao.textContent = t.descricao;
+  const favorito = document.getElementById('labelFavorito');
+  if (favorito) favorito.childNodes[1].textContent = " " + t.favorito;
+  const imagem = document.getElementById('labelImagem');
+  if (imagem) imagem.textContent = t.imagem;
+
+    // Botões do modal
+  const saveBtn = document.getElementById('btnSave');
+  if (saveBtn) saveBtn.textContent = t.save;
+  const cancelBtn = document.getElementById('btnCancel');
+  if (cancelBtn) cancelBtn.textContent = t.cancel;
+
+  // Mensagem de sucesso
+  const successMsg = document.getElementById('addSuccessMsg');
+  if (successMsg) successMsg.textContent = t.saveSuccess;
+
+  // Traduzir "Editar" e "Eliminar" dos cartões
+  document.querySelectorAll(".observation-card button.edit-btn").forEach(btn => {
+    btn.textContent = `✏️ ${t.edit}`;
+  });
+  document.querySelectorAll(".observation-card button.delete-btn").forEach(btn => {
+    btn.textContent = `🗑️ ${t.delete}`;
+  });
 
   // Traduzir nomes das tabs
   document.querySelectorAll("nav button[data-tab]").forEach(btn => {
@@ -572,9 +668,10 @@ function renderCalendario() {
   const daysInMonth = new Date(calendarioAno, calendarioMes + 1, 0).getDate();
 
   // Atualiza o título principal <h2>
-  const nomeMes    = new Date(calendarioAno, calendarioMes).toLocaleString('pt-PT', { month: 'long' });
-  const textoMesAno = `${capitalize(nomeMes)} ${calendarioAno}`;
-  title.textContent = textoMesAno;
+	const nomeMes = i18n[currentLang].monthNames[calendarioMes];
+	const textoMesAno = `${capitalize(nomeMes)} ${calendarioAno}`;
+	title.textContent = textoMesAno;
+	if (displaySpan) displaySpan.textContent = textoMesAno;
 
   // Se quiser mostrar também dentro do header (entre as setas):
   if (displaySpan) {
@@ -679,10 +776,12 @@ function renderObservacoes() {
     titleDiv.textContent = `${getIcon(obs.tipo)} ${obs.nome} ${obs.favorito ? '⭐' : ''}`;
     card.appendChild(titleDiv);
 
-    // --- TIPO (pequeno) ---
-    const tipoSmall = document.createElement('div');
-    tipoSmall.innerHTML = `<small>${obs.tipo}</small>`;
-    card.appendChild(tipoSmall);
+	// --- TIPO (pequeno) ---
+	const tipoSmall = document.createElement('div');
+	const tipoTraduzido = i18n[currentLang].tipos[obs.tipo] || obs.tipo;
+	tipoSmall.innerHTML = `<small>${tipoTraduzido}</small>`;
+	card.appendChild(tipoSmall);
+
 
     // --- DATA + LOCAL (pequeno) ---
     const dateLocal = document.createElement('div');
