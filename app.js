@@ -783,19 +783,20 @@ function translateUI() {
   }
 
   // Corrige tipos traduzidos do dropdown de filtro por tipo, se estiver aberto
-  document.querySelectorAll('.dropdown-menu > div').forEach((item, i) => {
-    // "Todos" está sempre no fim
-    if (item.textContent.trim() === i18n.pt.all || item.textContent.trim() === i18n.en.all) {
-      item.textContent = t.all;
-    } else if (i < Object.keys(i18n.pt.tipos).length) {
-      // outros tipos
-      const tipoKey = item.textContent.trim();
-      // tenta traduzir pelo valor reverso
-      item.textContent = t.tipos[tipoKey] || tipoKey;
-    }
-	  atualizarTabInicio();
-	}
-  });
+document.querySelectorAll('.dropdown-menu > div').forEach((item, i) => {
+  // "Todos" está sempre no fim
+  if (item.textContent.trim() === i18n.pt.all || item.textContent.trim() === i18n.en.all) {
+    item.textContent = t.all;
+  } else if (i < Object.keys(i18n.pt.tipos).length) {
+    // outros tipos
+    const tipoKey = item.textContent.trim();
+    // tenta traduzir pelo valor reverso
+    item.textContent = t.tipos[tipoKey] || tipoKey;
+  }
+}); // <-- fecha o forEach corretamente
+
+	// Chama fora do ciclo, só uma vez se quiseres atualizar a tab Inicio
+	atualizarTabInicio();
 }
 
 
