@@ -398,21 +398,21 @@ let localState = {
   country: null
 };
 let autocompleteResults = [];
-
 // ========== Inicialização ==========
 async function atualizarTabInicio() {
   const t = i18n[currentLang];
   const sec = document.getElementById('inicio-astroapi');
   const dadosDiv = document.getElementById('astroapi-dados');
   const skyDiv = document.getElementById('astroapi-skymap');
+
   if (!localState.coords) {
     dadosDiv.innerHTML = `<span>${t.erroGeo}</span>`;
     skyDiv.innerHTML = '';
     return;
   }
   dadosDiv.innerHTML = t.buscarTempo;
-    
-try {
+
+  try {
     const observer = {
       latitude: localState.coords.lat,
       longitude: localState.coords.lon,
@@ -461,6 +461,7 @@ try {
   const now = new Date();
   document.getElementById('inicio-date').textContent = now.toLocaleDateString(currentLang, {
     weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'
+  });
 
   // Localização
   if (!localState.coords) {
@@ -481,7 +482,8 @@ try {
 
   // Objetos visíveis
   mostrarObjetosVisiveis();
-}
+} // <-- Agora fecha aqui, só no fim de tudo!
+
 
 // ========== Localização Automática e Manual ==========
 async function obterLocalizacao() {
