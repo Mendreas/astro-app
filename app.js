@@ -63,9 +63,8 @@ const i18n = {
       "Aglomerado": "Aglomerado",
       "Nebulosa": "Nebulosa",
       "Sistema Solar": "Sistema Solar",
-      "Outro": "Outro
-   }
-},
+      "Outro": "Outro,
+  },
   en: {
     searchPlaceholder: "Search observations...",
     all: "All",
@@ -110,7 +109,7 @@ const i18n = {
       "Aglomerado": "Cluster",
       "Nebulosa": "Nebula",
       "Sistema Solar": "Solar System",
-      "Outro": "Other"
+      "Outro": "Other",
   }
 };
 
@@ -721,18 +720,17 @@ function mostrarObservacoesDoDia(dataISO) {
   const container = document.getElementById('calendarResults');
   if (!container) return;
 
-  const t = i18n[currentLang];
   if (!lista.length) {
-    container.innerHTML = `<p>${currentLang === 'pt' ? "Sem observações para" : "No observations for"} ${dataISO}</p>`;
+    container.innerHTML = `<p>Sem observações para ${dataISO}</p>`;
     return;
   }
+
   container.innerHTML = `
-    <h3>${currentLang === 'pt' ? "Observações em" : "Observations on"} ${dataISO}:</h3>
+    <h3>Observações em ${dataISO}:</h3>
     <ul>
       ${lista.map(o => `<li>${getIcon(o.tipo)} ${o.nome}</li>`).join('')}
     </ul>`;
 }
-
 
 function getIcon(tipo) {
   const icons = {
