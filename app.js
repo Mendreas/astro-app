@@ -171,8 +171,8 @@ const DB_VERSION = 1;
 const STORE_NAME = 'observacoes';
 
 // Chaves da API Astronomy
-const applicationId = '2dacb270-7ed1-46bc-a000-d8e558722b58';
-const applicationSecret = 'd8aa2fcb08d16a43b7aef292f6e4d5a1e5fb25001224b166102c12910101251eb954e305b1680dab5581feb38e02dcc131f3dadcb6035081a2145d428c9be7593c231dc68575104c70f2781b6fe0ea49e20db9b9a8c26985478c01d19e6aef93fab1dc56127a96e72ae6afb450397f14';
+const applicationId = 'be9e2092-773e-44e9-9856-bf51a01d4cc7';
+const applicationSecret = 'd8aa2fcb08d16a43b7aef292f6e4d5a1e5fb25001224b166102c12910101251eb954e305b1680dab5581feb38e02dcc131f3dadcb6035081a2145d428c9be7595ead0264fd198e2fd43dccd624cf05c9c4f2963f5257869da4399f9737ab8bad7e46ef2e816fdcd021411dfbd9effa84';
 
 // Codificando a string de autenticação
 const authString = btoa(`${applicationId}:${applicationSecret}`);
